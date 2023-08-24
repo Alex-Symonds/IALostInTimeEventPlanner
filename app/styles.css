@@ -1,0 +1,32 @@
+.plannerElement-data{
+    display: grid;
+    grid-template-columns: 4.25rem 1.75rem 1fr;
+}
+
+.upgradePicker-card{
+    display: grid;
+    grid-template-columns: 4.25rem 1.75rem 1fr;
+}
+
+.statusKV{
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    max-width: 320px;
+}
+
+.statusLevels{
+    grid-template-columns: repeat(8, 2rem);
+    grid-template-rows: auto auto;
+}
+
+.gameStateDisplayTimeAndPremium{
+    display: grid;
+    grid-template-columns: repeat(3, 33%);
+    max-width: 320px;
+}
+
+.gameStateDisplayDust{
+    display: grid;
+    grid-template-columns: 33% 1fr 4rem;
+    max-width: 320px;
+}

@@ -1,0 +1,1740 @@
+{
+	"trinity": { 
+			"name": "Trinity",
+			"type": "Worker",
+			"baseTime": "5",
+			"outputs": ["blue", "dust"],
+			"upgrades": [
+				{
+					"level": "1",
+					"costs": [],
+					"results": [
+						{
+							"outputType": "blue", 
+							"quantity": "1"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "5"
+						}
+					]
+				},
+				{
+					"level": "2",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "5"
+						}
+					],
+					"results": [
+						{
+							"outputType": "blue", 
+							"quantity": "2"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "10"
+						}
+					]
+				},
+				{
+					"level": "3",
+					"costs": [
+						{
+							"egg": "blue", 
+							"quantity": "50"
+						}
+					],
+					"results": [
+						{
+							"outputType": "blue", 
+							"quantity": "3"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "25"
+						}
+					]
+				},
+				{
+					"level": "4",
+					"costs": [
+						{
+							"egg": "green", 
+							"quantity": "50"
+						}
+					],
+					"results": [
+						{
+							"outputType": "blue", 
+							"quantity": "4"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "50"
+						}
+					]
+				},
+				{
+					"level": "5",
+					"costs": [
+						{
+							"egg": "green", 
+							"quantity": "150"
+						},
+						{
+							"egg": "blue", 
+							"quantity": "500"
+						}
+					],
+					"results": [
+						{
+							"outputType": "blue", 
+							"quantity": "5"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "100"
+						}
+					]
+				},
+				{
+					"level": "6",
+					"costs": [
+						{
+							"egg": "blue", 
+							"quantity": "4000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "blue", 
+							"quantity": "6"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "250"
+						}
+					]
+				},
+				{
+					"level": "7",
+					"costs": [
+						{
+							"egg": "green", 
+							"quantity": "2500"
+						}
+					],
+					"results": [
+						{
+							"outputType": "blue", 
+							"quantity": "7"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "500"
+						}
+					]
+				},
+				{
+					"level": "8",
+					"costs": [
+						{
+							"egg": "red", 
+							"quantity": "500"
+						},
+						{
+							"egg": "green", 
+							"quantity": "3000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "blue", 
+							"quantity": "8"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "1000"
+						}
+					]
+				},
+				{
+					"level": "9",
+					"costs": [
+						{
+							"egg": "red", 
+							"quantity": "1000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "blue", 
+							"quantity": "9"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "2500"
+						}
+					]
+				},
+				{
+					"level": "10",
+					"costs": [
+						{
+							"egg": "yellow", 
+							"quantity": "250"
+						}
+					],
+					"results": [
+						{
+							"outputType": "blue", 
+							"quantity": "10"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "5000"
+						}
+					]
+				}
+			]
+		},
+	"bronte": { 
+			"name": "Bronte",
+			"type": "Worker",
+			"baseTime": "10",
+			"outputs": ["green", "dust"],
+			"upgrades": [
+				{
+					"level": "1",
+					"prereq": "trinity",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "250"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "1"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "25"
+						}
+					]
+				},
+				{
+					"level": "2",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "50"
+						},
+						{
+							"egg": "blue",
+							"quantity": "250"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "2"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "50"
+						}
+					]
+				},
+				{
+					"level": "3",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "300"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "3"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "125"
+						}
+					]
+				},
+				{
+					"level": "4",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "1300"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "4"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "250"
+						}
+					]
+				},
+				{
+					"level": "5",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "2500"
+						},
+						{
+							"egg": "blue",
+							"quantity": "5000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "5"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "500"
+						}
+					]
+				},
+				{
+					"level": "6",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "5000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "6"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "1000"
+						}
+					]
+				},
+				{
+					"level": "7",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "750"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "7"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "2500"
+						}
+					]
+				},
+				{
+					"level": "8",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "1000"
+						},
+						{
+							"egg": "green",
+							"quantity": "5000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "8"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "5000"
+						}
+					]
+				},
+				{
+					"level": "9",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "2500"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "9"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "10000"
+						}
+					]
+				},
+				{
+					"level": "10",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "1000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "10"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "15000"
+						}
+					]
+				}
+			]
+		},
+	"anne": { 
+			"name": "Anne",
+			"type": "Worker",
+			"baseTime": "15",
+			"outputs": ["blue", "green"],
+			"upgrades": [				
+				{
+					"level": "1",
+					"prereq": "bronte",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "750"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "2"
+						},
+						{
+							"outputType": "blue", 
+							"quantity": "3"
+						}
+					]
+				},
+				{
+					"level": "2",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "2000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "4"
+						},
+						{
+							"outputType": "blue", 
+							"quantity": "6"
+						}
+					]
+				},
+				{
+					"level": "3",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "2500"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "6"
+						},
+						{
+							"outputType": "blue", 
+							"quantity": "9"
+						}
+					]
+				},
+				{
+					"level": "4",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "500"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "8"
+						},
+						{
+							"outputType": "blue", 
+							"quantity": "12"
+						}
+					]
+				},
+				{
+					"level": "5",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "5000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "10"
+						},
+						{
+							"outputType": "blue", 
+							"quantity": "15"
+						}
+					]
+				},
+				{
+					"level": "6",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "500"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "12"
+						},
+						{
+							"outputType": "blue", 
+							"quantity": "18"
+						}
+					]
+				},
+				{
+					"level": "7",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "3000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "14"
+						},
+						{
+							"outputType": "blue", 
+							"quantity": "21"
+						}
+					]
+				},
+				{
+					"level": "8",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "2500"
+						}
+					],
+					"results": [
+						{
+							"outputType": "green", 
+							"quantity": "16"
+						},
+						{
+							"outputType": "blue", 
+							"quantity": "24"
+						}
+					]
+				}
+			]
+		},
+	"petra": { 
+			"name": "Petra",
+			"type": "Worker",
+			"baseTime": "20",
+			"outputs": ["red", "dust"],
+			"upgrades": [				
+				{
+					"level": "1",
+					"prereq": "anne",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "5000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "red", 
+							"quantity": "1"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "250"
+						}
+					]
+				},
+				{
+					"level": "2",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "100"
+						}
+					],
+					"results": [
+						{
+							"outputType": "red", 
+							"quantity": "2"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "500"
+						}
+					]
+				},
+				{
+					"level": "3",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "1000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "red", 
+							"quantity": "3"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "1000"
+						}
+					]
+				},
+				{
+					"level": "4",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "5000"
+						},
+						{
+							"egg": "blue",
+							"quantity": "10000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "red", 
+							"quantity": "4"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "2000"
+						}
+					]
+				},
+				{
+					"level": "5",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "3000"
+						},
+						{
+							"egg": "green",
+							"quantity": "10000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "red", 
+							"quantity": "5"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "5000"
+						}
+					]
+				},
+				{
+					"level": "6",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "3000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "red", 
+							"quantity": "6"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "10000"
+						}
+					]
+				},
+				{
+					"level": "7",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "20000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "red", 
+							"quantity": "7"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "20000"
+						}
+					]
+				},
+				{
+					"level": "8",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "10000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "red", 
+							"quantity": "8"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "30000"
+						}
+					]
+				},
+				{
+					"level": "9",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "5000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "red", 
+							"quantity": "9"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "40000"
+						}
+					]
+				},
+				{
+					"level": "10",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "50000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "red", 
+							"quantity": "10"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "50000"
+						}
+					]
+				}
+			]
+		},
+	"manny": { 
+			"name": "Manny",
+			"type": "Worker",
+			"baseTime": "25",
+			"outputs": ["dust"],
+			"upgrades": [				
+				{
+					"level": "1",
+					"prereq": "petra",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "2500"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "1000"
+						}
+					]
+				},
+				{
+					"level": "2",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "5000"
+						},
+						{
+							"egg": "blue",
+							"quantity": "5000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "2000"
+						}
+					]
+				},
+				{
+					"level": "3",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "5000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "5000"
+						}
+					]
+				},
+				{
+					"level": "4",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "15000"
+						},
+						{
+							"egg": "blue",
+							"quantity": "30000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "10000"
+						}
+					]
+				},
+				{
+					"level": "5",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "3000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "15000"
+						}
+					]
+				},
+				{
+					"level": "6",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "20000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "20000"
+						}
+					]
+				},
+				{
+					"level": "7",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "10000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "30000"
+						}
+					]
+				},
+				{
+					"level": "8",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "40000"
+						},
+						{
+							"egg": "blue",
+							"quantity": "40000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "50000"
+						}
+					]
+				},
+				{
+					"level": "9",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "30000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "75000"
+						}
+					]
+				},
+				{
+					"level": "10",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "100000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "100000"
+						}
+					]
+				}
+			]
+		},
+	"tony": { 
+			"name": "Tony",
+			"type": "Worker",
+			"baseTime": "30",
+			"outputs": ["yellow", "dust"],
+			"upgrades": [				
+				{
+					"level": "1",
+					"prereq": "manny",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "5000"
+						},
+						{
+							"egg": "green",
+							"quantity": "15000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "1"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "2500"
+						}
+					]
+				},
+				{
+					"level": "2",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "15000"
+						},
+						{
+							"egg": "blue",
+							"quantity": "25000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "2"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "5000"
+						}
+					]
+				},
+				{
+					"level": "3",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "100000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "3"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "10000"
+						}
+					]
+				},
+				{
+					"level": "4",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "5000"
+						},
+						{
+							"egg": "green",
+							"quantity": "20000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "4"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "20000"
+						}
+					]
+				},
+				{
+					"level": "5",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "5000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "5"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "30000"
+						}
+					]
+				},
+				{
+					"level": "6",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "10000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "6"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "50000"
+						}
+					]
+				},
+				{
+					"level": "7",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "10000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "7"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "75000"
+						}
+					]
+				},
+				{
+					"level": "8",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "125000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "8"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "100000"
+						}
+					]
+				},
+				{
+					"level": "9",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "50000"
+						},
+						{
+							"egg": "blue",
+							"quantity": "50000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "9"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "150000"
+						}
+					]
+				},
+				{
+					"level": "10",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "30000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "10"
+						},
+						{
+							"outputType": "dust", 
+							"quantity": "200000"
+						}
+					]
+				}
+			]
+		},
+	"ruth": { 
+			"name": "Ruth",
+			"type": "Worker",
+			"baseTime": "35",
+			"outputs": ["red", "yellow"],
+			"upgrades": [				
+				{
+					"level": "1",
+					"prereq": "tony",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "5000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "2"
+						},
+						{
+							"outputType": "red", 
+							"quantity": "3"
+						}
+					]
+				},
+				{
+					"level": "2",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "2500"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "4"
+						},
+						{
+							"outputType": "red", 
+							"quantity": "6"
+						}
+					]
+				},
+				{
+					"level": "3",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "15000"
+						},
+						{
+							"egg": "blue",
+							"quantity": "15000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "6"
+						},
+						{
+							"outputType": "red", 
+							"quantity": "9"
+						}
+					]
+				},
+				{
+					"level": "4",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "2500"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "8"
+						},
+						{
+							"outputType": "red", 
+							"quantity": "12"
+						}
+					]
+				},
+				{
+					"level": "5",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "25000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "10"
+						},
+						{
+							"outputType": "red", 
+							"quantity": "15"
+						}
+					]
+				},
+				{
+					"level": "6",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "5000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "12"
+						},
+						{
+							"outputType": "red", 
+							"quantity": "18"
+						}
+					]
+				},
+				{
+					"level": "7",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "75000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "14"
+						},
+						{
+							"outputType": "red", 
+							"quantity": "21"
+						}
+					]
+				},
+				{
+					"level": "8",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "50000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "yellow", 
+							"quantity": "16"
+						},
+						{
+							"outputType": "red", 
+							"quantity": "24"
+						}
+					]
+				}
+			]
+		},
+	"rex": { 
+			"name": "Rex",
+			"type": "Worker",
+			"baseTime": "40",
+			"outputs": ["dust"],
+			"upgrades": [				
+				{
+					"level": "1",
+					"prereq": "ruth",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "10000"
+						},
+						{
+							"egg": "red",
+							"quantity": "20000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "5000"
+						}
+					]
+				},
+				{
+					"level": "2",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "75000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "10000"
+						}
+					]
+				},
+				{
+					"level": "3",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "15000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "20000"
+						}
+					]
+				},
+				{
+					"level": "4",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "75000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "35000"
+						}
+					]
+				},
+				{
+					"level": "5",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "20000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "50000"
+						}
+					]
+				},
+				{
+					"level": "6",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "100000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "75000"
+						}
+					]
+				},
+				{
+					"level": "7",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "25000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "100000"
+						}
+					]
+				},
+				{
+					"level": "8",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "75000"
+						},
+						{
+							"egg": "blue",
+							"quantity": "75000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "200000"
+						}
+					]
+				},
+				{
+					"level": "9",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "100000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "300000"
+						}
+					]
+				},
+				{
+					"level": "10",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "50000"
+						}
+					],
+					"results": [
+						{
+							"outputType": "dust", 
+							"quantity": "400000"
+						}
+					]
+				}
+			]
+		},
+	"blue": { 
+			"name": "Blue",
+			"firstCreatedBy": "trinity",
+			"type": "Egg",
+			"upgrades": [				
+				{
+					"level": "1",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "200"
+						}
+					]
+				},
+				{
+					"level": "2",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "1000"
+						}
+					]
+				},
+				{
+					"level": "3",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "2000"
+						}
+					]
+				},
+				{
+					"level": "4",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "1000"
+						}
+					]
+				}
+			]
+		},
+	"green": { 
+			"name": "Green",
+			"firstCreatedBy": "bronte",
+			"type": "Egg",
+			"upgrades": [				
+				{
+					"level": "1",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "500"
+						}
+					]
+				},
+				{
+					"level": "2",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "1000"
+						}
+					]
+				},
+				{
+					"level": "3",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "1500"
+						}
+					]
+				}
+			]
+		},
+	"red": { 
+			"name": "Red",
+			"firstCreatedBy": "petra",
+			"type": "Egg",
+			"upgrades": [				
+				{
+					"level": "1",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "500"
+						}
+					]
+				},
+				{
+					"level": "2",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "2000"
+						}
+					]
+				}
+			]
+		},
+	"yellow": { 
+			"name": "Yellow",
+			"firstCreatedBy": "tony",
+			"type": "Egg",
+			"upgrades": [				
+				{
+					"level": "1",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "5000"
+						}
+					]
+				}
+			] 
+		},
+	"speed":{ 
+			"name": "Speed",
+			"type": "Buff",
+			"upgrades": [				
+				{
+					"level": "1",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "10000"
+						}
+					],
+					"result": "0.05"
+				},
+				{
+					"level": "2",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "25000"
+						}
+					],
+					"result": "0.10"
+				},
+				{
+					"level": "3",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "10000"
+						}
+					],
+					"result": "0.15"
+				},
+				{
+					"level": "4",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "15000"
+						}
+					],
+					"result": "0.2"
+				},
+				{
+					"level": "5",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "125000"
+						}
+					],
+					"result": "0.25"
+				}
+			] 
+		},
+	"dust": { 
+			"name": "Dust",
+			"type": "Buff",
+			"upgrades": [				
+				{
+					"level": "1",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "25000"
+						}
+					],
+					"result": "0.25"
+				},
+				{
+					"level": "2",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "30000"
+						}
+					],
+					"result": "0.5"
+				},
+				{
+					"level": "3",
+					"costs": [
+						{
+							"egg": "red",
+							"quantity": "15000"
+						}
+					],
+					"result": "0.75"
+				},
+				{
+					"level": "4",
+					"costs": [
+						{
+							"egg": "blue",
+							"quantity": "100000"
+						}
+					],
+					"result": "1"
+				},
+				{
+					"level": "5",
+					"costs": [
+						{
+							"egg": "green",
+							"quantity": "50000"
+						}
+					],
+					"result": "1.25"
+				},
+				{
+					"level": "6",
+					"costs": [
+						{
+							"egg": "yellow",
+							"quantity": "25000"
+						}
+					],
+					"result": "1.5"
+				}
+			] 
+		}
+}
