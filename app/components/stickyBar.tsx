@@ -11,15 +11,17 @@ import ResultAtTop from './resultAtTop';
 interface I_StickyBar {
     saveLoadToggles : T_ViewToggle[],
     gameState : T_GameState,
-    setGameState : React.Dispatch<React.SetStateAction<T_GameState>>,
+    openGameStateModal : () => void,
     offlinePeriods : T_OfflinePeriod[],
-    setOfflinePeriods : React.Dispatch<React.SetStateAction<T_OfflinePeriod[]>>,
     planData : T_PurchaseData[],
     actions : T_Action[],
-    timeIdGroups : T_TimeGroup[]
+    timeIdGroups : T_TimeGroup[],
+
+    openOfflinePeriodsModal : (idx : number | null) => void,
+    offlinePeriodIdxEdit : number | null,
 }
 
-export default function StickyBar({timeIdGroups, saveLoadToggles, gameState, setGameState, offlinePeriods, setOfflinePeriods, planData, actions} 
+export default function StickyBar({timeIdGroups, saveLoadToggles, gameState, openGameStateModal, offlinePeriods, planData, actions, openOfflinePeriodsModal, offlinePeriodIdxEdit} 
     : I_StickyBar)
     : JSX.Element {    
 
@@ -56,7 +58,7 @@ export default function StickyBar({timeIdGroups, saveLoadToggles, gameState, set
                         <StickyBarSection extraCSS={"mt-1 mb-1 shadow-xl"}>
                             <SectionGameState   
                                 gameState={gameState}
-                                setGameState={setGameState}
+                                openEditForm={openGameStateModal}
                             />
                         </StickyBarSection>
                     : null
@@ -65,8 +67,9 @@ export default function StickyBar({timeIdGroups, saveLoadToggles, gameState, set
                         <StickyBarSection extraCSS={"mt-1 mb-1 shadow-xl"}>
                             <SectionOfflinePeriods  
                                 offlinePeriods={offlinePeriods}
-                                setOfflinePeriods={setOfflinePeriods}
                                 gameState={gameState}
+                                openModal={openOfflinePeriodsModal}
+                                idxEdit={offlinePeriodIdxEdit}
                             />
                         </StickyBarSection>
                     : null

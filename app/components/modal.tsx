@@ -13,7 +13,7 @@ export default function Modal({closeModal, children}
 
     return(
         <div className={"fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"}>
-            <div className={"relative max-h-[calc(100vh-3rem)] overflow-y-auto overflow-x-hidden min-w-[17rem] flex flex-col items-center px-2 py-2 bg-neutral-50 rounded max-w-full m-1"}>
+            <div className={"relative max-h-[calc(100vh-10rem)] overflow-y-auto overflow-x-hidden min-w-[17rem] flex flex-col items-center px-2 py-2 bg-neutral-50 rounded max-w-full m-1"}>
             <CloseButton close={closeModal} />
                 <div className={"flex flex-col w-full px-3 pb-3"}>
                     {children}
@@ -65,5 +65,4 @@ export function CloseButton({close, extraCSS}
                 <span className={'sr-only'}>close</span>
             </button>
 }
-
 

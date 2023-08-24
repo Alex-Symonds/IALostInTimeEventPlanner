@@ -45,12 +45,8 @@ export default function ModalSave({closeModal, saveInputs}
         closeModal();
     }
 
-    function handleCloseModal(){
-        closeModal();
-    }
-
     return(
-        <Modal closeModal={handleCloseModal}>
+        <Modal closeModal={closeModal}>
             { showOverwrite ?
                 <OverwriteQuestion name={name} goBack={() => setShowOverwrite(false)} acceptOverwrite={saveAndClose}/>
                 : <SaveForm name={name} handleChange={handleChange} showWarning={showWarning} handleSubmit={handleSubmit} />
