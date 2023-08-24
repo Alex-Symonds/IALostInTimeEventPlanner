@@ -1,5 +1,6 @@
 import calcEndInfo from '../utils/calcEndInfo';
 import { MAX_TIME, WIN_CONDITION } from "../utils/consts";
+import { toBillions } from '../utils/formatting';
 import { getProductionSettings } from "../utils/productionSettings";
 import { T_PurchaseData, T_GameState, T_Action, T_TimeGroup } from "../utils/types";
 
@@ -29,11 +30,11 @@ export default function ResultAtTop({planData, gameState, actions, timeIdGroups}
             </div>
 
             <div className={"text-base"}>
-                { dustAtEnd.toLocaleString() }
+                { dustAtEnd.toLocaleString() } {`(${toBillions(dustAtEnd)})`}
             </div>
             { tipStr !== null ? 
                 <div className={"text-sm mt-1"}>
-                    best: { tipStr }
+                    { tipStr }
                 </div>
                 : null
             }
@@ -89,7 +90,7 @@ function getTipString({planData, dustAtEnd}
     if(planData.length > 0){
         let maxDustInfo = getMaxDustInfo(planData);
         tipStr = maxDustInfo.max > dustAtEnd ? 
-                        `all to dust after #${maxDustInfo.index + 1} = ${ maxDustInfo.max.toLocaleString() }`
+                        `Current plan best: switch all to dust after #${maxDustInfo.index + 1} for ${ maxDustInfo.max.toLocaleString() } (${toBillions(maxDustInfo.max)})`
                         : tipStr;
     }
     return tipStr;

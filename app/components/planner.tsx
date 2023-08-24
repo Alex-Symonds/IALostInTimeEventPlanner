@@ -150,7 +150,7 @@ export default function Planner({timeIdGroups, gameState, actions, setActions, o
                 />
             }
 
-            { timeIdGroups.length > 0 ?
+            { timeIdGroups.length > 0 && gameState.levels.trinity > 0 ?
                 <ProductionStrip
                     currentProdSettings={initialProdSettings} 
                     gameState={gameState} 
