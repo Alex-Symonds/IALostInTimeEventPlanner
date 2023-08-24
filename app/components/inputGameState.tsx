@@ -334,14 +334,14 @@ function TimeRemainingFieldset({timeRemaining, setTimeRemaining}
     return (
         <fieldset className={"relative w-full pt-5" + " " + ""}>
             <legend className={"absolute block w-20 pl-2 top-0 mb-2"}>Remaining</legend>
-            <div className={'flex flex-col items-center gap-1 px-3 ml-1'}>
+            <div className={'relative flex flex-col items-center gap-1 px-3 ml-1'}>
                 <div className={'flex justify-center gap-2 mt-1'}>
                     <TimeRemainingUnit unitName={"days"} value={timeRemaining == null ? 0 : timeRemaining.days} handleChange={handleChangeDays} />
                     <TimeRemainingUnit unitName={"hours"} value={timeRemaining == null ? 0 : timeRemaining.hours} handleChange={handleChangeHours} />
                     <TimeRemainingUnit unitName={"minutes"} value={timeRemaining == null ? 0 : timeRemaining.minutes} handleChange={handleChangeMinutes} />
                 </div>
                 { isError ?
-                    <div className={"text-xs border-1 text-neutral-700 px-1 py-1 w-full"}>{capitalise(message)}</div>
+                    <div className={"text-xs border-1 text-neutral-700 px-1 py-1 w-56"}>{capitalise(message)}</div>
                     : null
                 }
             </div>

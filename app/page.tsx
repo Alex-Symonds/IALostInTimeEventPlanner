@@ -11,6 +11,7 @@ import Planner from './components/planner';
 import ModalSave from './components/inputSave';
 import ModalLoad from './components/inputLoad';
 import StatusForm from './components/inputGameState';
+import OfflineForm from './components/inputOfflinePeriods';
 import StickyBar from './components/stickyBar';
 
 
@@ -24,7 +25,8 @@ export default function Home() {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
   const [showGameStateModal, setShowGameStateModal] = useState<boolean>(false);
-
+  const [showOfflinePeriodsModal, setShowOfflinePeriodsModal] = useState<boolean>(false);
+  const [offlinePeriodIdxEdit, setOfflinePeriodIdxEdit] = useState<number | null>(null);
 
   const [purchaseData, setPurchaseData] = useState<T_PurchaseData[] | undefined>(getPlanData({ gameState, actions, offlinePeriods, prodSettingsAtTop })?.purchaseData);
   const [switchData, setSwitchData] = useState<T_SwitchData | undefined>(getPlanData({ gameState, actions, offlinePeriods, prodSettingsAtTop })?.switchData);
@@ -46,9 +48,9 @@ export default function Home() {
 
     if('offlinePeriods' in inputs && inputs.offlinePeriods.length !== 0){
 
-      let offlinePeriods : T_OfflinePeriod[];
+      let backwardsCompatibleOfflinePeriods : T_OfflinePeriod[];
       if('date' in inputs.offlinePeriods[0].start){
-        offlinePeriods = inputs.offlinePeriods.map((oldStyleEle : any) => {
+        backwardsCompatibleOfflinePeriods = inputs.offlinePeriods.map((oldStyleEle : any) => {
           return {
             start: delete Object.assign(oldStyleEle.start, {['dateOffset']: oldStyleEle.start['date'] })['date'],
             end: delete Object.assign(oldStyleEle.end, {['dateOffset']: oldStyleEle.end['date'] })['date'],
@@ -56,10 +58,10 @@ export default function Home() {
         });
       }
       else{
-        offlinePeriods = inputs.offlinePeriods;
+        backwardsCompatibleOfflinePeriods = inputs.offlinePeriods;
       }
 
-      setOfflinePeriods(inputs.offlinePeriods);
+      setOfflinePeriods(backwardsCompatibleOfflinePeriods);
     }
 
     if('premiumInfo' in inputs){
@@ -80,6 +82,14 @@ export default function Home() {
     }
     localStorage.setItem(keyName, JSON.stringify(inputs));
   }
+
+  function openOfflinePeriodsModal(idx : number | null) : void {
+    if(idx === null || idx < offlinePeriods.length){
+        setOfflinePeriodIdxEdit(idx);
+        setShowOfflinePeriodsModal(true);
+    }
+    // TODO: what if the idx is invalid?
+}
 
   const saveLoadToggles : T_ViewToggle[] = [
     {displayStr: "save", toggle: () => setShowSaveModal(prev => !prev), value: showSaveModal},
@@ -102,11 +112,6 @@ export default function Home() {
   }
   const timeIdGroups : T_TimeGroup[] = groupByTimeId({purchaseData, switchData});
 
-  function test(){
-    console.log("test function passing");
-  }
-
-  //console.log("called"); setShowGameStateModal(false)}
   return (
     <main className={"flex justify-center bg-neutral-50"}>
       <div className={"w-full max-w-5xl bg-white shadow-xl"}>
@@ -119,10 +124,11 @@ export default function Home() {
           gameState={gameState}
           openGameStateModal={() => setShowGameStateModal(true)}
           offlinePeriods={offlinePeriods}
-          setOfflinePeriods={setOfflinePeriods}
           planData={purchaseData}
           actions={actions}
           timeIdGroups={timeIdGroups}
+          openOfflinePeriodsModal = { openOfflinePeriodsModal }
+          offlinePeriodIdxEdit = {offlinePeriodIdxEdit}
         />
         { showSaveModal ?
             <ModalSave 
@@ -140,7 +146,18 @@ export default function Home() {
                   setGameState={ setGameState } 
                   gameState={ gameState } 
                 />
-                : null
+                : showOfflinePeriodsModal ?
+                  <OfflineForm 
+                      closeForm={ () => { setShowOfflinePeriodsModal(false); setOfflinePeriodIdxEdit(null) } } 
+                      offlinePeriod={offlinePeriodIdxEdit === null ? null : offlinePeriods[offlinePeriodIdxEdit]} 
+                      gameState={gameState} 
+                      pos={offlinePeriodIdxEdit === null ? offlinePeriods.length + 1 : offlinePeriodIdxEdit + 1}
+                    
+                      setOfflinePeriods = {setOfflinePeriods}
+                      idxToEdit = {offlinePeriodIdxEdit}
+                      offlinePeriods = {offlinePeriods}
+                    />
+                  : null
         }
 
         { gameState === null ?
