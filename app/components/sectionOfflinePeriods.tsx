@@ -29,17 +29,7 @@ export default function SectionOfflinePeriods({offlinePeriods, openModal, gameSt
 
 }
 
-{/*                 { isEditMode ?
-                    <OfflineForm 
-                        closeForm={ closeAndResetForm } 
-                        offlinePeriod={idxEdit === null ? null : offlinePeriods[idxEdit]} 
-                        updateOfflinePeriod={updateOfflinePeriod} 
-                        removeOfflinePeriod={removeOfflinePeriod}
-                        gameState={gameState} 
-                        pos={idxEdit === null ? offlinePeriods.length + 1 : idxEdit + 1}
-                    />
-                    : <button className={buttonSecondaryCSS + " " + "w-24 mt-4"} onClick={() => setIsEditMode(true)}>+ more</button>   
-                }   */}
+
 
 interface I_OfflineDisplay {
     offlinePeriods : T_OfflinePeriod[], 

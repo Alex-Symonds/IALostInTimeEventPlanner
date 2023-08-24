@@ -47,13 +47,18 @@ export default function Home() {
     }
 
     if('offlinePeriods' in inputs && inputs.offlinePeriods.length !== 0){
-
       let backwardsCompatibleOfflinePeriods : T_OfflinePeriod[];
       if('date' in inputs.offlinePeriods[0].start){
         backwardsCompatibleOfflinePeriods = inputs.offlinePeriods.map((oldStyleEle : any) => {
+          let newStyleStart = Object.assign(oldStyleEle.start, {['dateOffset']: oldStyleEle.start['date'] });
+          delete newStyleStart['date']
+
+          let newStyleEnd = Object.assign(oldStyleEle.end, {['dateOffset']: oldStyleEle.end['date'] });
+          delete newStyleEnd['date']
+
           return {
-            start: delete Object.assign(oldStyleEle.start, {['dateOffset']: oldStyleEle.start['date'] })['date'],
-            end: delete Object.assign(oldStyleEle.end, {['dateOffset']: oldStyleEle.end['date'] })['date'],
+            start: newStyleStart,
+            end: newStyleEnd,
           }
         });
       }
