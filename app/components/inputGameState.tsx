@@ -9,17 +9,17 @@ import { buttonSecondaryCSSColours_onDark, resourceCSS, capitalise } from '../ut
 import { T_Stockpiles, T_Levels, T_TimeRemainingDHM, T_GameState } from '../utils/types';
 
 import Select, { T_OptionData } from './select';
-import { CloseButton, ModalSubmitButton } from './modal';
+import Modal, { ModalSubmitButton } from './modal';
 import { BadgeCost, BadgeMaxed } from './badges';
 
 
 interface I_StatusFormProps {
     setGameState : React.Dispatch<SetStateAction<T_GameState>>,
     gameState : T_GameState,
-    closeForm : () => void,
+    closeModal : () => void,
 }
 
-export default function StatusForm({setGameState, gameState, closeForm} 
+export default function StatusForm({setGameState, gameState, closeModal}
     : I_StatusFormProps)
     : JSX.Element {
 
@@ -34,7 +34,7 @@ export default function StatusForm({setGameState, gameState, closeForm}
         e.preventDefault();
         let newGameState = convertFormInputsToGameState({timeEntered, timeRemaining, hasAdBoost, allEggsLevel, stockpiles, levels});
         setGameState(newGameState);
-        closeForm();
+        closeModal();
     }
 
     function setStateOnChange(e : React.ChangeEvent<any>, setFunction : React.Dispatch<SetStateAction<any>>){
@@ -91,49 +91,47 @@ export default function StatusForm({setGameState, gameState, closeForm}
         return thisValue === null ? '' : thisValue;
     }
 
-
     return (
-        <div className={'overflow-y-auto overflow-x-hidden max-h-[calc(100vh-10rem)] relative m-1 flex flex-col border-2 border-grey-500 border-solid rounded bg-gray-100 p-2 text-sm'}>
-            <CloseButton extraCSS={"top-1 right-1"} close={() => closeForm()} />
+        <Modal closeModal={closeModal}>
+            <div className={'m-1 flex flex-col text-sm'}>
+                <h2 className={"text-lg font-bold mb-2"}>Enter Game Status</h2>
+                {/* <button onClick={setToLateGame}>setToLateGame</button> */}
+                <form onSubmit={(e) => onSubmit(e)}>
+                    <section>
+                        <FormSubHeading text={"General"} />
+                        <FormRow extraCSS={"flex gap-2"}>
+                            <TimeRemainingFieldset timeRemaining={timeRemaining} setTimeRemaining={setTimeRemaining} />
+                        </FormRow>
+                        <FormRow extraCSS={"flex gap-2 items-center"}>
+                            <Entered timeEntered={timeEntered} setStateOnChange={setStateOnChange} setTimeEntered={setTimeEntered}/>
+                        </FormRow>
+                        <FormRow extraCSS={"flex gap-2"}>
+                            <Select labelExtraCSS={"block w-20 ml-2"} selectExtraCSS={undefined} id={"id_AllEggs"} labelDisplay={"All Eggs"} initValue={gameState === null ? undefined : formatValueStr("All", gameState.premiumInfo.allEggs)} options={getUpgradeOptions({ name: "All", max: 5 })} handleChange={handleLevelChange} />
+                        </FormRow>
+                        <FormRow extraCSS={"flex gap-2"}>
+                            <Label htmlFor={"id_adBoost"}>Ad Boost</Label>
+                            <input type="checkbox" id="id_adBoost" checked={hasAdBoost} onChange={ toggleAdBoost } />
+                        </FormRow>
+                    </section>
 
-            <h2 className={"text-lg font-bold mb-2"}>Enter Game Status</h2>
-            {/* <button onClick={setToLateGame}>setToLateGame</button> */}
-            <form onSubmit={(e) => onSubmit(e)}>
-                <section>
-                    <FormSubHeading text={"General"} />
-                    <FormRow extraCSS={"flex gap-2"}>
-                        <TimeRemainingFieldset timeRemaining={timeRemaining} setTimeRemaining={setTimeRemaining} />
-                    </FormRow>
-                    <FormRow extraCSS={"flex gap-2 items-center"}>
-                        <Entered timeEntered={timeEntered} setStateOnChange={setStateOnChange} setTimeEntered={setTimeEntered}/>
-                    </FormRow>
-                    <FormRow extraCSS={"flex gap-2"}>
-                        <Select labelExtraCSS={"block w-20 ml-2"} selectExtraCSS={undefined} id={"id_AllEggs"} labelDisplay={"All Eggs"} initValue={gameState === null ? undefined : formatValueStr("All", gameState.premiumInfo.allEggs)} options={getUpgradeOptions({ name: "All", max: 5 })} handleChange={handleLevelChange} />
-                    </FormRow>
-                    <FormRow extraCSS={"flex gap-2"}>
-                        <Label htmlFor={"id_adBoost"}>Ad Boost</Label>
-                        <input type="checkbox" id="id_adBoost" checked={hasAdBoost} onChange={ toggleAdBoost } />
-                    </FormRow>
-                </section>
+                    <section className={"mt-4"}>
+                        <FormSubHeading text={"Current Stockpiles"} />
+                        <DustInput controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
+                        <StockpileInput keyId={'blue'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
+                        <StockpileInput keyId={'green'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
+                        <StockpileInput keyId={'red'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
+                        <StockpileInput keyId={'yellow'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
+                    </section>
 
-                <section className={"mt-4"}>
-                    <FormSubHeading text={"Current Stockpiles"} />
-                    <DustInput controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-                    <StockpileInput keyId={'blue'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-                    <StockpileInput keyId={'green'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-                    <StockpileInput keyId={'red'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-                    <StockpileInput keyId={'yellow'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-                </section>
+                    <FormSectionLevels handleLevelChange={handleLevelChange} gameState={gameState} levels={levels} />
 
-                <FormSectionLevels handleLevelChange={handleLevelChange} gameState={gameState} levels={levels} />
-
-                <ModalSubmitButton label={"submit"} extraCSS={"mt-4"} disabled={false}/>
-            </form>
-        </div>
+                    <ModalSubmitButton label={"submit"} extraCSS={"mt-4"} disabled={false}/>
+                </form>
+            </div>
+        </Modal>
     )
 
 }
-
 
 
 function Label({htmlFor, children} 

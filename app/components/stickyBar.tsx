@@ -11,7 +11,7 @@ import ResultAtTop from './resultAtTop';
 interface I_StickyBar {
     saveLoadToggles : T_ViewToggle[],
     gameState : T_GameState,
-    setGameState : React.Dispatch<React.SetStateAction<T_GameState>>,
+    openGameStateModal : () => void,
     offlinePeriods : T_OfflinePeriod[],
     setOfflinePeriods : React.Dispatch<React.SetStateAction<T_OfflinePeriod[]>>,
     planData : T_PurchaseData[],
@@ -19,7 +19,7 @@ interface I_StickyBar {
     timeIdGroups : T_TimeGroup[]
 }
 
-export default function StickyBar({timeIdGroups, saveLoadToggles, gameState, setGameState, offlinePeriods, setOfflinePeriods, planData, actions} 
+export default function StickyBar({timeIdGroups, saveLoadToggles, gameState, openGameStateModal, offlinePeriods, setOfflinePeriods, planData, actions} 
     : I_StickyBar)
     : JSX.Element {    
 
@@ -56,7 +56,7 @@ export default function StickyBar({timeIdGroups, saveLoadToggles, gameState, set
                         <StickyBarSection extraCSS={"mt-1 mb-1 shadow-xl"}>
                             <SectionGameState   
                                 gameState={gameState}
-                                setGameState={setGameState}
+                                openEditForm={openGameStateModal}
                             />
                         </StickyBarSection>
                     : null

@@ -7,7 +7,7 @@ import { getDateDisplayStr, convertTimeIdToTimeRemaining } from '../utils/dateAn
 import { maxedLevelCSS, capitalise, resourceCSS, toBillions, nbsp } from '../utils/formatting';
 import { T_GameState, T_Levels, T_PremiumInfo, T_Stockpiles } from '../utils/types';
 
-import StatusForm from './inputGameState';
+
 import StockpilesDisplay from './stockpilesStrip';
 import { SectionToggled, EditButtonBox } from './sectionToggled';
 
@@ -16,23 +16,8 @@ interface I_SectionGameState {
     gameState : T_GameState,
     setGameState : React.Dispatch<React.SetStateAction<T_GameState>>
 }
-export default function SectionGameState({gameState, setGameState} 
-    : I_SectionGameState)
-    : JSX.Element {
 
-    const [formVisible, setFormVisible] = useState<boolean>(false);
-    return(
-        <>
-        { formVisible ? 
-            <StatusForm setGameState={setGameState} gameState={gameState} closeForm={() => setFormVisible(false)}/>
-            : <GameStateDisplay gameState={gameState} openEditForm={() => setFormVisible(true)} />
-        }
-        </>
-    )
-}
-
-
-function GameStateDisplay({gameState, openEditForm} 
+export default function SectionGameState({gameState, openEditForm} 
     : Pick<I_SectionGameState, "gameState"> & { openEditForm : () => void } )
     : JSX.Element {
 

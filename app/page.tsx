@@ -10,7 +10,9 @@ import { T_TimeGroup, T_OfflinePeriod, T_GameState, T_Action, T_InterruptProduct
 import Planner from './components/planner';
 import ModalSave from './components/inputSave';
 import ModalLoad from './components/inputLoad';
+import StatusForm from './components/inputGameState';
 import StickyBar from './components/stickyBar';
+
 
 export default function Home() {
   
@@ -21,6 +23,8 @@ export default function Home() {
   
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
+  const [showGameStateModal, setShowGameStateModal] = useState<boolean>(false);
+
 
   const [purchaseData, setPurchaseData] = useState<T_PurchaseData[] | undefined>(getPlanData({ gameState, actions, offlinePeriods, prodSettingsAtTop })?.purchaseData);
   const [switchData, setSwitchData] = useState<T_SwitchData | undefined>(getPlanData({ gameState, actions, offlinePeriods, prodSettingsAtTop })?.switchData);
@@ -98,7 +102,11 @@ export default function Home() {
   }
   const timeIdGroups : T_TimeGroup[] = groupByTimeId({purchaseData, switchData});
 
+  function test(){
+    console.log("test function passing");
+  }
 
+  //console.log("called"); setShowGameStateModal(false)}
   return (
     <main className={"flex justify-center bg-neutral-50"}>
       <div className={"w-full max-w-5xl bg-white shadow-xl"}>
@@ -109,7 +117,7 @@ export default function Home() {
         <StickyBar    
           saveLoadToggles={saveLoadToggles}
           gameState={gameState}
-          setGameState={setGameState}
+          openGameStateModal={() => setShowGameStateModal(true)}
           offlinePeriods={offlinePeriods}
           setOfflinePeriods={setOfflinePeriods}
           planData={purchaseData}
@@ -117,12 +125,22 @@ export default function Home() {
           timeIdGroups={timeIdGroups}
         />
         { showSaveModal ?
-            <ModalSave closeModal={() => setShowSaveModal(false)} saveInputs={saveInputs} />
-            : null
-        }
-        { showLoadModal ?
-            <ModalLoad closeModal={() => setShowLoadModal(false)} loadInputs={loadInputs} />
-            : null
+            <ModalSave 
+              closeModal={ () => setShowSaveModal(false) } 
+              saveInputs={saveInputs} 
+            />
+            : showLoadModal ?
+              <ModalLoad
+                closeModal={ () => setShowLoadModal(false) } 
+                loadInputs={loadInputs} 
+              />
+              : showGameStateModal ?
+                <StatusForm 
+                  closeModal={ () => setShowGameStateModal(false) } 
+                  setGameState={ setGameState } 
+                  gameState={ gameState } 
+                />
+                : null
         }
 
         { gameState === null ?
