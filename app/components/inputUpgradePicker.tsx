@@ -60,7 +60,7 @@ export default function UpgradePickerModal({closeModal, movePlanElement, pickerT
                         }
                     </div>
                 </fieldset>
-                <ModalSubmitButton label={"pick"} disabled={false} extraCSS={undefined} />
+                <ModalSubmitButton label={"submit"} disabled={false} extraCSS={undefined} />
             </form>
         </Modal>
 

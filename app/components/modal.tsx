@@ -1,7 +1,5 @@
-import { buttonPrimaryCSS, buttonPrimaryCSS_disabled } from "../utils/formatting"
-
 import { IconClose } from "./icons";
-
+import { Button } from './buttons';
 
 export interface I_Modal {
     closeModal : () => void, 
@@ -38,16 +36,15 @@ export function ModalSubmitButton({label, extraCSS, disabled}
     : { label? : string, extraCSS? : string, disabled? : boolean })
     : JSX.Element {
 
-    disabled = disabled === undefined ? false : disabled;
-    let strCSS = disabled ? buttonPrimaryCSS_disabled : buttonPrimaryCSS;
-    strCSS = extraCSS === undefined ? strCSS : strCSS + " " + extraCSS
-
-    return <button 
-                className={strCSS + " " + "justify-self-end mt-5 px-2 py-1 rounded w-full"} 
-                disabled={disabled} 
+    let strCSS = extraCSS === undefined ? "mt-5" : extraCSS;
+    return <Button 
+                extraCSS={"justify-self-end w-full" + " " + strCSS} 
+                colours={"primary"}
+                size={"full"}
+                disabled={disabled}
                 >
-                    {label ?? "submit"}
-            </button>
+                { label ?? "submit" }
+            </Button>
 }
 
 

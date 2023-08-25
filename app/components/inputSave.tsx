@@ -1,9 +1,9 @@
 import { useId, useState } from 'react';
 
 import { SAVE_FILE_PREFIX } from '../utils/consts';
-import { buttonPrimaryCSSColours, buttonSecondaryCSSColours } from '../utils/formatting';
 
 import Modal, { ModalHeading, ModalSubmitButton, I_Modal } from './modal';
+import { Button } from './buttons';
 
 
 interface I_ModalSave extends Pick<I_Modal, "closeModal"> {
@@ -80,7 +80,7 @@ function SaveForm({name, handleChange, showWarning, handleSubmit}
                 <p>!: There is already a save called &quot;{name}&quot;</p>
                 : null
             }
-            <ModalSubmitButton label={"submit"} extraCSS={undefined} disabled={false} />
+            <ModalSubmitButton label={"save"} extraCSS={undefined} disabled={false} />
         </form>
         </>
     )
@@ -95,7 +95,6 @@ function OverwriteQuestion({name, goBack, acceptOverwrite}
     : I_OverwriteQuestion)
     : JSX.Element {
 
-    let sharedButtonCSS = "py-1 rounded w-2/5";
     return(
         <>
         <ModalHeading>
@@ -104,18 +103,20 @@ function OverwriteQuestion({name, goBack, acceptOverwrite}
         <div className={"flex flex-col gap-1"}>
             <p>There is already a save called &quot;{name}&quot;.</p>
             <div className={"flex justify-between mt-3"}>
-                <button 
-                    className={"border-2" + " " + sharedButtonCSS + " " + buttonSecondaryCSSColours} 
+                <Button 
+                    size={'twin'}
+                    colours={'secondary'}
                     onClick={() => goBack()}
                     >
-                     &laquo;&nbsp;back
-                </button>
-                <button 
-                    className={sharedButtonCSS + " " + buttonPrimaryCSSColours} 
+                    &laquo;&nbsp;back
+                </Button>
+                <Button 
+                    size={'twin'}
+                    colours={'primary'}
                     onClick={() => acceptOverwrite()}
                     >
-                    &raquo;&nbsp;overwrite
-                </button>
+                    overwrite&nbsp;&raquo;
+                </Button>
             </div>
         </div>
         </>

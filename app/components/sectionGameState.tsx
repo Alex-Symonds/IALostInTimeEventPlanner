@@ -1,11 +1,11 @@
-import { useState } from 'react';
+
 
 import UPGRADE_DATA from '../upgrades.json';
 
-import { MAX_ALL_EGGS } from '../utils/consts';
+
 import { getDateDisplayStr, convertTimeIdToTimeRemaining } from '../utils/dateAndTimeHelpers';
 import { maxedLevelCSS, capitalise, resourceCSS, toBillions, nbsp } from '../utils/formatting';
-import { T_GameState, T_Levels, T_PremiumInfo, T_Stockpiles } from '../utils/types';
+import { T_GameState, T_Levels, T_Stockpiles } from '../utils/types';
 
 
 import StockpilesDisplay from './stockpilesStrip';
@@ -31,7 +31,7 @@ export default function SectionGameState({gameState, openEditForm}
                     <LevelsStatus levels={gameState.levels} />
                 </div>
                 
-                <EditButtonBox openEditForm={openEditForm} />
+                <EditButtonBox openEditForm={openEditForm} label={undefined} />
             </div>
         </SectionToggled>
     )
@@ -103,7 +103,7 @@ function LevelsStatus({levels}
 
     return(
         <Subsection subheading={undefined}>
-        <div className={"grid max-w-xs w-full gap-1 statusLevels"}>
+        <div className={"grid max-w-xs w-full justify-between statusLevels"}>
             {
                 workers.map(worker => {
                     return <LevelWithLabel key={worker.key} label={worker.displayStr} level={worker.level} max={worker.max} />

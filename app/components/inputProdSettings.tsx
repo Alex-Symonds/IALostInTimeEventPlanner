@@ -56,7 +56,7 @@ export default function ModalProdSettings({closeModal, currentProdSettings, curr
                     })
                 }
                 </div>
-                <ModalSubmitButton label={"submit"} extraCSS={"justify-self-end mt-2 w-full"} disabled={false} />
+                <ModalSubmitButton label={"submit"} extraCSS={"mt-2"} disabled={false} />
             </form>
         </Modal>
     )
@@ -84,7 +84,7 @@ interface I_ProductionToggle {
     handleSelection : (myKey : string, changeTo : string) => void
 }
 function ProductionToggle({myKey, toggledTo, handleSelection, disabled}
-    : any)
+    : I_ProductionToggle)
     : JSX.Element | null {
 
     let data = UPGRADE_DATA[myKey as keyof typeof UPGRADE_DATA];

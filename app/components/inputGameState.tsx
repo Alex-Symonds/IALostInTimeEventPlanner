@@ -5,12 +5,13 @@ import UPGRADE_DATA from '../upgrades.json';
 import { deepCopy, MAX_DAYS } from '../utils/consts';
 import { getDateDisplayStr } from '../utils/dateAndTimeHelpers';
 import { defaultLevels, defaultStockpiles, defaultTimeRemaining, lateGameSettings } from '../utils/defaults';
-import { buttonSecondaryCSSColours_onDark, resourceCSS, capitalise } from '../utils/formatting';
+import { resourceCSS, capitalise } from '../utils/formatting';
 import { T_Stockpiles, T_Levels, T_TimeRemainingDHM, T_GameState } from '../utils/types';
 
 import Select, { T_OptionData } from './select';
 import Modal, { ModalSubmitButton } from './modal';
 import { BadgeCost, BadgeMaxed } from './badges';
+import { Button } from './buttons';
 
 
 interface I_StatusFormProps {
@@ -179,12 +180,15 @@ function Entered({timeEntered, setStateOnChange, setTimeEntered}
             <p suppressHydrationWarning={true}>{ getDateDisplayStr(timeEntered) }</p>
             <input hidden type="datetime-local" id={"id_timeEntered"} value={timeEntered == null ? "" : `${timeEntered}`} onChange={(e) => setStateOnChange(e, setTimeEntered)}/>
 
-            <button 
-                type={"button"} 
-                onClick={() => {setTimeEntered(new Date())}} 
-                className={"ml-3 border-2 text-xs px-1 py-0.5 rounded" + " " + buttonSecondaryCSSColours_onDark}>
-                    &laquo;&nbsp;now
-                </button>
+            <Button 
+                htmlType={"button"}
+                onClick={() => { setTimeEntered(new Date()) }}
+                colours={"secondary"}
+                size={"inline"}
+                extraCSS={"ml-3"}
+            >
+                &laquo;&nbsp;now
+            </Button>
         </>
     )
 }
