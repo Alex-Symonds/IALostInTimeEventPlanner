@@ -1,9 +1,9 @@
 import UPGRADE_DATA from '../upgrades.json';
 
 import { MAX_TIME } from '../utils/consts';
-import { buttonPrimaryCSSColours } from '../utils/formatting';
 
 import { BadgeCost } from './badges';
+import { Button } from './buttons';
 
 interface I_UpgradeCard {
     data : any, 
@@ -32,23 +32,30 @@ export default function UpgradeCard({data, pos, openUpgradePicker, isDuringOffli
                                     : defaultClass;
 
     return (
-        <button className={"flex gap-1 items-stretch"} onClick={() => openUpgradePicker(indexPlanData)}>
-            <div className={"flex items-center justify-center px-0.25 py-0.75 w-8 rounded"+ " " + buttonPrimaryCSSColours}>
+        <div className={"flex gap-1 items-stretch"}>
+            <Button 
+                size={'pos'}
+                colours={'primary'}
+                extraCSS={"flex items-center justify-center w-8"}
+                onClick={() => openUpgradePicker(indexPlanData)}
+                >
                 {pos}
-            </div>
-            <div className={"w-52 flex items-center text-black px-1.5 py-0.5 gap-3.5 border"  + " " + conditionalClass}>
-                <span className={"w-10 block text-sm flex items-center"}>{name}</span>
-                <span className={"w-5 block text-sm font-bold flex items-center justify-center"}>{data.level}</span>
-                <div className={"flex gap-1"} >
-                {
-                    costData === null || costData.length === 0 ?
-                        <div>{ data.level === 1 ? "free" : "n/a" }</div>
-                        : costData.map((costData : any, idx : number) => {
-                            return <BadgeCost key={idx} data={costData} extraCSS={undefined} />
-                        })
-                }
+            </Button>
+            <button onClick={() => openUpgradePicker(indexPlanData)}>
+                <div className={"w-52 flex items-center text-black px-1.5 py-0.5 gap-3.5 border"  + " " + conditionalClass}>
+                    <span className={"w-10 block text-sm flex items-center"}>{name}</span>
+                    <span className={"w-5 block text-sm font-bold flex items-center justify-center"}>{data.level}</span>
+                    <div className={"flex gap-1"} >
+                    {
+                        costData === null || costData.length === 0 ?
+                            <div className={"text-sm"}>{ data.level === 1 ? "free" : "n/a" }</div>
+                            : costData.map((costData : any, idx : number) => {
+                                return <BadgeCost key={idx} data={costData} extraCSS={undefined} />
+                            })
+                    }
+                    </div>
                 </div>
-            </div>
-        </button>
+            </button>
+        </div>
     )
 }

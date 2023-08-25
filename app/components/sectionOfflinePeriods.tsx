@@ -1,8 +1,9 @@
 import { getDateDisplayStr, getStartTime, convertOfflineTimeToDate, printOfflineTime } from "../utils/dateAndTimeHelpers";
-import { buttonPrimaryCSSColours, buttonPrimaryCSS_disabledColours, buttonSecondaryCSS } from "../utils/formatting";
+import { nbsp } from "../utils/formatting";
 import { T_GameState, T_OfflinePeriod } from "../utils/types";
 
-import { SectionToggled } from './sectionToggled';
+import { SectionToggled, EditButtonBox } from './sectionToggled';
+import { Button } from './buttons';
 
 
 interface I_SectionOfflinePeriods {
@@ -21,14 +22,13 @@ export default function SectionOfflinePeriods({offlinePeriods, openModal, gameSt
     }
 
     return  <SectionToggled title={"Offline Periods"}>
-                <div className={'overflow-y-auto overflow-x-hidden max-h-[calc(100vh-5rem)] px-2'}>
+                <div className={'overflow-y-auto overflow-x-hidden max-h-[calc(100vh-10rem)] px-2'}>
                     <OfflineDisplay offlinePeriods={offlinePeriods} gameState={gameState} openForm={openModal} idxEdit={idxEdit} />
-                    <button className={buttonSecondaryCSS + " " + "w-24 mt-4"} onClick={() => openModal(null)}>+&nbsp;more</button>   
+                    <EditButtonBox openEditForm={() => openModal(null)} label={`+${nbsp()}more`} />
                 </div>
             </SectionToggled>
 
 }
-
 
 
 interface I_OfflineDisplay {
@@ -49,11 +49,8 @@ function OfflineDisplay({offlinePeriods, gameState, openForm, idxEdit}
                 :
                 offlinePeriods.map((ele, idx) => {
                     let conditionalWrapperCSS = "";
-                    let conditionalButtonCSS = buttonPrimaryCSSColours;
-                    
                     if(idxEdit === idx){
                         conditionalWrapperCSS = "text-gray-300";
-                        conditionalButtonCSS = buttonPrimaryCSS_disabledColours;
                     }
 
                     let startDate : Date = convertOfflineTimeToDate(ele.start, startedAt);
@@ -66,7 +63,15 @@ function OfflineDisplay({offlinePeriods, gameState, openForm, idxEdit}
                                 <div>
                                     {getDateDisplayStr(startDate)} - {getDateDisplayStr(endDate)}
                                 </div>
-                                <button className={"py-1 px-2 rounded text-xs" + " " + conditionalButtonCSS} onClick={() => openForm(idx)} disabled={idxEdit === idx}>edit</button>
+
+                                <Button
+                                    size={'inline'}
+                                    colours={'secondary'}
+                                    onClick={() => openForm(idx)}
+                                    disabled={idxEdit === idx}
+                                >
+                                    edit
+                                </Button>
                             </div>
                 })
             }

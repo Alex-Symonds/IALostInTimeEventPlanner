@@ -1,4 +1,4 @@
-import { buttonPrimaryCSSColours } from '../utils/formatting';
+import { Button } from './buttons';
 
 export function SectionToggled({title, children} 
     : {title : string, children : React.ReactNode})
@@ -12,18 +12,19 @@ export function SectionToggled({title, children}
     )
 }
 
-export function EditButtonBox({openEditForm} 
-    : {openEditForm : () => void})
+export function EditButtonBox({openEditForm, label} 
+    : {openEditForm : () => void, label : string | undefined})
     : JSX.Element {
 
     return(
         <div className={"mt-6"}>
-            <button 
-                className={"py-2 px-5 rounded" + " " + buttonPrimaryCSSColours} 
+            <Button 
+                size={'default'}
+                colours={'primary'}
                 onClick={() => openEditForm()}
                 >
-                    edit
-            </button>
+                    {label ?? 'edit'}
+            </Button>
         </div>
     )
 }

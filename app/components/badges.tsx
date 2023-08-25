@@ -1,7 +1,6 @@
 import { resourceCSS, toThousands, maxedLevelCSS } from "../utils/formatting";
 import { T_CostData } from '../utils/types';
 
-
 interface I_PropsBadgeCost {
     data : T_CostData,
     extraCSS? : string,

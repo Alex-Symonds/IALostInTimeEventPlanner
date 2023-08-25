@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 import { T_OfflinePeriod, T_TimeGroup,  T_GameState} from '../utils/types';
 import { calcDHMString, convertOfflineTimeToTimeId, convertTimeIdToTimeRemaining, convertTimeIdToDate, getDateDisplayStr, getStartTime } from '../utils/dateAndTimeHelpers';
-import { buttonPrimaryCSSColours, buttonPrimaryCSS_on, buttonMoreCSSColours_offlineOn, buttonMoreCSSColours, buttonMoreCSSColours_on, buttonMoreCSSColours_offline} from '../utils/formatting';
 import { MAX_TIME } from '../utils/consts';
 
 import UpgradeCard from './planner_upgradeCard';
@@ -33,7 +32,7 @@ export default function TimeGroup({groupData, startPos, openUpgradePicker, offli
                             : "";
     const borderColour = isDuringOfflinePeriod ?
                             "border-greyBlue-300"
-                            : "border-gray-300";
+                            : "border-neutral-300";
     
     return (
         <>
@@ -102,6 +101,8 @@ function UpdateCardContainer({upgrades, startPos, isDuringOfflinePeriod, openUpg
 }
 
 
+
+
 interface I_MoreButtonContainer {
     showMore : boolean,
     setShowMore : React.Dispatch<React.SetStateAction<boolean>>,
@@ -111,20 +112,30 @@ function MoreButtonContainer({showMore, setShowMore, isDuringOfflinePeriod,}
     : I_MoreButtonContainer)
     : JSX.Element {
 
-    const closedCSS = isDuringOfflinePeriod ? buttonMoreCSSColours_offline :  buttonMoreCSSColours;
-    const openCSS = isDuringOfflinePeriod ? buttonMoreCSSColours_offlineOn: buttonMoreCSSColours_on;
-    
-    const toggleMoreCSS = showMore ? openCSS : closedCSS;
+    const COLOURS = {
+        normal: {
+            on:     "bg-violet-300      border-violet-400   text-violet-600     hover:bg-violet-200     hover:text-violet-400",
+            off:    "bg-violet-200      border-violet-200   text-white          hover:bg-violet-100     hover:text-violet-400",
+        },
+        offlineMode: {
+            on:     "bg-greyBlue-600    border-greyBlue-800 text-white          hover:bg-greyBlue-300   hover:text-greyBlue-100",
+            off:    "bg-greyBlue-400    border-greyBlue-400 text-white          hover:bg-greyBlue-300   hover:text-greyBlue-100",
+        }
+    }
+
+    const modeKey = isDuringOfflinePeriod ? 'offlineMode' : 'normal';
+    const onOffKey = showMore ? 'on' : 'off';
+    const toggleMoreCSS = COLOURS[modeKey][onOffKey];
 
     return (
         <div className={"self-end pb-2 pl-1"}>
-        <button className={"border-2 rounded-full flex align-center justify-center w-7 h-7" + " " + toggleMoreCSS} 
-                onClick={() => setShowMore(prev => !prev)}
-                >
-            <span aria-hidden={true}>...</span>
-            <span className={"sr-only"}>more info</span>
-        </button>
-    </div>
+            <button className={"border-2 rounded-full flex align-center justify-center w-7 h-7" + " " + toggleMoreCSS} 
+                    onClick={() => setShowMore(prev => !prev)}
+                    >
+                <span aria-hidden={true}>...</span>
+                <span className={"sr-only"}>more info</span>
+            </button>
+        </div>
     )
 }
 

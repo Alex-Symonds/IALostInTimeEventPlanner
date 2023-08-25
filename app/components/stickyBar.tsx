@@ -1,12 +1,11 @@
 import { useState } from 'react';
 
 import { T_ViewToggle, T_Action, T_TimeGroup, T_GameState, T_OfflinePeriod, T_PurchaseData } from '../utils/types';
-import { buttonPrimaryCSSColours, buttonPrimaryCSS_on, buttonSecondaryCSSColours } from '../utils/formatting';
 
 import SectionGameState from './sectionGameState';
 import SectionOfflinePeriods from './sectionOfflinePeriods';
 import ResultAtTop from './resultAtTop';
-
+import { Button } from './buttons';
 
 interface I_StickyBar {
     saveLoadToggles : T_ViewToggle[],
@@ -39,14 +38,27 @@ export default function StickyBar({timeIdGroups, saveLoadToggles, gameState, ope
                         <div className={"flex gap-2"}>
                             {
                                 viewToggles.map(ele => {
-                                    return <StickyBarButton key={ele.displayStr} label={ele.displayStr} isOn={ele.value} onClick={ele.toggle} />
+                                    return <Button key={ele.displayStr}
+                                                size={'stickyBar'}
+                                                colours={'primary'}
+                                                onClick={ele.toggle}
+                                                toggledOn={ele.value}
+                                                >
+                                                {ele.displayStr}
+                                            </Button>
                                 })
                             }
                         </div>
                         <div className={"flex gap-2"}>
                             {
                                 saveLoadToggles.map(ele => {
-                                    return <button key={ele.displayStr} className={"border-2 rounded text-sm px-3 py-1" + " " + buttonSecondaryCSSColours} onClick={ele.toggle}>{ele.displayStr}</button>
+                                    return  <Button key={ele.displayStr}
+                                                size={'stickyBar'}
+                                                colours={'secondary'}
+                                                onClick={ele.toggle}
+                                                >
+                                                {ele.displayStr}
+                                            </Button>
                                 })
                             }
                         </div>
@@ -80,16 +92,6 @@ export default function StickyBar({timeIdGroups, saveLoadToggles, gameState, ope
 
 }
 
-function StickyBarButton({label, isOn, onClick} 
-    : { label : string, isOn : boolean, onClick : () => void} )
-    : JSX.Element {
-
-    let conditionalCSS = isOn ?
-                            buttonPrimaryCSS_on
-                            : buttonPrimaryCSSColours
-
-   return <button className={"px-3 py-1 rounded" + " " + conditionalCSS} onClick={onClick}>{label}</button>
-}
 
 function StickyBarSection({extraCSS, children} 
     : { extraCSS? : string, children : React.ReactNode })

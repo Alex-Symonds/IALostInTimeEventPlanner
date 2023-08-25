@@ -170,7 +170,6 @@ export default function Planner({timeIdGroups, gameState, actions, setActions, o
                                 return data.productionSettings[ele.key as keyof typeof data.productionSettings] !== ele.to;
                             })}
                             handleProductionClick={() => setShowProdSetterTop(true)} 
-                            isDuringOfflinePeriod={offlinePeriods.findIndex(ele => convertOfflineTimeToTimeId(ele.end, getStartTime(gameState)) === timeIdGroups[0].timeId) !== -1}
                             handleUpgradeClick={() => openUpgradePicker(0)}
                             showUpgradeButton={true}
                         />
@@ -300,7 +299,6 @@ function TimeGroupsList({timeIdGroups, offlinePeriods, gameState, openUpgradePic
             const displaySwitches = data.switches.filter(ele => {
                 return data.productionSettings[ele.key as keyof typeof data.productionSettings] !== ele.to;
             });
-            const isDuringOfflinePeriod = offlinePeriods.findIndex(ele => convertOfflineTimeToTimeId(ele.end, getStartTime(gameState)) === data.timeId) !== -1;
 
             let startPos = groupStartPos;
             groupStartPos += data.upgrades.length;
@@ -317,7 +315,6 @@ function TimeGroupsList({timeIdGroups, offlinePeriods, gameState, openUpgradePic
                         <ControlsRow
                             displaySwitches={displaySwitches}
                             handleProductionClick={() => openProdSwitcherModal(data)} 
-                            isDuringOfflinePeriod={isDuringOfflinePeriod}
                             handleUpgradeClick={() => openUpgradePicker(nextPos - 1)}
                             showUpgradeButton={ idx < timeIdGroups.length - 1 || purchasesPassTimeLimit }
                         />

@@ -3,12 +3,12 @@ import {useState, useId } from 'react';
 import { deepCopy } from '../utils/consts';
 import { defaultOfflinePeriodStart, defaultOfflinePeriodEnd } from '../utils/defaults';
 import { printOfflineTime, getStartTime, getMonthName, convertOfflineTimeToTimeId } from '../utils/dateAndTimeHelpers';
-import { buttonDeleteCSS, buttonPrimaryCSSColours } from '../utils/formatting';
 import { T_OfflinePeriod, T_GameState, T_TimeOfflinePeriod } from '../utils/types';
 import { generateKey } from '../utils/uniqueKeys';
 
 import Modal from './modal';
 import Select, { T_OptionData } from './select';
+import { Button } from './buttons';
 
 /*
     Note: the dates on offline period times must be stored as an offset to the 
@@ -145,8 +145,6 @@ function OfflinePeriodInput({data, handleSubmit, handleChange, pos, gameState, s
     }
 
     const id = useId();
-    const sharedButtonCSS = "w-20 text-sm rounded";
-
     return(
         <Modal closeModal={closeForm}>
             <form onSubmit={ (e) => handleSubmit(e) } className={"mt-2 w-64"}>
@@ -159,8 +157,21 @@ function OfflinePeriodInput({data, handleSubmit, handleChange, pos, gameState, s
                         : null
                     }
                     <div className={"flex justify-between mt-5"}>
-                        <button className={buttonPrimaryCSSColours + " " + sharedButtonCSS } disabled={showError && !data.isValid}>submit</button>
-                        <button type={"button"} className={buttonDeleteCSS + " " + sharedButtonCSS + " " + "self-end"} onClick={() => removeOfflinePeriod()}>remove</button>
+                        <Button 
+                            size={'twin'} 
+                            colours={'primary'}
+                            disabled={showError && !data.isValid}
+                            >
+                            submit
+                        </Button>
+                        <Button 
+                            size={'twin'}
+                            colours={'warning'}
+                            htmlType={'button'}
+                            onClick={() => removeOfflinePeriod()}
+                        >
+                            delete
+                        </Button>
                     </div>
                 </fieldset>
             </form>
