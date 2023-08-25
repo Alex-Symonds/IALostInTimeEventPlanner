@@ -22,7 +22,7 @@ export default function SectionOfflinePeriods({offlinePeriods, openModal, gameSt
     }
 
     return  <SectionToggled title={"Offline Periods"}>
-                <div className={'overflow-y-auto overflow-x-hidden max-h-[calc(100vh-10rem)] px-2'}>
+                <div className={'overflow-y-auto overflow-x-hidden max-h-[calc(100vh-5rem)] px-2'}>
                     <OfflineDisplay offlinePeriods={offlinePeriods} gameState={gameState} openForm={openModal} idxEdit={idxEdit} />
                     <EditButtonBox openEditForm={() => openModal(null)} label={`+${nbsp()}more`} />
                 </div>

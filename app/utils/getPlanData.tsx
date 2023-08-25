@@ -38,7 +38,12 @@ export default function getPlanData({ gameState, actions, offlinePeriods, prodSe
     for(let idx = 0; idx < actions.length; idx++){
 
         let loopAction = actions[idx];
-        if(loopAction.type === 'switch' && timeId < OUT_OF_TIME){
+        if(loopAction.type === 'switch'){
+
+            if(timeId >= OUT_OF_TIME){
+                continue;
+            }
+
             if('to' in loopAction){
                 let switchObject = {
                     key: loopAction.key,
@@ -292,17 +297,6 @@ function advanceWithTwoProdRates({levels, premiumInfo, productionSettings, stock
     return advanceWithTwoProdRates;  
 }
 
-
-// interface I_AdvanceToTime extends 
-//     Pick<I_BuyUpgrade, "levels" | "offlinePeriods" | "premiumInfo" | "productionSettings" | "stockpiles" | "timeId" | "startedAt"> {
-//     eggKey : string, 
-//     eggQty : number, 
-// }
-
-// type T_OutputAdvanceToPurchaseTime = {
-//     timeReady : number,
-//     stockpilesAtTimeReady: T_Stockpiles
-// }
 
 interface I_AdvanceToTimeID extends Pick<I_AdvanceToTime, "stockpiles" | "levels" | "premiumInfo" | "productionSettings"> {
     timeIdStart : number,
