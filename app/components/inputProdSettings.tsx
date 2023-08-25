@@ -65,7 +65,7 @@ export default function ModalProdSettings({closeModal, currentProdSettings, curr
 function getInitSettingsForModal(currentProdSettings : T_ProductionSettings, currentSwitches : T_SwitchAction[])
     : T_ProductionSettings {
 
-    let result = deepCopy(defaultProductionSettings);
+    let result : T_ProductionSettings = deepCopy(defaultProductionSettings);
     for(const [k, v] of Object.entries(currentProdSettings)){
         let idx = currentSwitches.findIndex(ele => ele.key === k);
         let newValue = v;

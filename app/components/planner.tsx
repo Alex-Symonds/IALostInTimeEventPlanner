@@ -63,12 +63,12 @@ export default function Planner({timeIdGroups, gameState, actions, setActions, o
         : void {
 
         if(modalProdSwitchData === null){
-            console.log("error: modalProdSwitchData is null, so production settings can't be updated");
             return;
         }
 
         let workingActions : T_Action[] = deepCopy(actions);
         let numInternalSwitches = 0;
+
         if(modalProdSwitchData.switches.length > 0){
             workingActions = removeAllSwitchActionsInTimeGroup({ timeGroupData: modalProdSwitchData, workingActions });
             numInternalSwitches = countInternalProductionSwitches({ timeGroupData: modalProdSwitchData });
@@ -220,12 +220,13 @@ interface I_PlannerModals extends
     Pick<I_Planner, "gameState" | "purchaseData">{
     upgradePickerProps : T_PropsUpgradePickerModal,
     middleProdSwitcherProps : T_PropsMiddleProdSwitcherModal,
-    topProdSwitcherProps : T_PropsTopProdSwitcherModal
+    topProdSwitcherProps : T_PropsTopProdSwitcherModal,
 }
 
 function PlannerModals({ purchaseData, gameState, upgradePickerProps, middleProdSwitcherProps: middleSwitcher, topProdSwitcherProps: topSwitcher } 
     : I_PlannerModals) 
     : JSX.Element | null{
+
 
     return upgradePickerProps.showModal ?
             <UpgradePicker 

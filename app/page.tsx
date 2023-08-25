@@ -104,7 +104,7 @@ export default function Home() {
   useEffect(() => {
     let planAndSwitchData = getPlanData({ gameState, actions, offlinePeriods, prodSettingsAtTop });
     if(planAndSwitchData === null){
-      return
+      return;
     }
 
     setPurchaseData(planAndSwitchData.purchaseData);
@@ -115,6 +115,7 @@ export default function Home() {
   if(purchaseData === undefined || switchData === undefined){
     return null;
   }
+
   const timeIdGroups : T_TimeGroup[] = groupByTimeId({purchaseData, switchData});
 
   return (
