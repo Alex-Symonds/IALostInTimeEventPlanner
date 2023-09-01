@@ -1,18 +1,19 @@
-import {SetStateAction, useState } from 'react';
+import {SetStateAction, Dispatch, useState } from 'react';
 
 import UPGRADE_DATA from '../upgrades.json';
 
-import { deepCopy, MAX_DAYS } from '../utils/consts';
-import { getDateDisplayStr } from '../utils/dateAndTimeHelpers';
+import { deepCopy } from '../utils/consts';
 import { defaultLevels, defaultStockpiles, defaultTimeRemaining, lateGameSettings } from '../utils/defaults';
-import { resourceCSS, capitalise } from '../utils/formatting';
 import { T_Stockpiles, T_Levels, T_TimeRemainingDHM, T_GameState } from '../utils/types';
 
 import Select, { T_OptionData } from './select';
-import Modal, { ModalSubmitButton } from './modal';
+import Modal, { ModalSubmitButton, ModalHeading } from './modal';
 import { BadgeCost, BadgeMaxed } from './badges';
-import { Button } from './buttons';
 
+import InputGeneral from './inputGameState_general';
+import InputStockpiles from './inputGameState_stockpiles';
+import InputLevelsWorkers from './inputGameState_levelsWorkers';
+import InputLevelsOther from './inputGameState_levelsOther';
 
 interface I_StatusFormProps {
     setGameState : React.Dispatch<SetStateAction<T_GameState>>,
@@ -30,6 +31,8 @@ export default function StatusForm({setGameState, gameState, closeModal}
     const [allEggsLevel, setAllEggsLevel] = useState<number>(gameState === null ? 0 : gameState.premiumInfo.allEggs)
     const [stockpiles, setStockpiles] = useState<T_Stockpiles>(gameState === null ? deepCopy(defaultStockpiles) : gameState.stockpiles)
     const [levels, setLevels] = useState<T_Levels>(gameState === null ? deepCopy(defaultLevels) : gameState.levels)
+
+    const [activePage, setActivePage] = useState<number>(1);
 
     function onSubmit(e : React.SyntheticEvent){
         e.preventDefault();
@@ -94,38 +97,45 @@ export default function StatusForm({setGameState, gameState, closeModal}
 
     return (
         <Modal closeModal={closeModal}>
-            <div className={'m-1 flex flex-col text-sm'}>
-                <h2 className={"text-lg font-bold mb-2"}>Enter Game Status</h2>
+            <div className={'m-1 flex flex-col text-sm w-[280px] max-w-full'}>
+                <ModalHeading>Enter Game Status</ModalHeading>
                 {/* <button onClick={setToLateGame}>setToLateGame</button> */}
                 <form onSubmit={(e) => onSubmit(e)}>
-                    <section>
-                        <FormSubHeading text={"General"} />
-                        <FormRow extraCSS={"flex gap-2"}>
-                            <TimeRemainingFieldset timeRemaining={timeRemaining} setTimeRemaining={setTimeRemaining} />
-                        </FormRow>
-                        <FormRow extraCSS={"flex gap-2 items-center"}>
-                            <Entered timeEntered={timeEntered} setStateOnChange={setStateOnChange} setTimeEntered={setTimeEntered}/>
-                        </FormRow>
-                        <FormRow extraCSS={"flex gap-2"}>
-                            <Select labelExtraCSS={"block w-20 ml-2"} selectExtraCSS={undefined} id={"id_AllEggs"} labelDisplay={"All Eggs"} initValue={gameState === null ? undefined : formatValueStr("All", gameState.premiumInfo.allEggs)} options={getUpgradeOptions({ name: "All", max: 5 })} handleChange={handleLevelChange} />
-                        </FormRow>
-                        <FormRow extraCSS={"flex gap-2"}>
-                            <Label htmlFor={"id_adBoost"}>Ad Boost</Label>
-                            <input type="checkbox" id="id_adBoost" checked={hasAdBoost} onChange={ toggleAdBoost } />
-                        </FormRow>
-                    </section>
 
-                    <section className={"mt-4"}>
-                        <FormSubHeading text={"Current Stockpiles"} />
-                        <DustInput controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-                        <StockpileInput keyId={'blue'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-                        <StockpileInput keyId={'green'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-                        <StockpileInput keyId={'red'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-                        <StockpileInput keyId={'yellow'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-                    </section>
+                    <InputGeneral 
+                        isVisible={ activePage === 1 }
+                        timeEntered={timeEntered}
+                        setStateOnChange={setStateOnChange}
+                        setTimeEntered={setTimeEntered}
+                        timeRemaining={timeRemaining}
+                        setTimeRemaining={setTimeRemaining}
+                        gameState={gameState}
+                        handleLevelChange={handleLevelChange}
+                        hasAdBoost={hasAdBoost}
+                        toggleAdBoost={toggleAdBoost}
+                    />
 
-                    <FormSectionLevels handleLevelChange={handleLevelChange} gameState={gameState} levels={levels} />
+                    <InputStockpiles
+                        isVisible={ activePage === 2 }
+                        controlledStockpileValue={controlledStockpileValue}
+                        updateStockpiles={updateStockpiles}
+                    />
 
+                    <InputLevelsWorkers
+                        isVisible={ activePage === 3 }
+                        handleLevelChange={handleLevelChange} 
+                        gameState={gameState} 
+                        levels={levels}
+                    />
+
+                    <InputLevelsOther
+                        isVisible={ activePage === 4 }
+                        handleLevelChange={handleLevelChange} 
+                        gameState={gameState} 
+                        levels={levels}
+                    />
+
+                    <ProgressStatus activePage={activePage} changePage={setActivePage}/>
                     <ModalSubmitButton label={"submit"} extraCSS={"mt-4"} disabled={false}/>
                 </form>
             </div>
@@ -135,407 +145,91 @@ export default function StatusForm({setGameState, gameState, closeModal}
 }
 
 
-function Label({htmlFor, children} 
-    : { htmlFor : string, children : React.ReactNode })
+function ProgressStatus({activePage, changePage}
+    : { activePage : number, changePage : Dispatch<SetStateAction<number>> })
     : JSX.Element {
- 
-    return <label className={"block w-20 ml-2"} htmlFor={htmlFor}>{children}</label>
+
+    return  <div aria-hidden={true} className={"w-full flex gap-4 justify-center py-2"}>
+                {
+                    [1,2,3,4].map(ele => {
+                        return <CircleButton key={`formProgBtn${ele}`} 
+                                    isActive={activePage === ele} 
+                                    handleClick={ () => changePage(ele) } 
+                                />
+                    })
+                }
+            </div>
+}
+
+function CircleButton({isActive, handleClick}
+    : any)
+    : JSX.Element {
+
+    const selectionCSS = isActive ? 
+            "bg-violet-500"
+            :
+            "bg-neutral-300 hover:bg-neutral-400";
+    return <button type={'button'} className={"rounded-full w-4 h-4 mt-4" + " " + selectionCSS} onClick={handleClick}></button>
 }
 
 
-function FormSubHeading({text} 
+export function InputPageWrapper({ isVisible, heading, children }
+    : { isVisible : boolean, heading? : string, children : React.ReactNode })
+    : JSX.Element {
+
+    const visibilityCSS = isVisible ? "" : "sr-only";
+
+    return  <section className={"mt-2 flex flex-col gap-3.5" + " " + visibilityCSS}>
+                {
+                    heading === undefined ?
+                    null
+                    :
+                    <FormSubHeading text={heading} />
+                }
+                { children }
+            </section>
+}
+
+
+export function FormSubHeading({text} 
     : { text : string })
     : JSX.Element {
 
-    return <h3 className={'text-md font-bold mb-2'}>{text}</h3>
+    return <h3 className={'text-md font-bold'}>{text}</h3>
 }
 
 
-function FormRow({extraCSS, children} 
+export function FormRow({extraCSS, children} 
     : { extraCSS : string | undefined, children : React.ReactNode })
     : JSX.Element {
 
     return(
-        <div className={"mt-3" + " " + extraCSS ?? ""}>
+        <div className={"first:mt-0 mt-2 mb-3.5" + " " + extraCSS ?? ""}>
             {children}
         </div>
     )
 }
 
 
-interface I_PropsEntered {
-    timeEntered : Date | null, 
-    setStateOnChange : (e : React.ChangeEvent<any>, setFunction : React.Dispatch<SetStateAction<any>>) => void, 
-    setTimeEntered : React.Dispatch<React.SetStateAction<Date>>
-}
-function Entered({timeEntered, setStateOnChange, setTimeEntered} 
-    : I_PropsEntered)
+// Use this to pass matching formatting to legends and the label built-in to Select
+export const GAMESTATE_LABEL_CSS_FORMATTING = "block w-20 ml-2 font-semibold";
+export function Label({htmlFor, children} 
+    : { htmlFor : string, children : React.ReactNode })
     : JSX.Element {
-
-    timeEntered = timeEntered ?? new Date();
-
-    return(
-        <>
-            <Label htmlFor={"id_timeEntered"}>Entered</Label>
-            <p suppressHydrationWarning={true}>{ getDateDisplayStr(timeEntered) }</p>
-            <input hidden type="datetime-local" id={"id_timeEntered"} value={timeEntered == null ? "" : `${timeEntered}`} onChange={(e) => setStateOnChange(e, setTimeEntered)}/>
-
-            <Button 
-                htmlType={"button"}
-                onClick={() => { setTimeEntered(new Date()) }}
-                colours={"secondary"}
-                size={"inline"}
-                extraCSS={"ml-3"}
-            >
-                &laquo;&nbsp;now
-            </Button>
-        </>
-    )
+ 
+    return <label className={GAMESTATE_LABEL_CSS_FORMATTING} htmlFor={htmlFor}>{children}</label>
 }
 
 
-interface I_PropsTimeRemainingFieldset {
-    timeRemaining: T_TimeRemainingDHM,
-    setTimeRemaining: React.Dispatch<React.SetStateAction<T_TimeRemainingDHM>>
-}
-
-function TimeRemainingFieldset({timeRemaining, setTimeRemaining} 
-    : I_PropsTimeRemainingFieldset)
+export function LevelsWrapper({children} 
+    : { children : React.ReactNode })
     : JSX.Element {
-
-    const [isError, setIsError] = useState(false);
-    const [message, setMessage] = useState("");
-
-    const MAX_HOURS = 23;
-    const MAX_MINUTES = 59;
-
-    function handleChangeDays(e : React.ChangeEvent<HTMLInputElement>){
-        let newDaysStr = e.target.value;
-        let newDays = parseInt(newDaysStr);
-
-        newDays = validateDays(newDays);
-
-        if(newDays === MAX_DAYS){
-            setTimeRemaining({
-                days: MAX_DAYS,
-                hours: 0,
-                minutes: 0
-            });
-            return;
-        }
-
-        setTimeRemaining(prev => {
-            return {
-                ...prev,
-                days: newDays
-            }
-        });
-    }
-
-    function validateDays(newDays : number){
-        const rangeStr = `days can be 0 - ${MAX_DAYS}`;
-
-        if(newDays > MAX_DAYS){
-            setMessage(rangeStr);
-            setIsError(true);
-            newDays = MAX_DAYS;
-        }
-        else if(newDays === MAX_DAYS 
-                && ( timeRemaining.hours > 0 || timeRemaining.minutes > 0)
-            ){
-            setIsError(true);
-            setMessage(`${MAX_DAYS} days is the maximum: hours and minutes set to 0`);
-        }
-        else if(newDays < 0){
-            setIsError(true);
-            setMessage(rangeStr);
-            newDays = 0;
-        }
-        else if(isError){
-            setIsError(false);
-        }
-
-        return newDays;
-    }
-
-
-    function handleChangeHours(e: React.ChangeEvent<HTMLInputElement>){
-        let newHoursStr = e.target.value;
-        let newHours = parseInt(newHoursStr);
-        newHours = validateHours(newHours);
-
-        setTimeRemaining((prev) => {
-            return {
-                ...prev,
-                hours: newHours
-            }
-        });
-    }
-
-    function validateHours(newHours : number){
-        const rangeStr = `hours can be 0 - ${MAX_HOURS} (inclusive)`;
-
-        if(timeRemaining.days === MAX_DAYS && newHours !== 0){
-            setIsError(true);
-            setMessage(`can't go above ${MAX_DAYS} days`);
-            newHours = 0;
-        }
-        else if(newHours > MAX_HOURS){
-            setIsError(true);
-            setMessage(rangeStr);
-            newHours = MAX_HOURS;
-        }
-        else if(newHours < 0){
-            setIsError(true);
-            setMessage(rangeStr);
-            newHours = 0;
-        }
-        else{
-            setIsError(false);
-        }
-
-        return newHours;
-    }
-
-
-    function handleChangeMinutes(e: React.ChangeEvent<HTMLInputElement>){
-        let newMinutesStr = e.target.value;
-        let newMinutes = parseInt(newMinutesStr);
-        newMinutes = validateMinutes(newMinutes);
-
-        setTimeRemaining((prev) => {
-            return {
-                ...prev,
-                minutes: newMinutes
-            }
-        });
-    }
-
-
-    function validateMinutes(newMinutes : number){
-        const rangeStr = `minutes can be 0 - ${MAX_MINUTES}`;
-        if(timeRemaining.days === MAX_DAYS && newMinutes !== 0){
-            setIsError(true);
-            setMessage(`can't go above ${MAX_DAYS} days`);
-            newMinutes = 0;
-        }
-        else if(newMinutes > MAX_MINUTES){
-            setIsError(true);
-            setMessage(rangeStr);
-            newMinutes = MAX_MINUTES;
-        }
-        else if(newMinutes < 0){
-            setIsError(true);
-            setMessage(rangeStr);
-            newMinutes = 0;
-        }
-        else{
-            setIsError(false);
-        }
-        return newMinutes;
-    }
 
     return (
-        <fieldset className={"relative w-full pt-5" + " " + ""}>
-            <legend className={"absolute block w-20 pl-2 top-0 mb-2"}>Remaining</legend>
-            <div className={'relative flex flex-col items-center gap-1 px-3 ml-1'}>
-                <div className={'flex justify-center gap-2 mt-1'}>
-                    <TimeRemainingUnit unitName={"days"} value={timeRemaining == null ? 0 : timeRemaining.days} handleChange={handleChangeDays} />
-                    <TimeRemainingUnit unitName={"hours"} value={timeRemaining == null ? 0 : timeRemaining.hours} handleChange={handleChangeHours} />
-                    <TimeRemainingUnit unitName={"minutes"} value={timeRemaining == null ? 0 : timeRemaining.minutes} handleChange={handleChangeMinutes} />
-                </div>
-                { isError ?
-                    <div className={"text-xs border-1 text-neutral-700 px-1 py-1 w-56"}>{capitalise(message)}</div>
-                    : null
-                }
-            </div>
-        </fieldset>
-    )
-}
-
-interface I_TimeRemainingUnitProps {
-    unitName : string, 
-    value : number, 
-    handleChange : (e : React.ChangeEvent<HTMLInputElement>) => void
-}
-function TimeRemainingUnit({unitName, value, handleChange} 
-    : I_TimeRemainingUnitProps)
-    : JSX.Element {
-
-    if(isNaN(value)){
-        value = 0;
-    }
-
-    const idStr = `id_${unitName}`;
-    return (
-        <div className={'flex items-center'}>
-            <InputNumberAsText cssStr={"w-12 pl-1"} idStr={idStr} value={value} handleChange={handleChange} />
-            <label className={"pl-1 pr-2"} htmlFor={idStr}>{unitName.charAt(0)}</label>
+        <div className={"pl-4 flex flex-col"}>
+            {children}
         </div>
     )
-}
-
-
-interface I_PropsStockpileWrapper { 
-    coloursCSS : string, 
-    idStr : string, 
-    label: string, 
-    children : React.ReactNode 
-}
-function StockpileWrapper({coloursCSS, idStr, label, children} 
-    : I_PropsStockpileWrapper)
-    : JSX.Element {
-
-    return  <div className={"flex py-1 px-2 items-center border" + " " + coloursCSS}>
-                <label className={"block w-20"} htmlFor={idStr}>{label}</label>
-                {children}
-            </div>
-}
-
-interface I_PropsStockpileInput {
-    keyId : string, 
-    controlledStockpileValue : (keyId : string) => string | number, 
-    updateStockpiles : (e : React.ChangeEvent<HTMLInputElement>, keyId : string) => void
-}
-function StockpileInput({keyId, controlledStockpileValue, updateStockpiles} 
-    : I_PropsStockpileInput )
-    : JSX.Element {
-
-    const idStr = `id_${keyId}Stock`;
-    const label = `${keyId.charAt(0).toUpperCase()}${keyId.slice(1)}`;
-    return (
-        <StockpileWrapper coloursCSS={resourceCSS[keyId as keyof typeof resourceCSS].badge} label={label} idStr={idStr}>
-            <InputNumberAsText cssStr={"w-36 text-black py-1 px-2 font-normal"} idStr={idStr} value={controlledStockpileValue(keyId)} handleChange={(e: React.ChangeEvent<HTMLInputElement> ) => updateStockpiles(e, keyId)} />
-        </StockpileWrapper>
-    )
-}
-
-
-function DustInput({controlledStockpileValue, updateStockpiles} 
-    : Pick<I_PropsStockpileInput, "controlledStockpileValue" | "updateStockpiles">)
-    : JSX.Element {
-
-    return(
-        <StockpileWrapper coloursCSS={resourceCSS.dust.badge} label={"Dust"} idStr={"id_dust"}>
-            <InputNumberAsText 
-                idStr={"id_dust"}
-                cssStr={"w-36 py-1 px-2 font-normal"}
-                value={ controlledStockpileValue('dust') }
-                handleChange={(e) => updateStockpiles(e, 'dust')}
-            />
-        </StockpileWrapper>
-    )
-}
-
-
-interface I_PropsInputNumberAsText {
-    idStr : string, 
-    value : number | string, 
-    handleChange : (e : React.ChangeEvent<HTMLInputElement>) => void, 
-    cssStr : string | undefined
-};
-function InputNumberAsText({idStr, value, handleChange, cssStr} 
-    : I_PropsInputNumberAsText)
-    : JSX.Element {
-
-    let valueStr = value.toString();
-    if(typeof value !== 'number' || isNaN(value)){
-        valueStr = "0";
-    }
-
-    return <input 
-                className={cssStr} 
-                type="text" 
-                inputMode="numeric" 
-                pattern="^[0-9]+$|^$" 
-                id={idStr} 
-                value={valueStr} 
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e)} 
-            />
-}
-
-interface I_PropsFormSectionLevels {
-    handleLevelChange : (e : React.ChangeEvent<HTMLSelectElement>) => void, 
-    gameState : T_GameState, 
-    levels : T_Levels
-};
-function FormSectionLevels({handleLevelChange, gameState, levels} 
-    : I_PropsFormSectionLevels)
-    : JSX.Element {
-
-    return (
-        <section className={"mt-4"}>
-            <FormSubHeading text={"Upgrades"} />
-            <DetailsSummary summaryText={"Worker Levels"}>
-                
-                { workerUpgrades.map(ele => {
-                    let initValue : string | undefined = getInitValueForLevelSelect(ele.optionsProps.name, gameState);
-                    let keyName = ele.optionsProps.name.toLowerCase();
-                    return <UnitLevelInput key={ele.id} 
-                                keyName={keyName} 
-                                idStr={ele.id} 
-                                labelStr={ele.labelDisplay} 
-                                initValue={initValue}
-                                options={getUpgradeOptions(ele.optionsProps)} 
-                                handleLevelChange={handleLevelChange} 
-                                currentValue={levels[keyName as keyof typeof levels]}
-                            />
-                    })
-                }
-            </DetailsSummary>
-
-            <DetailsSummary summaryText={"Egg Levels"}>
-                { productionUpgrades.map((ele, idx) => {
-                        let initValue : string | undefined  = getInitValueForLevelSelect(ele.optionsProps.name, gameState);
-                        let keyName = ele.optionsProps.name.toLowerCase();
-                        return <UnitLevelInput key={ele.id} 
-                                    keyName={keyName} 
-                                    idStr={ele.id} 
-                                    labelStr={ele.labelDisplay} 
-                                    initValue={initValue}
-                                    options={getUpgradeOptions(ele.optionsProps)} 
-                                    handleLevelChange={handleLevelChange} 
-                                    currentValue={levels[keyName as keyof typeof levels]}
-                                />
-                    })
-                }
-           </DetailsSummary>
-
-            <DetailsSummary summaryText={"Buff Levels"}>
-                <UnitLevelInput
-                    keyName={"speed"} 
-                    idStr={"id_speed"} 
-                    labelStr={"Speed"} 
-                    initValue={gameState === null ? undefined : speedOptions[gameState.levels.speed].valueStr}
-                    options={speedOptions} 
-                    handleLevelChange={handleLevelChange} 
-                    currentValue={levels.speed}
-                />
-                <UnitLevelInput
-                    keyName={"dust"} 
-                    idStr={"id_dust"} 
-                    labelStr={"Dust"} 
-                    initValue={gameState === null ? undefined : dustOptions[gameState.levels.dust].valueStr}
-                    options={dustOptions} 
-                    handleLevelChange={handleLevelChange} 
-                    currentValue={levels.dust}
-                />
-            </DetailsSummary>
-        </section>
-    )
-}
-
-
-function getInitValueForLevelSelect(name : string, gameState : T_GameState)
-    : string | undefined {
-
-    let initValue : string | undefined = undefined;
-    let keyName = name.toLowerCase();
-    if(gameState !== null){
-        let level = gameState.levels[keyName as keyof typeof gameState.levels];
-        initValue = formatValueStr(name, level);
-    }
-    return initValue;
 }
 
 
@@ -548,7 +242,7 @@ interface I_PropsUnitLevelInput {
     handleLevelChange : (e : React.ChangeEvent<HTMLSelectElement>) => void, 
     currentValue : number
 }
-function UnitLevelInput({keyName, idStr, labelStr, initValue, options, handleLevelChange, currentValue} 
+export function UnitLevelInput({keyName, idStr, labelStr, initValue, options, handleLevelChange, currentValue} 
     : I_PropsUnitLevelInput)
     : JSX.Element {
 
@@ -577,60 +271,70 @@ function UnitLevelInput({keyName, idStr, labelStr, initValue, options, handleLev
 }
 
 
-function DetailsSummary({summaryText, children} 
-    : {summaryText : string, children : React.ReactNode})
+interface I_PropsInputNumberAsText {
+    idStr : string, 
+    value : number | string, 
+    handleChange : (e : React.ChangeEvent<HTMLInputElement>) => void, 
+    cssStr : string | undefined
+};
+export function InputNumberAsText({idStr, value, handleChange, cssStr} 
+    : I_PropsInputNumberAsText)
     : JSX.Element {
 
-    return (
-        <details className={"mb-3 ml-2"}>
-            <summary>{summaryText}</summary>
-            <div className={"pl-4 flex flex-col gap-2 py-2"}>
-                {children}
-            </div>
-        </details>
-    )
+    let valueStr = value.toString();
+    if(typeof value !== 'number' || isNaN(value)){
+        valueStr = "0";
+    }
+
+    if(cssStr === undefined || !cssStr.includes('border')){
+        cssStr += ' border-neutral-200 ';
+    }
+
+    return <input 
+                className={"border" + " " + cssStr} 
+                type="text" 
+                inputMode="numeric" 
+                pattern="^[0-9]+$|^$" 
+                id={idStr} 
+                value={valueStr} 
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(e)} 
+            />
 }
 
 
-const speedOptions = [
-    {valueStr: "Speed_0", displayStr: "0%"},
-    {valueStr: "Speed_1", displayStr: "-5%"},
-    {valueStr: "Speed_2", displayStr: "-10%"},
-    {valueStr: "Speed_3", displayStr: "-15%"},
-    {valueStr: "Speed_4", displayStr: "-20%"},
-    {valueStr: "Speed_5", displayStr: "-25%"},
-]
+export function getInitValueForLevelSelect(name : string, gameState : T_GameState)
+    : string | undefined {
+
+    let initValue : string | undefined = undefined;
+    let keyName = name.toLowerCase();
+    if(gameState !== null){
+        let level = gameState.levels[keyName as keyof typeof gameState.levels];
+        initValue = formatValueStr(name, level);
+    }
+    return initValue;
+}
 
 
-const dustOptions = [
-    {valueStr: "Dust_0", displayStr: "0%"},
-    {valueStr: "Dust_1", displayStr: "25%"},
-    {valueStr: "Dust_2", displayStr: "50%"},
-    {valueStr: "Dust_3", displayStr: "75%"},
-    {valueStr: "Dust_4", displayStr: "100%"},
-    {valueStr: "Dust_5", displayStr: "125%"},
-    {valueStr: "Dust_6", displayStr: "150%"},
-]
+export function formatValueStr(name : string, numStr : number)
+    : string {
+
+    return `${ name.toLowerCase() }_${ numStr.toString() }`
+}
 
 
-const productionUpgrades = [
-    { id: "id_Blue", labelDisplay: "Blue", optionsProps: { name: "Blue", max: 4 }},
-    { id: "id_Green", labelDisplay: "Green", optionsProps: { name: "Green", max: 3 }},
-    { id: "id_Red", labelDisplay: "Red", optionsProps: { name: "Red", max: 2 }},
-    { id: "id_Yellow", labelDisplay: "Yellow", optionsProps: { name: "Yellow", max: 1 }},
-]
+export function getUpgradeOptions({name, max} 
+    : { name : string, max : number})
+    : T_OptionData[] {
 
+    let options = [];
 
-const workerUpgrades = [
-    { id: "id_Trinity", labelDisplay: "Trinity", optionsProps: { name: "Trinity", max: 10 }},
-    { id: "id_Bronte", labelDisplay: "Bronte", optionsProps: { name: "Bronte", max: 10 }},
-    { id: "id_Anne", labelDisplay: "Anne", optionsProps: { name: "Anne", max: 8 }},
-    { id: "id_Petra", labelDisplay: "Petra", optionsProps: { name: "Petra", max: 10 }},
-    { id: "id_Manny", labelDisplay: "Manny", optionsProps: { name: "Manny", max: 10 }},
-    { id: "id_Tony", labelDisplay: "Tony", optionsProps: { name: "Tony", max: 10 }},
-    { id: "id_Ruth", labelDisplay: "Ruth", optionsProps: { name: "Ruth", max: 8 }},
-    { id: "id_Rex", labelDisplay: "Rex", optionsProps: { name: "Rex", max: 10 }},
-]
+    for(let i=0; i<=max; i++){
+        let newOption = { valueStr: formatValueStr(name, i), displayStr: `${ i }` };
+        options.push(newOption);
+    }
+
+    return options;
+}
 
 
 function convertTimeIdToDHM(timeId: number)
@@ -686,27 +390,6 @@ function convertFormInputsToGameState({timeEntered, timeRemaining, hasAdBoost, a
     }
 }
 
-
-function formatValueStr(name : string, numStr : number)
-    : string {
-
-    return `${ name.toLowerCase() }_${ numStr.toString() }`
-}
-
-
-function getUpgradeOptions({name, max} 
-    : { name : string, max : number})
-    : T_OptionData[] {
-
-    let options = [];
-
-    for(let i=0; i<=max; i++){
-        let newOption = { valueStr: formatValueStr(name, i), displayStr: `${ i }` };
-        options.push(newOption);
-    }
-
-    return options;
-}
 
 
 

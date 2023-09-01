@@ -29,7 +29,7 @@ function Stockpile({myKey, data}
     : JSX.Element {
 
     return (
-        <div className={"flex justify-between text-sm w-1/4 px-1 gap-1" + " " + resourceCSS[myKey as keyof typeof resourceCSS].badge}>
+        <div className={"flex justify-between text-sm w-1/4 px-1 gap-1 rounded" + " " + resourceCSS[myKey as keyof typeof resourceCSS].badge}>
             <div>{myKey.charAt(0).toUpperCase()}</div>
             <div>{toThousands(data[myKey as keyof typeof data])}</div>
         </div>
