@@ -19,6 +19,7 @@ export default function ProductionSwitchButton({nameKey, setTo, handleClick}
                 size={'planner'}
                 colours={'secondary'}
                 onClick={handleClick}
+                extraCSS={"plnMd:self-end"}
             >
                 switch
             </Button>
@@ -38,11 +39,11 @@ function ResourceSwitchButton({setTo, nameKey, handleClick}
             : "#FFF";
 
     return  <button 
-                className={"flex text-sm items-center px-2 py-0.5 rounded border-2 my-0.5 " + " " + conditionalCSS}
+                className={"flex plnMd:justify-between text-sm items-center px-2 py-0.5 rounded border-2 mb-1 " + " " + conditionalCSS}
                 onClick={handleClick}
                 >
-                <div className={"w-10"}>{nameKey !== null ? capitalise(nameKey) : "Worker"}</div>
+                <div className={"w-10 plnMd:w-16 plnMd:flex plnMd:justify-start"}>{nameKey !== null ? capitalise(nameKey) : "Worker"}</div>
                 <div className={"px-4"}>{IconPointingRight(svgFill)} <span className={"sr-only"}>to </span></div>
-                <div>{setTo}</div>
+                <div className={"plnMd:w-16 plnMd:flex plnMd:justify-end"}>{setTo}</div>
             </button>
 }

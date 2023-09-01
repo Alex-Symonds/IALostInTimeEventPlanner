@@ -9,7 +9,7 @@ import { T_GameState, T_Levels, T_Stockpiles } from '../utils/types';
 
 
 import StockpilesDisplay from './stockpilesStrip';
-import { SectionToggled, EditButtonBox } from './sectionToggled';
+import { InputResultsSection, EditButtonBox } from './sectionInputResults';
 
 
 interface I_SectionGameState {
@@ -22,7 +22,7 @@ export default function SectionGameState({gameState, openEditForm}
     : JSX.Element {
 
     return(
-        <SectionToggled title={"Game Status"}>
+        <InputResultsSection title={"Game Status"}>
             <div className={"px-2"}>
                 <TimeAndPremiumStatus gameState={gameState} />
 
@@ -33,7 +33,7 @@ export default function SectionGameState({gameState, openEditForm}
                 
                 <EditButtonBox openEditForm={openEditForm} label={undefined} />
             </div>
-        </SectionToggled>
+        </InputResultsSection>
     )
 }
 

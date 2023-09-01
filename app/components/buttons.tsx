@@ -69,8 +69,10 @@ function getCSS({size, colours, disabled, toggledOn, extraCSS}
         }
     }
 
-    css += " " + extraCSS ?? '';
-
+    if(extraCSS !== undefined){
+        css += " " + extraCSS;
+    }
+    
     return css;
 }
 

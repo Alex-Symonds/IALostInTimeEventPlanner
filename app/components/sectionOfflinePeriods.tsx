@@ -2,7 +2,7 @@ import { getDateDisplayStr, getStartTime, convertOfflineTimeToDate, printOffline
 import { nbsp } from "../utils/formatting";
 import { T_GameState, T_OfflinePeriod } from "../utils/types";
 
-import { SectionToggled, EditButtonBox } from './sectionToggled';
+import { InputResultsSection, EditButtonBox } from './sectionInputResults';
 import { Button } from './buttons';
 
 
@@ -21,12 +21,12 @@ export default function SectionOfflinePeriods({offlinePeriods, openModal, gameSt
         return null;
     }
 
-    return  <SectionToggled title={"Offline Periods"}>
+    return  <InputResultsSection title={"Offline Periods"}>
                 <div className={'overflow-y-auto overflow-x-hidden max-h-[calc(100vh-5rem)] px-2'}>
                     <OfflineDisplay offlinePeriods={offlinePeriods} gameState={gameState} openForm={openModal} idxEdit={idxEdit} />
                     <EditButtonBox openEditForm={() => openModal(null)} label={`+${nbsp()}more`} />
                 </div>
-            </SectionToggled>
+            </InputResultsSection>
 
 }
 
@@ -57,8 +57,8 @@ function OfflineDisplay({offlinePeriods, gameState, openForm, idxEdit}
                     let endDate : Date = convertOfflineTimeToDate(ele.end, startedAt);
 
                     return  <div key={`${printOfflineTime(ele.start)}_${printOfflineTime(ele.end)}`} className={"flex justify-between items-center mb-2" + " " + conditionalWrapperCSS}>
-                                <div>
-                                    #{idx + 1}
+                                <div className={"text-violet-800 font-bold"}>
+                                    {idx + 1}
                                 </div>
                                 <div>
                                     {getDateDisplayStr(startDate)} - {getDateDisplayStr(endDate)}

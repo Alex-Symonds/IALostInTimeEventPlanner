@@ -6,6 +6,8 @@ import { MAX_TIME } from '../utils/consts';
 
 import UpgradeCard from './planner_upgradeCard';
 import TimeGroupMore from './planner_timeGroupMore';
+import TimeGroupHeading from './planner_timeGroupHeading';
+
 import { IconMoon } from './icons';
 
 interface I_TimeGroup {
@@ -32,17 +34,18 @@ export default function TimeGroup({groupData, startPos, openUpgradePicker, offli
                             : "";
     const borderColour = isDuringOfflinePeriod ?
                             "border-greyBlue-300"
-                            : "border-neutral-300";
+                            : "border-neutral-200";
     
     return (
         <>
-        <div className={"flex flex-col border-b-2 shadow-md" + " " + offlineCSS + " " + borderColour}>
             <TimeGroupHeading 
                 data={groupData} 
                 startOfOfflinePeriod={isDuringOfflinePeriod ? convertOfflineTimeToTimeId(offlinePeriods[activeOfflinePeriodIdx].start, startedAt) : null} 
                 gameState={gameState}
             />
-            <div className={"flex justify-center pt-1 px-1 border-l-2 border-r-2" + " " + borderColour}>
+        <div className={"flex flex-col mt-1 border-b border-t shadow w-72" + " " + offlineCSS + " " + borderColour}>
+
+            <div className={"flex justify-center pt-1 px-1 border-l border-r" + " " + borderColour}>
                 <div className={"flex"}>
                     <UpdateCardContainer 
                         upgrades={groupData.upgrades}
@@ -140,63 +143,4 @@ function MoreButtonContainer({showMore, setShowMore, isDuringOfflinePeriod,}
 }
 
 
-interface I_TimeGroupHeading extends Pick<I_TimeGroup, "gameState"> {
-    data : T_TimeGroup,
-    startOfOfflinePeriod : number | null,
-}
-function TimeGroupHeading({data, startOfOfflinePeriod, gameState} : I_TimeGroupHeading){
-    const [showFullOfflinePeriod, setShowFullOfflinePeriod] = useState<boolean>(false);
-    const [isHover, setIsHover] = useState(false);
-
-    const timeAsDHM = convertTimeIdToTimeRemaining(MAX_TIME - data.timeId);
-    const timeAsDate = convertTimeIdToDate(data.timeId, gameState);
-
-    const isDuringOfflinePeriod = startOfOfflinePeriod !== null;
-
-    const conditionalClass = isDuringOfflinePeriod ?
-                                "bg-greyBlue-600 border-greyBlue-700 text-white"
-                                : "bg-violet-100 border-violet-300 text-black";
-    const fullOfflinePeriodCSS = isDuringOfflinePeriod && showFullOfflinePeriod ?
-                                    "text-sm"
-                                    : "";
-    
-    let startAsDate = isDuringOfflinePeriod ?
-                        convertTimeIdToDate(startOfOfflinePeriod, gameState)
-                        : null;
-
-    let shortDisplayStr = getDateDisplayStr(timeAsDate);
-    let fullDisplayStr = startAsDate !== null ? 
-                            getDateDisplayStr(startAsDate) + " - " + shortDisplayStr
-                            : shortDisplayStr;
-
-    return(
-        <div className={"flex items-center justify-between px-1 border-t-2 border-l-2 border-r-2" + " " + conditionalClass}>
-            <div>
-                {calcDHMString(timeAsDHM)}
-            </div>
-            {
-                startAsDate === null ?
-                    <div suppressHydrationWarning={true}>
-                        { shortDisplayStr }
-                    </div>
-                    : 
-                    <>
-                        { !showFullOfflinePeriod ?
-                            <div>{IconMoon("16", isHover ? "#dde6ff" : "#fff")}</div>
-                            : null
-                        }
-                        <button 
-                            suppressHydrationWarning={true} 
-                            className={"hover:text-greyBlue-100" + " " + fullOfflinePeriodCSS} 
-                            onClick={() => setShowFullOfflinePeriod(prev => !prev)}
-                            onMouseEnter={() => setIsHover(true)}
-                            onMouseLeave={() => setIsHover(false)}
-                            >
-                            { showFullOfflinePeriod ? fullDisplayStr : shortDisplayStr }
-                        </button>
-                    </>
-            } 
-        </div>
-    )
-}
 
