@@ -33,7 +33,7 @@ export default function TimeGroupMore({data, productionSettings, levels, remaini
                             : "border-b border-gray-200 mt-2";
 
     return (
-        <section className={"flex flex-col gap-2 border-l-2 border-r-2 px-2 pb-4" + " " + borderColour + " " + offlineModeCSS}>
+        <section className={"flex flex-col gap-2 border-l border-r px-2 pb-4" + " " + borderColour + " " + offlineModeCSS}>
             <div className={"mb-1" + " " + offlineModeHr}></div>
             <DustStatsSection moreData={moreData} gameState={gameState} leftHeadingWidth={leftHeadingWidth} isDuringOfflinePeriod={isDuringOfflinePeriod} />
             <ProductionSettingsSection productionSettings={productionSettings} levels={levels} leftHeadingWidth={leftHeadingWidth} isDuringOfflinePeriod={isDuringOfflinePeriod} />

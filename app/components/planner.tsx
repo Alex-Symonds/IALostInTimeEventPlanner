@@ -12,6 +12,8 @@ import ControlsRow from './planner_controlsRow';
 import TimeGroup from './planner_timeGroup';
 import ProductionSummary from './productionSummary';
 import PlannerFooter from './planner_footer';
+import ResultAtTop from './resultAtTop';
+
 
 interface I_Planner {
     actions : T_Action[], 
@@ -139,9 +141,11 @@ export default function Planner({timeIdGroups, gameState, actions, setActions, o
     }
 
     return(
-        <div className={"flex flex-col items-center mt-2"}>
+        <div className={"flex flex-col items-center bg-white"}>
+            
+            <ResultAtTop planData={purchaseData} gameState={gameState} actions={actions} timeIdGroups={timeIdGroups} />
             {
-                <PlannerModals 
+                <Modal 
                     purchaseData={purchaseData} 
                     gameState={gameState} 
                     upgradePickerProps={upgradePickerProps}
@@ -158,7 +162,7 @@ export default function Planner({timeIdGroups, gameState, actions, setActions, o
                 : null
             }
             
-            <div className={"flex flex-col gap-1 w-72 max-w-xs"}>
+            <div className={"flex flex-col gap-1 w-min"}>
             {
                 timeIdGroups.length === 0 ?
                     null
@@ -223,7 +227,7 @@ interface I_PlannerModals extends
     topProdSwitcherProps : T_PropsTopProdSwitcherModal,
 }
 
-function PlannerModals({ purchaseData, gameState, upgradePickerProps, middleProdSwitcherProps: middleSwitcher, topProdSwitcherProps: topSwitcher } 
+function Modal({ purchaseData, gameState, upgradePickerProps, middleProdSwitcherProps: middleSwitcher, topProdSwitcherProps: topSwitcher } 
     : I_PlannerModals) 
     : JSX.Element | null{
 
@@ -304,7 +308,8 @@ function TimeGroupsList({timeIdGroups, offlinePeriods, gameState, openUpgradePic
             let startPos = groupStartPos;
             groupStartPos += data.upgrades.length;
             let nextPos = groupStartPos;
-            return <Fragment key={'tgcr' + idx}>
+
+            return <div key={'tgcr' + idx} className={"w-min"}>
                         <TimeGroup 
                             groupData={data} 
                             startPos={startPos} 
@@ -319,7 +324,23 @@ function TimeGroupsList({timeIdGroups, offlinePeriods, gameState, openUpgradePic
                             handleUpgradeClick={() => openUpgradePicker(nextPos - 1)}
                             showUpgradeButton={ idx < timeIdGroups.length - 1 || purchasesPassTimeLimit }
                         />
-                    </Fragment>
+                    </div>
+            // return <Fragment key={'tgcr' + idx}>
+            //             <TimeGroup 
+            //                 groupData={data} 
+            //                 startPos={startPos} 
+            //                 openUpgradePicker={ openUpgradePicker } 
+            //                 offlinePeriods={offlinePeriods} 
+            //                 gameState={gameState} 
+            //                 remainingGroups={timeIdGroups.slice(idx + 1)}
+            //             />
+            //             <ControlsRow
+            //                 displaySwitches={displaySwitches}
+            //                 handleProductionClick={() => openProdSwitcherModal(data)} 
+            //                 handleUpgradeClick={() => openUpgradePicker(nextPos - 1)}
+            //                 showUpgradeButton={ idx < timeIdGroups.length - 1 || purchasesPassTimeLimit }
+            //             />
+            //         </Fragment>
         })}
         </>
 }

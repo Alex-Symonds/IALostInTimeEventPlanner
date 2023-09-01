@@ -30,3 +30,25 @@
     grid-template-columns: 33% 1fr 4rem;
     max-width: 320px;
 }
+
+.desktopBarsLayout{
+    display: grid;
+    grid-template-rows: auto auto auto;
+    grid-template-columns: auto 1fr;
+    grid-template-areas: 
+    "buttons buttons"
+    "status banner"
+    "status .";
+}
+
+.desktopAreaButtons{
+    grid-area: buttons;
+}
+
+.desktopAreaStatus{
+    grid-area: status;
+}
+
+.desktopAreaBanner{
+    grid-area: banner;
+}

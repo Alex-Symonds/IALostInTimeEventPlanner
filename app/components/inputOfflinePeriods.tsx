@@ -149,7 +149,7 @@ function OfflinePeriodInput({data, handleSubmit, handleChange, pos, gameState, s
         <Modal closeModal={closeForm}>
             <form onSubmit={ (e) => handleSubmit(e) } className={"mt-2 w-64"}>
                 <fieldset className={""}>
-                    <legend className={"font-bold mb-1"}>Offline Period #{pos}</legend>
+                    <legend className={"font-bold mb-1"}>Offline Period {pos}</legend>
                     <OfflineTimeInput legend={"from"} idStr={id} roleKey={"start"} dhm={data.start} handleSingleKeyChange={handleSingleKeyChange} gameState={gameState} showError={showError && !data.isValid} />
                     <OfflineTimeInput legend={"to"} idStr={id} roleKey={"end"} dhm={data.end} handleSingleKeyChange={handleSingleKeyChange} gameState={gameState} showError={showError && !data.isValid} />
                     {showError && !data.isValid ?

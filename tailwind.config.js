@@ -25,6 +25,9 @@ module.exports = {
         'greyBlue-900': '#313749',
         'greyBlue-950': '#202331',
       },
+      screens: {
+        'plnMd' : '880px'
+      }
     },
   },
   plugins: [],

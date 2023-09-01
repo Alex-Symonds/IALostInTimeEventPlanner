@@ -93,7 +93,7 @@ export function getMonthName(monthNumber : number) : string {
 
 
 export function getDateDisplayStr(myDate : Date) : string {
-    return myDate.getDate() + nbsp() + getMonthName(myDate.getMonth()) + nbsp() + myDate.toLocaleTimeString([], {timeStyle: 'short', hourCycle: 'h23' });
+    return myDate.getDate().toString().padStart(2, '0') + nbsp() + getMonthName(myDate.getMonth()) + nbsp() + myDate.toLocaleTimeString([], {timeStyle: 'short', hourCycle: 'h23' });
 }
 
 export function printOfflineTime(dhm : T_TimeOfflinePeriod) : string{

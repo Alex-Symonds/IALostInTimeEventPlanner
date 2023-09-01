@@ -1,11 +1,12 @@
 'use client';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef, SetStateAction} from 'react';
 
 import { defaultActionsList, defaultLevels, defaultStockpiles } from './utils/defaults';
-import { MAX_TIME, SAVE_FILE_PREFIX, deepCopy } from './utils/consts';
+import { MAX_TIME, SAVE_FILE_PREFIX, deepCopy, TAILWIND_MD_BREAKPOINT } from './utils/consts';
 import getPlanData from './utils/getPlanData';
 import { groupByTimeId } from './utils/groupByTimeId';
 import { T_TimeGroup, T_OfflinePeriod, T_GameState, T_Action, T_InterruptProductionSettings, T_SwitchData, T_PremiumInfo, T_ViewToggle, T_PurchaseData } from './utils/types';
+import useForcedVisibilityOnDesktop from './utils/useForcedVisibilityOnDesktop';
 
 import Planner from './components/planner';
 import ModalSave from './components/inputSave';
@@ -13,6 +14,7 @@ import ModalLoad from './components/inputLoad';
 import StatusForm from './components/inputGameState';
 import OfflineForm from './components/inputOfflinePeriods';
 import StickyBar from './components/stickyBar';
+import InputResults from './components/sectionInputResults';
 
 
 export default function Home() {
@@ -24,12 +26,21 @@ export default function Home() {
   
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
-  const [showGameStateModal, setShowGameStateModal] = useState<boolean>(false);
+  const [showGameStateModal, setShowGameStateModal] = useState<boolean>(true);
   const [showOfflinePeriodsModal, setShowOfflinePeriodsModal] = useState<boolean>(false);
   const [offlinePeriodIdxEdit, setOfflinePeriodIdxEdit] = useState<number | null>(null);
 
   const [purchaseData, setPurchaseData] = useState<T_PurchaseData[] | undefined>(getPlanData({ gameState, actions, offlinePeriods, prodSettingsAtTop })?.purchaseData);
   const [switchData, setSwitchData] = useState<T_SwitchData | undefined>(getPlanData({ gameState, actions, offlinePeriods, prodSettingsAtTop })?.switchData);
+
+  const [showGameState, setShowGameState] = useState(window.innerWidth >= TAILWIND_MD_BREAKPOINT);
+  const [showOfflinePeriods, setShowOfflinePeriods] = useState(window.innerWidth >= TAILWIND_MD_BREAKPOINT);
+  useForcedVisibilityOnDesktop(
+    showGameState, setShowGameState,
+    showOfflinePeriods, setShowOfflinePeriods
+  )
+
+  
 
   function loadInputs(keyName : string){
     let loadedJSONStr = localStorage.getItem(SAVE_FILE_PREFIX + keyName);
@@ -101,6 +112,11 @@ export default function Home() {
     {displayStr: "load", toggle: () => setShowLoadModal(prev => !prev), value: showLoadModal},
   ]
 
+  const viewToggles : T_ViewToggle[] = [
+    {displayStr: "game", toggle: () => setShowGameState(prev => !prev), value: showGameState},
+    {displayStr: "offline", toggle: () => setShowOfflinePeriods(prev => !prev), value: showOfflinePeriods},
+]
+
   useEffect(() => {
     let planAndSwitchData = getPlanData({ gameState, actions, offlinePeriods, prodSettingsAtTop });
     if(planAndSwitchData === null){
@@ -118,24 +134,9 @@ export default function Home() {
 
   const timeIdGroups : T_TimeGroup[] = groupByTimeId({purchaseData, switchData});
 
+
   return (
     <main className={"flex justify-center bg-neutral-50"}>
-      <div className={"w-full max-w-5xl bg-white shadow-xl"}>
-        <h1 className={"flex flex-col px-3 py-1 mb-2"}>
-          <span className={"text-3xl font-extrabold block leading-snug text-violet-700"}>Event&nbsp;Planner</span>
-          <span className={"text-sm block leading-none"}>Idle&nbsp;Apocalypse: Lost&nbsp;in&nbsp;Time&nbsp;</span>
-        </h1>
-        <StickyBar    
-          saveLoadToggles={saveLoadToggles}
-          gameState={gameState}
-          openGameStateModal={() => setShowGameStateModal(true)}
-          offlinePeriods={offlinePeriods}
-          planData={purchaseData}
-          actions={actions}
-          timeIdGroups={timeIdGroups}
-          openOfflinePeriodsModal = { openOfflinePeriodsModal }
-          offlinePeriodIdxEdit = {offlinePeriodIdxEdit}
-        />
         { showSaveModal ?
             <ModalSave 
               closeModal={ () => setShowSaveModal(false) } 
@@ -166,6 +167,24 @@ export default function Home() {
                   : null
         }
 
+      <div className={'relative z-10 w-full max-w-5xl bg-neutral-100 shadow-xl md:grid md:[grid-template-rows:auto_auto_auto_auto] md:[grid-template-columns:auto_1fr] md:[grid-template-areas:"heading_heading""buttons_buttons""status_banner""status_."]'}>
+        <MainPageHeading />
+        
+        <StickyBar    
+          saveLoadToggles={saveLoadToggles}
+          viewToggles={viewToggles}
+        />
+
+        <InputResults
+          showGameState={showGameState}
+          showOfflinePeriods={showOfflinePeriods}
+          gameState={gameState}
+          openGameStateModal={() => setShowGameStateModal(true)}
+          offlinePeriods={offlinePeriods}
+          openOfflinePeriodsModal = { openOfflinePeriodsModal }
+          offlinePeriodIdxEdit = {offlinePeriodIdxEdit}
+        />
+
         { gameState === null ?
             null 
             :
@@ -183,6 +202,14 @@ export default function Home() {
     </main>
   )
 }
+
+function MainPageHeading(){
+  return  <h1 className={"flex flex-col px-3 pt-1 pb-3 block bg-white md:sticky md:top-0 md:relative md:[grid-area:heading]"}>
+            <span className={"text-3xl font-extrabold block leading-snug text-violet-700"}>Event&nbsp;Planner</span>
+            <span className={"text-sm block leading-none"}>Idle&nbsp;Apocalypse: Lost&nbsp;in&nbsp;Time&nbsp;</span>
+          </h1>
+}
+
 
 type T_LocalStorage = {
   actions : T_Action[],
