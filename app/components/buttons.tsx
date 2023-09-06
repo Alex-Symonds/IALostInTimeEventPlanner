@@ -1,4 +1,4 @@
-interface I_Button{
+export interface I_Button{
     size : keyof typeof SIZES,
     colours : keyof typeof COLOURS,
     htmlType? : string,
@@ -9,11 +9,11 @@ interface I_Button{
     children: React.ReactNode,
 }
 
-const COLOURS = {
+export const COLOURS = {
     primary: {
-        main: "text-white bg-violet-700 hover:bg-violet-600",
+        main: "text-white bg-violet-700 hover:bg-violet-600 border-violet-700",
         disabled: "text-gray-500 bg-gray-300",
-        toggledOn: "text-white bg-violet-950 hover:bg-violet-800"
+        toggledOn: "text-white bg-violet-950 hover:bg-violet-800 border-violet-950"
     },
     secondary: {
         main: "border-2 text-violet-600 bg-transparent border-violet-600 hover:bg-violet-50",
@@ -22,6 +22,14 @@ const COLOURS = {
     warning: {
         main: "border-2 text-violet-600 bg-white bg-opacity-50 border-violet-600 hover:bg-red-700 hover:border-red-700 hover:text-white",
         disabled: "border-2 text-gray-500 border-gray-300",
+    },
+    more: {
+        main: "bg-violet-200      border-violet-200   text-white          hover:bg-violet-100     hover:text-violet-400",
+        toggledOn: "bg-violet-300      border-violet-400   text-violet-600     hover:bg-violet-200     hover:text-violet-400",
+    },
+    moreOffline: {
+        main: "bg-greyBlue-400    border-greyBlue-400 text-white          hover:bg-greyBlue-300   hover:text-greyBlue-100",
+        toggledOn: "bg-greyBlue-600    border-greyBlue-800 text-white          hover:bg-greyBlue-300   hover:text-greyBlue-100",
     },
 }
 
@@ -86,5 +94,37 @@ function getValidType(htmlType : string | undefined)
 }
 
 
+interface I_MoreButtonContainer {
+    showMore : boolean,
+    setShowMore : React.Dispatch<React.SetStateAction<boolean>>,
+    modeKey : 'more' | 'moreOffline' | 'primary',
+}
+export function MoreButton({showMore, setShowMore, modeKey,} 
+    : I_MoreButtonContainer)
+    : JSX.Element {
 
+    const onOffKey = showMore ? 'toggledOn' : 'main';
+
+    modeKey = modeKey !== 'moreOffline' && modeKey !== 'primary' ?
+                'more'
+                : modeKey;
+
+    let colourTheme = COLOURS[modeKey as keyof typeof COLOURS];
+    if(!('main' in colourTheme) || !('toggledOn' in colourTheme)){
+        colourTheme = COLOURS.more;
+    }
+    let CSS = colourTheme[onOffKey];
+    
+    return (
+        
+            <button className={"border-2 rounded-full flex align-center justify-center w-7 h-7" + " " + CSS} 
+                    onClick={() => setShowMore(prev => !prev)}
+                    type={'button'}
+                    >
+                <span aria-hidden={true}>...</span>
+                <span className={"sr-only"}>more info</span>
+            </button>
+       
+    )
+}
 

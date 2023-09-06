@@ -1,24 +1,22 @@
 
 import { resourceCSS } from '../utils/formatting';
 
+import { InputNumberAsText } from "./inputGameState";
 
-import { InputPageWrapper, InputNumberAsText } from "./inputGameState";
+export interface I_InputStockpiles extends Pick<I_StockpileInput, "controlledStockpileValue" | "updateStockpiles"> {}
 
-interface I_InputStockpiles extends Pick<I_StockpileInput, "controlledStockpileValue" | "updateStockpiles"> {
-    isVisible : boolean,
-}
-
-export default function InputStockpiles({isVisible, controlledStockpileValue, updateStockpiles} 
+export default function InputStockpiles({ controlledStockpileValue, updateStockpiles } 
     : I_InputStockpiles)
     : JSX.Element {
 
-    return  <InputPageWrapper isVisible={isVisible} heading={"Current Stockpiles"}>
+    return  <div className={"flex flex-col gap-3"}>
                 <DustInput controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
                 <StockpileInput keyId={'blue'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
                 <StockpileInput keyId={'green'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
                 <StockpileInput keyId={'red'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
                 <StockpileInput keyId={'yellow'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-            </InputPageWrapper>
+            </div>
+
 }
 
 interface I_PropsStockpileWrapper { 

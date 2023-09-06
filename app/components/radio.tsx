@@ -14,7 +14,15 @@ export default function Radio({checked, extraCSS, disabled, handleSelection, val
     disabled = disabled ?? false;
     
     return  <label className={extraCSS}>
-                <input type={"radio"} className={"sr-only"} value={value} checked={checked} disabled={disabled} onChange={() => handleSelection()} onClick={() => handleSelection()} />
+                <input 
+                    type={"radio"} 
+                    className={"sr-only"} 
+                    value={value} 
+                    checked={checked} 
+                    disabled={disabled} 
+                    onChange={() => handleSelection()} 
+                    onClick={() => handleSelection()} 
+                />
                 {children}
             </label>
 }

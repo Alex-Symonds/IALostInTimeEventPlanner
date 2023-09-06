@@ -1,4 +1,4 @@
-import {useState, useId } from 'react';
+import {useState, useId, ChangeEvent, SyntheticEvent } from 'react';
 
 import { deepCopy } from '../utils/consts';
 import { defaultOfflinePeriodStart, defaultOfflinePeriodEnd } from '../utils/defaults';
@@ -6,8 +6,8 @@ import { printOfflineTime, getStartTime, getMonthName, convertOfflineTimeToTimeI
 import { T_OfflinePeriod, T_GameState, T_TimeOfflinePeriod } from '../utils/types';
 import { generateKey } from '../utils/uniqueKeys';
 
-import Modal from './modal';
-import Select, { T_OptionData } from './select';
+import Modal, { ModalHeading, ModalSubHeading, ModalFieldsWrapper } from './modal';
+import { SelectWithLabel, T_OptionData } from './select';
 import { Button } from './buttons';
 
 /*
@@ -47,6 +47,159 @@ export default function OfflineForm({closeForm, offlinePeriod, gameState, pos, s
                         isValid: true, 
                         id: generateKey(`${printOfflineTime(offlinePeriod.start)}_${printOfflineTime(offlinePeriod.end)}`)
                     };
+    const {
+            formOfflinePeriod,
+            handleSubmit,
+            handleSingleKeyChange,
+            removeOfflinePeriod,
+            showError,
+        } = useOfflineForm({initValue, idxToEdit, setOfflinePeriods, closeForm, offlinePeriods, gameState});
+    
+    const id = useId();
+
+    return  <Modal closeModal={closeForm}>
+                <ModalHeading>Enter Offline Period</ModalHeading>
+                <form onSubmit={ (e) => handleSubmit(e) } >
+                    <fieldset className={""}>
+                        <ModalSubHeading tagName={'legend'}>
+                            Time Range for Period #{pos}
+                        </ModalSubHeading>
+
+                        <ModalFieldsWrapper>
+                            <div className={"flex flex-col gap-5"}>
+                                <OfflineTimeInput 
+                                    legend={"from"} 
+                                    idStr={id} 
+                                    roleKey={"start"} 
+                                    dhm={formOfflinePeriod.start} 
+                                    handleSingleKeyChange={handleSingleKeyChange} 
+                                    gameState={gameState} 
+                                    showError={showError && !formOfflinePeriod.isValid} 
+                                />
+                                <OfflineTimeInput 
+                                    legend={"to"} 
+                                    idStr={id} 
+                                    roleKey={"end"} 
+                                    dhm={formOfflinePeriod.end} 
+                                    handleSingleKeyChange={handleSingleKeyChange} 
+                                    gameState={gameState} 
+                                    showError={showError && !formOfflinePeriod.isValid} 
+                                />
+                            
+                                {showError && !formOfflinePeriod.isValid ?
+                                    <ErrorMessage />
+                                    : null
+                                }
+                            </div>
+                        </ModalFieldsWrapper>
+
+                        <div className={"flex justify-between"}>
+                            <Button 
+                                size={'twin'} 
+                                colours={'primary'}
+                                disabled={showError && !formOfflinePeriod.isValid}
+                                >
+                                submit
+                            </Button>
+                            <Button 
+                                size={'twin'}
+                                colours={'warning'}
+                                htmlType={'button'}
+                                onClick={() => removeOfflinePeriod()}
+                                >
+                                delete
+                            </Button>
+                        </div>
+                    </fieldset>
+                </form>
+            </Modal>
+}
+
+
+function ErrorMessage(){
+    return <p className={"text-sm border-1 text-neutral-700 px-1 py-1 w-56"}>Error: offline period ends before it starts</p>
+}
+
+
+interface I_OfflineFormProps extends Pick<I_OfflineForm, "gameState">{
+    showError : boolean,
+    legend : string, 
+    idStr : string, 
+    roleKey : string, 
+    dhm : T_TimeOfflinePeriod, 
+    handleSingleKeyChange : (roleKey : string, unitKey : string, value : number) => void
+}
+
+function OfflineTimeInput({ legend, idStr, roleKey, dhm, handleSingleKeyChange, gameState, showError } 
+    : I_OfflineFormProps)
+    : JSX.Element {
+
+    const ID_D = idStr + "-" + roleKey + "-d";
+    const ID_H = idStr + "-" + roleKey + "-h";
+    const ID_M = idStr + "-" + roleKey + "-m";
+
+    const {
+        handleDateChange,
+        validDates,
+        convertValidDatesToOptions,
+        calcOptionsForNumberRange,
+    } = offlineTimesInputKit({ handleSingleKeyChange, roleKey, gameState });
+
+
+    const LABEL_CSS = "pl-2 pr-1 text-sm";
+    return (
+        <fieldset>
+            <legend className={"font-semibold ml-2 mb-1"}>{legend}</legend>
+            <div className={"flex flex-nowrap text-sm items-center"}>
+                <SelectWithLabel
+                    id={ID_D}
+                    labelDisplay={"d"}
+                    labelExtraCSS={LABEL_CSS}
+                    selectExtraCSS={undefined}
+                    handleChange={handleDateChange}
+                    initValue={validDates[dhm.dateOffset].date.toString()}
+                    options={convertValidDatesToOptions(validDates)} 
+                />
+                <SelectWithLabel
+                    id={ID_H}
+                    labelDisplay={"h"}
+                    labelExtraCSS={LABEL_CSS}
+                    selectExtraCSS={undefined}
+                    handleChange={(e : ChangeEvent<HTMLSelectElement>) => handleSingleKeyChange(roleKey, 'hours', parseInt(e.target.value))}
+                    initValue={dhm.hours.toString()}
+                    options={calcOptionsForNumberRange(0, 23)} 
+                />
+                <SelectWithLabel
+                    id={ID_M}
+                    labelDisplay={"m"}
+                    labelExtraCSS={LABEL_CSS}
+                    selectExtraCSS={undefined}
+                    handleChange={(e : ChangeEvent<HTMLSelectElement>) => handleSingleKeyChange(roleKey, 'minutes', parseInt(e.target.value))}
+                    initValue={dhm.minutes.toString()}
+                    options={calcOptionsForNumberRange(0, 59)} 
+                />
+                {
+                    showError ?
+                        <span className={"ml-2 text-red-500 font-bold font-lg"}>X</span>
+                        : null
+                }
+            </div>
+        </fieldset>
+    )
+}
+
+
+type T_OutputUseOfflineForm = {
+    formOfflinePeriod : T_OfflinePeriodForm,
+    handleSubmit : (e : SyntheticEvent) => void,
+    removeOfflinePeriod : () => void,
+    showError : boolean,
+    handleSingleKeyChange : (roleKey : string, unitKey : string, newValue : number) => void,
+}
+
+function useOfflineForm({initValue, idxToEdit, setOfflinePeriods, closeForm, offlinePeriods, gameState}
+    : { initValue : T_OfflinePeriodForm } & Pick<I_OfflineForm, "closeForm" | "idxToEdit" | "setOfflinePeriods" | "offlinePeriods" | "gameState">)
+    : T_OutputUseOfflineForm {
 
     const [formOfflinePeriod, setFormOfflinePeriod] = useState<T_OfflinePeriodForm>(initValue);
     const [showError, setShowError] = useState(false);
@@ -100,10 +253,27 @@ export default function OfflineForm({closeForm, offlinePeriod, gameState, pos, s
         setFormOfflinePeriod(newData);
     }
 
-    return (
-        <OfflinePeriodInput data={formOfflinePeriod} closeForm={closeForm} handleSubmit={handleSubmit} handleChange={handleChange} removeOfflinePeriod={removeOfflinePeriod} gameState={gameState} showError={showError} pos={pos} />
-    )
+    function handleSingleKeyChange(roleKey : string, unitKey : string, newValue : number){
+        let newDataDeepCopy = deepCopy(formOfflinePeriod);
+        newDataDeepCopy[roleKey][unitKey] = newValue;
+
+        const startedAt = getStartTime(gameState);
+        let startTimeId = convertOfflineTimeToTimeId(newDataDeepCopy.start, startedAt);
+        let endTimeId = convertOfflineTimeToTimeId(newDataDeepCopy.end, startedAt);
+
+        newDataDeepCopy.isValid = startTimeId < endTimeId;
+        handleChange(newDataDeepCopy);
+    }
+
+    return {
+        formOfflinePeriod,
+        handleSubmit,
+        removeOfflinePeriod,
+        showError,
+        handleSingleKeyChange
+    }
 }
+
 
 function defaultOfflinePeriodForm()
     : T_OfflinePeriodForm {
@@ -116,96 +286,25 @@ function defaultOfflinePeriodForm()
     }
 }
 
-function ErrorMessage(){
-    return <p className={"text-sm mt-2 border-1 text-neutral-700 px-1 py-1 w-56"}>Error: offline period ends before it starts</p>
+
+type T_DateAndMonth = { date: number, month: number };
+type T_OutputOfflineTimesInputKit = {
+    handleDateChange : (e : ChangeEvent<HTMLSelectElement>) => void,
+    validDates : T_DateAndMonth[],
+    convertValidDatesToOptions : (dateObj : T_DateAndMonth[]) => T_OptionData[],
+    calcOptionsForNumberRange : (firstNum : number, lastNum : number) => T_OptionData[],
 }
 
-
-interface I_OfflinePeriodInput extends Pick<I_OfflineForm, "closeForm" | "pos" | "gameState"> {
-    data: T_OfflinePeriodForm, 
-    removeOfflinePeriod: () => void,
-    handleSubmit : (e : React.SyntheticEvent) => void, 
-    handleChange : (data : T_OfflinePeriodForm) => void, 
-    showError : boolean
-}
-function OfflinePeriodInput({data, handleSubmit, handleChange, pos, gameState, showError, removeOfflinePeriod, closeForm} 
-    : I_OfflinePeriodInput)
-    : JSX.Element {
-
-    function handleSingleKeyChange(roleKey : string, unitKey : string, newValue : number){
-        let newDataDeepCopy = deepCopy(data);
-        newDataDeepCopy[roleKey][unitKey] = newValue;
-
-        const startedAt = getStartTime(gameState);
-        let startTimeId = convertOfflineTimeToTimeId(newDataDeepCopy.start, startedAt);
-        let endTimeId = convertOfflineTimeToTimeId(newDataDeepCopy.end, startedAt);
-
-        newDataDeepCopy.isValid = startTimeId < endTimeId;
-        handleChange(newDataDeepCopy);
-    }
-
-    const id = useId();
-    return(
-        <Modal closeModal={closeForm}>
-            <form onSubmit={ (e) => handleSubmit(e) } className={"mt-2 w-64"}>
-                <fieldset className={""}>
-                    <legend className={"font-bold mb-1"}>Offline Period {pos}</legend>
-                    <OfflineTimeInput legend={"from"} idStr={id} roleKey={"start"} dhm={data.start} handleSingleKeyChange={handleSingleKeyChange} gameState={gameState} showError={showError && !data.isValid} />
-                    <OfflineTimeInput legend={"to"} idStr={id} roleKey={"end"} dhm={data.end} handleSingleKeyChange={handleSingleKeyChange} gameState={gameState} showError={showError && !data.isValid} />
-                    {showError && !data.isValid ?
-                        <ErrorMessage />
-                        : null
-                    }
-                    <div className={"flex justify-between mt-5"}>
-                        <Button 
-                            size={'twin'} 
-                            colours={'primary'}
-                            disabled={showError && !data.isValid}
-                            >
-                            submit
-                        </Button>
-                        <Button 
-                            size={'twin'}
-                            colours={'warning'}
-                            htmlType={'button'}
-                            onClick={() => removeOfflinePeriod()}
-                        >
-                            delete
-                        </Button>
-                    </div>
-                </fieldset>
-            </form>
-        </Modal>
-    )
-}
-
-
-interface I_OfflineFormProps extends Pick<I_OfflinePeriodInput, "gameState" | "showError" >{
-    legend : string, 
-    idStr : string, 
-    roleKey : string, 
-    dhm : T_TimeOfflinePeriod, 
-    handleSingleKeyChange : (roleKey : string, unitKey : string, value : number) => void
-}
-
-function OfflineTimeInput({ legend, idStr, roleKey, dhm, handleSingleKeyChange, gameState, showError } 
-    : I_OfflineFormProps)
-    : JSX.Element {
-
-    const ID_D = idStr + "-" + roleKey + "-d";
-    const ID_H = idStr + "-" + roleKey + "-h";
-    const ID_M = idStr + "-" + roleKey + "-m";
-
+function offlineTimesInputKit({ handleSingleKeyChange, roleKey, gameState }
+    : Pick<I_OfflineFormProps, "handleSingleKeyChange" | "roleKey" | "gameState">)
+    : T_OutputOfflineTimesInputKit {
     const validDates = calcValidDates();
 
-    function handleDateChange(e : React.ChangeEvent<HTMLSelectElement>){
+    function handleDateChange(e : ChangeEvent<HTMLSelectElement>){
         let idx = validDates.findIndex(ele => ele.date === parseInt(e.target.value));
         if(idx === -1){
             // TODO: error handling for if the date isn't in the list of dates, somehow
-            return null;
-        }
-        if(idx === 0 || idx === 3){
-            
+            return;
         }
         handleSingleKeyChange(roleKey, 'date', idx);
     }
@@ -251,43 +350,10 @@ function OfflineTimeInput({ legend, idStr, roleKey, dhm, handleSingleKeyChange, 
         return options;
     }
 
-    return (
-        <fieldset className={showError ? "" : "mt-2"}>
-            <legend>{legend}</legend>
-            <div className={"flex flex-nowrap"}>
-            <Select
-                id={ID_D}
-                labelDisplay={"d"}
-                labelExtraCSS={"pl-2 pr-1"}
-                selectExtraCSS={undefined}
-                handleChange={handleDateChange}
-                initValue={validDates[dhm.dateOffset].date.toString()}
-                options={convertValidDatesToOptions(validDates)} 
-            />
-            <Select
-                id={ID_H}
-                labelDisplay={"h"}
-                labelExtraCSS={"pl-2 pr-1"}
-                selectExtraCSS={undefined}
-                handleChange={(e : React.ChangeEvent<HTMLSelectElement>) => handleSingleKeyChange(roleKey, 'hours', parseInt(e.target.value))}
-                initValue={dhm.hours.toString()}
-                options={calcOptionsForNumberRange(0, 23)} 
-            />
-            <Select
-                id={ID_M}
-                labelDisplay={"m"}
-                labelExtraCSS={"pl-2 pr-1"}
-                selectExtraCSS={undefined}
-                handleChange={(e : React.ChangeEvent<HTMLSelectElement>) => handleSingleKeyChange(roleKey, 'minutes', parseInt(e.target.value))}
-                initValue={dhm.minutes.toString()}
-                options={calcOptionsForNumberRange(0, 59)} 
-            />
-            {
-                showError ?
-                    <span className={"ml-2 text-red-500 font-bold font-lg"}>X</span>
-                    : null
-            }
-            </div>
-        </fieldset>
-    )
+    return {
+        handleDateChange,
+        validDates,
+        convertValidDatesToOptions,
+        calcOptionsForNumberRange,
+    }
 }

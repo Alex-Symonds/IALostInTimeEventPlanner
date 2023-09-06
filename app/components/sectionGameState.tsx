@@ -2,11 +2,9 @@
 
 import UPGRADE_DATA from '../upgrades.json';
 
-
 import { getDateDisplayStr, convertTimeIdToTimeRemaining } from '../utils/dateAndTimeHelpers';
 import { maxedLevelCSS, capitalise, resourceCSS, toBillions, nbsp } from '../utils/formatting';
 import { T_GameState, T_Levels, T_Stockpiles } from '../utils/types';
-
 
 import StockpilesDisplay from './stockpilesStrip';
 import { InputResultsSection, EditButtonBox } from './sectionInputResults';
@@ -70,6 +68,7 @@ function TimeAndPremiumStatus({gameState}
 
 }
 
+
 function GridRowWrapper({title, children} : { title : string, children : React.ReactNode }){
     return  <>
                 <div className={"col-start-1"}>{title}</div>
@@ -88,7 +87,7 @@ function StockpilesStatus({stockpiles}
                     <div>{stockpiles.dust.toLocaleString()}</div>
                     <div className={"justify-self-end"}>({toBillions(stockpiles.dust)})</div>
                 </div>
-                <StockpilesDisplay stockpiles={stockpiles} extraCSS={"gap-1"} wantDust={false} />
+                <StockpilesDisplay stockpiles={stockpiles} extraCSS={"gap-1"} />
             </Subsection>
 }
 
@@ -130,13 +129,13 @@ function LevelsStatus({levels}
     )
 }
 
+
 interface T_LevelWithLabel{
     label : string,
     level : number,
     max : number,
     gridPosCSS? : string
 }
-
 function LevelWithLabel({label, level, max, gridPosCSS} 
     : T_LevelWithLabel)
     : JSX.Element {
