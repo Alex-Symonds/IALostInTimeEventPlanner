@@ -10,7 +10,7 @@ export function BadgeCost({data, extraCSS}
     : JSX.Element {
 
     const displayQty = toThousands(parseInt(data.quantity));
-    extraCSS = extraCSS ?? "justify-between px-2 py-0.5 rounded text-xs";
+    extraCSS = extraCSS ?? "justify-between items-center px-2 py-0.5 rounded text-xs";
     
     return (
         <div className={"flex" + " " + extraCSS + " " + resourceCSS[data.egg as keyof typeof resourceCSS].badge}>

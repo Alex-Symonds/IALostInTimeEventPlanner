@@ -1,14 +1,13 @@
 import { T_GameState, T_Levels } from "../utils/types";
-import {InputPageWrapper, FormSubHeading, LevelsWrapper, UnitLevelInput, getInitValueForLevelSelect, getUpgradeOptions } from "./inputGameState";
+import { LevelsWrapper, UnitLevelInput, getInitValueForLevelSelect, getUpgradeOptions } from "./inputGameState";
 
-interface I_InputLevelsOther {
-    isVisible : boolean,
+export interface I_InputLevelsOther {
     gameState : T_GameState,
     levels : T_Levels,
     handleLevelChange : (e : React.ChangeEvent<HTMLSelectElement>) => void, 
 }
 
-export default function InputLevelsOther({isVisible, gameState, levels, handleLevelChange} 
+export default function InputLevelsOther({gameState, levels, handleLevelChange} 
     : I_InputLevelsOther)
     : JSX.Element {
 
@@ -39,13 +38,12 @@ export default function InputLevelsOther({isVisible, gameState, levels, handleLe
     ]
 
 
-    return  <InputPageWrapper isVisible={isVisible} heading={undefined}>
-                <FormSubHeading text={"Egg Levels"} />
-                <LevelsWrapper>
-                    { productionUpgrades.map((ele, idx) => {
+    return  <>
+                <SubSection heading={"Egg Levels"}>
+                    { productionUpgrades.map(ele => {
                             let initValue : string | undefined  = getInitValueForLevelSelect(ele.optionsProps.name, gameState);
                             let keyName = ele.optionsProps.name.toLowerCase();
-                            return <UnitLevelInput key={ele.id} 
+                            return <UnitLevelInput key={`${ele.id}EggLevelField`} 
                                         keyName={keyName} 
                                         idStr={ele.id} 
                                         labelStr={ele.labelDisplay} 
@@ -56,10 +54,9 @@ export default function InputLevelsOther({isVisible, gameState, levels, handleLe
                                     />
                         })
                     }
-                </LevelsWrapper>
+                </SubSection>
 
-                <FormSubHeading text={"Buff Levels"} />
-                <LevelsWrapper>
+                <SubSection heading={"Buff Levels"}>
                     <UnitLevelInput
                         keyName={"speed"} 
                         idStr={"id_speed"} 
@@ -78,8 +75,21 @@ export default function InputLevelsOther({isVisible, gameState, levels, handleLe
                         handleLevelChange={handleLevelChange} 
                         currentValue={levels.dust}
                     />
-                </LevelsWrapper>
-            </InputPageWrapper>
+                </SubSection>
+                
+            </>
 
 }
 
+
+function SubSection({ heading, children }
+    : { heading : string, children : React.ReactNode } )
+    : JSX.Element {
+
+    return  <section className={"first:mt-0 mt-7"}>
+                <h3 className={"font-semibold pb-3"}>{heading}</h3>
+                <LevelsWrapper>
+                    { children }
+                </LevelsWrapper>
+            </section>
+}

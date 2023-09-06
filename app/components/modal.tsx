@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from 'react';
+
 import { IconClose } from "./icons";
 import { Button } from './buttons';
 
@@ -12,8 +14,8 @@ export default function Modal({closeModal, children}
     return(
         <div className={"fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"}>
             <div className={"relative max-h-[calc(100vh-10rem)] overflow-y-auto overflow-x-hidden min-w-[17rem] flex flex-col items-center px-2 py-2 bg-neutral-50 rounded max-w-full m-1"}>
-            <CloseButton close={closeModal} />
-                <div className={"flex flex-col w-full px-3 pb-3"}>
+                <CloseButton close={closeModal} />
+                <div className={"flex flex-col w-[280px] max-w-full px-3 pb-3 text-sm"}>
                     {children}
                 </div>
             </div>
@@ -22,37 +24,11 @@ export default function Modal({closeModal, children}
 }
 
 
-export function ModalHeading({children} 
-    : { children : React.ReactNode })
-    : JSX.Element {
-
-    return  <h2 className={"font-bold text-lg pb-2 mt-3 self-start"}>
-                {children}
-            </h2>
-}
-
-
-export function ModalSubmitButton({label, extraCSS, disabled} 
-    : { label? : string, extraCSS? : string, disabled? : boolean })
-    : JSX.Element {
-
-    let strCSS = extraCSS === undefined ? "mt-5" : extraCSS;
-    return <Button 
-                extraCSS={"justify-self-end w-full" + " " + strCSS} 
-                colours={"primary"}
-                size={"full"}
-                disabled={disabled}
-                >
-                { label ?? "submit" }
-            </Button>
-}
-
-
 interface I_CloseButton {
     close : () => void, 
     extraCSS? : string
 };
-export function CloseButton({close, extraCSS} 
+function CloseButton({close, extraCSS} 
     : I_CloseButton)
     : JSX.Element {
 
@@ -62,4 +38,154 @@ export function CloseButton({close, extraCSS}
                 <span className={'sr-only'}>close</span>
             </button>
 }
+
+
+export function ModalHeading({tagName, children} 
+    : { tagName? : keyof JSX.IntrinsicElements, children : React.ReactNode })
+    : JSX.Element {
+
+    const Tag = tagName !== undefined ?
+                    tagName
+                    :'h2' as keyof JSX.IntrinsicElements;
+
+    return  <Tag className={"font-bold text-lg pl-0.5 mt-2 self-start w-full border-b border-violet-500"}>
+                {children}
+            </Tag>
+}
+
+
+export function ModalSubHeading({tagName, children} 
+    : { tagName? : keyof JSX.IntrinsicElements, children : React.ReactNode })
+    : JSX.Element {
+
+    const Tag = tagName !== undefined ?
+                tagName
+                :'h3' as keyof JSX.IntrinsicElements;
+
+    return  <Tag className={"pl-0.5 text-md font-medium text-black"}>
+                {children}
+            </Tag>
+}
+
+
+export function ModalFieldsWrapper({children}
+    : { children : React.ReactNode })
+    : JSX.Element {
+
+    return  <div className={"pt-6 pb-10"}>
+                {children}
+            </div>
+}
+
+
+export function ModalSubmitButton({label, extraCSS, disabled} 
+    : { label? : string, extraCSS? : string, disabled? : boolean })
+    : JSX.Element {
+
+    return <Button 
+                extraCSS={"justify-self-end w-full" + " " + extraCSS} 
+                colours={"primary"}
+                size={"full"}
+                disabled={disabled}
+                >
+                { label ?? "submit" }
+            </Button>
+}
+
+
+interface I_ModalMultiPageNav {
+    activePage : number, 
+    numPages : number, 
+    changePage : Dispatch<SetStateAction<number>>
+}
+export function ModalMultiPageNav({activePage, numPages, changePage}
+    : I_ModalMultiPageNav)
+    : JSX.Element {
+
+    return  <div aria-hidden={true} className={"flex flex-col justify-center gap-5"}>
+                <NavButtonBox activePage={activePage} numPages={numPages} changePage={changePage} />
+                <ProgressStatus activePage={activePage} numPages={numPages} changePage={changePage} />
+            </div>
+
+}
+
+
+function NavButtonBox({activePage, numPages, changePage}
+    : I_ModalMultiPageNav)
+    : JSX.Element {
+
+    const isLastPage = activePage === numPages
+
+    return  <div className={"flex justify-center"}>
+                <div className={"flex justify-between w-full"}>
+                    <Button
+                        colours={'secondary'}
+                        htmlType={'button'}
+                        size={'twin'}
+                        onClick={() => activePage === 1 ? undefined : changePage(activePage - 1)}
+                        disabled={activePage === 1}
+                    >
+                        &laquo;&nbsp;previous
+                    </Button>
+                    {
+                        isLastPage ?
+                            <Button
+                                key={'submitBtn'}
+                                colours={'primary'}
+                                htmlType={'submit'}
+                                size={'twin'}
+                                onClick={undefined}
+                                disabled={false}
+                            >
+                                submit
+                            </Button>
+                        :
+                            <Button
+                                key={'nextBtn'}
+                                colours={'primary'}
+                                htmlType={'button'}
+                                size={'twin'}
+                                onClick={() => changePage(activePage + 1)}
+                                disabled={isLastPage}
+                            >
+                                next&nbsp;&raquo;
+                            </Button>
+                    }
+                </div>
+            </div>
+}
+
+
+function ProgressStatus({activePage, numPages, changePage}
+    : I_ModalMultiPageNav)
+    : JSX.Element {
+
+    const range = (start : number, stop : number, step : number) =>
+        Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);
+
+    return  <div aria-hidden={true} className={"w-full flex gap-4 justify-center"}>
+                {
+                    range(1, numPages, 1).map(ele => {
+                        return <CircleButton key={`formProgBtn${ele}`} 
+                                    isActive={activePage === ele} 
+                                    handleClick={ () => changePage(ele) } 
+                                />
+                    })
+                }
+            </div>
+}
+
+
+function CircleButton({isActive, handleClick}
+    : { isActive : boolean, handleClick : () => void })
+    : JSX.Element {
+
+    const selectionCSS = isActive ? 
+            "bg-violet-500"
+            :
+            "bg-neutral-300 hover:bg-neutral-400";
+    return <button type={'button'} className={"rounded-full w-3 h-3" + " " + selectionCSS} onClick={handleClick}></button>
+}
+
+
 

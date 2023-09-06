@@ -2,14 +2,16 @@ import { useState } from "react";
 
 import UPGRADE_DATA from '../upgrades.json';
 
+import { deepCopy } from "../utils/consts";
 import { moveIsValid } from '../utils/editPlan';
-import { toThousands, resourceCSS } from "../utils/formatting";
+import { T_GameState, T_PurchaseData, T_Stockpiles, T_CostData, } from "../utils/types";
 
 import { BadgeCost, BadgeMaxed } from "./badges";
-import Modal, { ModalSubmitButton, I_Modal } from './modal';
-import Radio from './radio';
-import { T_GameState, T_PurchaseData, T_Stockpiles, T_CostData } from "../utils/types";
 
+import Modal, { ModalHeading, ModalSubmitButton, I_Modal, ModalFieldsWrapper } from './modal';
+import Radio from './radio';
+import { MoreButton } from "./buttons";
+import StockpilesDisplay from "./stockpilesStrip";
 
 
 export interface I_UpgradePickerModal extends Pick<I_Modal, "closeModal"> {
@@ -32,35 +34,40 @@ export default function UpgradePickerModal({closeModal, movePlanElement, pickerT
 
     function handleClick(e : React.FormEvent){
         e.preventDefault();
-        movePlanElement({oldIdx: fromIdx, newIdx: pickerTargetIdx ?? -1});
+        movePlanElement({ oldIdx: fromIdx, newIdx: pickerTargetIdx ?? -1 });
         closeModal();
     }
 
     return(
         <Modal closeModal={closeModal}>
-            <form className={"flex flex-col gap-2 items-center h-auto gap-2 mt-2 pb-2"} onSubmit={handleClick}>
-                <fieldset className={"flex flex-col w-full mt-3"}> 
-                    <legend className={"font-bold text-lg mb-1"}>Select upgrade</legend>
-                    <StockpilesDisplay stockpiles={purchaseData[pickerTargetIdx].stockpiles} />
-                    <div>
-                        {
-                            radioData.map((data, idx : number) => {
-                                let result = moveIsValid({srcIdx: data.fromIdx, dstIdx: pickerTargetIdx, purchaseData});
-                                let isDisabled = result.isValid === false;
-                                let {key : myKey, fromIdx : myFromIdx, ...unitPickerData} = data;
+            <form className={"flex flex-col items-center h-auto"} onSubmit={handleClick}>
+                <fieldset className={"flex flex-col w-full"}> 
+                    <ModalHeading tagName={'legend'}>
+                        Select Upgrade
+                    </ModalHeading>
+                    
+                    <ModalFieldsWrapper>
+                        <div className={"flex flex-col items-stretch"}>
+                            {
+                                radioData.map((data, idx : number) => {
+                                    let result = moveIsValid({srcIdx: data.fromIdx, dstIdx: pickerTargetIdx, purchaseData});
+                                    let isDisabled = result.isValid === false;
+                                    let {key : myKey, fromIdx : myFromIdx, ...unitPickerData} = data;
 
-                                return <UpgradeRadio key={idx}
-                                            checked={myFromIdx === fromIdx} 
-                                            myKey={myKey} 
-                                            data={unitPickerData} 
-                                            handleSelection={() => setFromIdx(myFromIdx)} 
-                                            disabled={isDisabled} 
-                                        />
-                            })
-                        }
-                    </div>
+                                    return <UpgradeRadio key={idx}
+                                                checked={myFromIdx === fromIdx} 
+                                                myKey={myKey} 
+                                                data={unitPickerData} 
+                                                handleSelection={() => setFromIdx(myFromIdx)} 
+                                                disabled={isDisabled} 
+                                            />
+                                })
+                            }
+                        </div>
+                        <MoreInfo stockpiles={ calcStockpilesIncludingCurrentPurchase(purchaseData[pickerTargetIdx]) } />
+                    </ModalFieldsWrapper>
                 </fieldset>
-                <ModalSubmitButton label={"submit"} disabled={false} extraCSS={undefined} />
+                <ModalSubmitButton label={"submit"} disabled={false} extraCSS={''} />
             </form>
         </Modal>
 
@@ -68,32 +75,44 @@ export default function UpgradePickerModal({closeModal, movePlanElement, pickerT
 }
 
 
-function StockpilesDisplay({stockpiles} 
+function MoreInfo({stockpiles} 
+    : { stockpiles : T_Stockpiles })
+    : JSX.Element {
+
+    const [showStockpiles, setShowStockpiles] = useState<boolean>(false);
+
+    return  <div className={"relative flex justify-end"}>                             
+                <div className={"self-end relative top-3"}>
+                    <MoreButton showMore={showStockpiles} setShowMore={setShowStockpiles} modeKey={'primary'} />
+                </div>
+                { showStockpiles ?
+                    <button 
+                        className={'absolute top-0.5 right-8 z-30 border border-neutral-100 bg-white shadow-lg rounded-lg w-11/12 pt-2 pb-2.5 px-3'}
+                        onClick={() => setShowStockpiles(false)}
+                        type={'button'}
+                        >
+                        <StockpilesSection stockpiles={stockpiles} />
+                    </button>
+                    : null
+                }
+            </div>
+}
+
+
+function StockpilesSection({stockpiles} 
     : {stockpiles : T_Stockpiles})
     : JSX.Element {
 
     return (
-        <div className={"mt-1 mb-2"}>
-            <div className={"flex overflow-hidden gap-1"}>
-                <Stockpile myKey={'blue'} data={stockpiles} />
-                <Stockpile myKey={'green'} data={stockpiles} />
-                <Stockpile myKey={'red'} data={stockpiles} />
-                <Stockpile myKey={'yellow'} data={stockpiles} />
+        <section className={"text-left"}>
+            <h4 className={"text-sm"}>Current stockpiles</h4>
+            <div className={"mt-1"}>
+                <StockpilesDisplay 
+                    stockpiles={stockpiles}
+                    extraCSS={"overflow-hidden gap-1"}
+                    />
             </div>
-        </div>
-    )
-}
-
-
-function Stockpile({myKey, data} 
-    : { myKey : string, data : T_Stockpiles})
-    : JSX.Element {
-
-    return (
-        <div className={"flex rounded justify-between text-sm w-16 px-1 gap-1" + " " + resourceCSS[myKey as keyof typeof resourceCSS].badge}>
-            <div>{myKey.charAt(0).toUpperCase()}</div>
-            <div>{toThousands(data[myKey as keyof typeof data])}</div>
-        </div>
+        </section>
     )
 }
 
@@ -135,37 +154,29 @@ function UnitPickerCard({checked, disabled, data}
     let wrapperColours = checked ?
                             "bg-violet-100 border-violet-500"
                             : disabled ?
-                                "bg-gray-100 border-gray-200 text-gray-300"
-                                : "bg-gray-200 border-gray-300 hover:bg-violet-50 hover:border-violet-300"
+                                "bg-transparent border-gray-100 text-gray-200"
+                                : "bg-gray-200 border-gray-300 hover:bg-violet-50 hover:border-violet-300";
     
-    let wrapperRounded = checked ?
-                            "rounded-r"
-                            : disabled ?
-                                "rounded":
-                                isHover ?
-                                    "rounded-r"
-                                    : "rounded";
-
-    let conditionalCSS_wrapper = wrapperColours + " " + wrapperRounded;
-
-    let costCSS = disabled ?
-                            "opacity-20"
+    let fadeCostBadge = disabled ?
+                            "opacity-10"
                             : "";
 
-    let selectedMarker = checked ?
-                        "bg-violet-500"
+    let radioCircle = checked ?
+                        "bg-violet-500 border-violet-500"
                         : isHover && !disabled ?
-                            "bg-violet-300"
-                            : "bg-transparent";
+                            "bg-violet-300 border-violet-400"
+                            : disabled ?
+                            "bg-gray-50 border-gray-100"
+                            : "bg-white border-neutral-400";
 
     return(
-        <div className={"flex border m-1" + " " + conditionalCSS_wrapper} onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)}>
-            <div className={"w-1" + " " + selectedMarker}>
+        <div className={"ease-linear duration-75 flex border m-1 items-center rounded" + " " + wrapperColours} onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)}>
+            <div className={"ease-linear duration-75 w-3 h-3 ml-2 border rounded-full" + " " + radioCircle}>
             </div>
             <div className={"upgradePicker-card mr-5"}>
                 <span className={"block text-sm ml-2 px-1 flex items-center"}>{data.name}</span>
                 <span className={"block text-sm p-1 font-bold flex items-center"}>{data.isMaxLevel ? " " : data.level}</span>
-                <div className={"flex gap-1 py-1" + " " + costCSS}>
+                <div className={"flex gap-1 py-1" + " " + fadeCostBadge}>
                     {   
                         data.isMaxLevel ?
                             <BadgeMaxed extraCSS={undefined} />
@@ -180,6 +191,7 @@ function UnitPickerCard({checked, disabled, data}
         </div>
     )
 }
+
 
 
 interface I_GetUpgradeRadioData extends Pick<I_UpgradePickerModal, "purchaseData" | "gameState">{
@@ -224,4 +236,20 @@ function getUpgradeRadioData({ targetIdx, purchaseData, gameState }
     }
 
     return result;
+}
+
+function calcStockpilesIncludingCurrentPurchase(purchaseData 
+    : T_PurchaseData) 
+    : T_Stockpiles {
+
+    let stockpiles = deepCopy(purchaseData.stockpiles);
+    let data = UPGRADE_DATA[purchaseData.key as keyof typeof UPGRADE_DATA];
+    let costs = data.upgrades[purchaseData.level - 1].costs;
+
+    for(let i = 0; i < costs.length; i++){
+        let loopKey = costs[i].egg;
+        stockpiles[loopKey as keyof typeof stockpiles] = stockpiles[loopKey as keyof typeof stockpiles] + parseInt(costs[i].quantity);
+    }
+
+    return stockpiles;
 }

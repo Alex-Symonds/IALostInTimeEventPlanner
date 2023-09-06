@@ -1,14 +1,13 @@
 import { T_GameState, T_Levels } from "../utils/types";
-import {InputPageWrapper, LevelsWrapper, UnitLevelInput, getInitValueForLevelSelect, getUpgradeOptions } from "./inputGameState";
+import { LevelsWrapper, UnitLevelInput, getInitValueForLevelSelect, getUpgradeOptions } from "./inputGameState";
 
 
 interface I_InputLevelsWorkers {
-    isVisible : boolean,
     gameState : T_GameState,
     levels : T_Levels,
     handleLevelChange : (e : React.ChangeEvent<HTMLSelectElement>) => void, 
 }
-export default function InputLevelsWorkers({isVisible, gameState, levels, handleLevelChange} 
+export default function InputLevelsWorkers({gameState, levels, handleLevelChange} 
     : I_InputLevelsWorkers)
     : JSX.Element {
 
@@ -23,23 +22,20 @@ export default function InputLevelsWorkers({isVisible, gameState, levels, handle
         { id: "id_Rex", labelDisplay: "Rex", optionsProps: { name: "Rex", max: 10 }},
     ]
     
-    return <InputPageWrapper isVisible={isVisible} heading={"Worker Levels"} >
-            <LevelsWrapper>
-                
-                { workerUpgrades.map(ele => {
-                    let initValue : string | undefined = getInitValueForLevelSelect(ele.optionsProps.name, gameState);
-                    let keyName = ele.optionsProps.name.toLowerCase();
-                    return <UnitLevelInput key={ele.id} 
-                                keyName={keyName} 
-                                idStr={ele.id} 
-                                labelStr={ele.labelDisplay} 
-                                initValue={initValue}
-                                options={getUpgradeOptions(ele.optionsProps)} 
-                                handleLevelChange={handleLevelChange} 
-                                currentValue={levels[keyName as keyof typeof levels]}
-                            />
-                    })
-                }
+    return <LevelsWrapper>
+            { workerUpgrades.map(ele => {
+                let initValue : string | undefined = getInitValueForLevelSelect(ele.optionsProps.name, gameState);
+                let keyName = ele.optionsProps.name.toLowerCase();
+                return <UnitLevelInput key={ele.id} 
+                            keyName={keyName} 
+                            idStr={ele.id} 
+                            labelStr={ele.labelDisplay} 
+                            initValue={initValue}
+                            options={getUpgradeOptions(ele.optionsProps)} 
+                            handleLevelChange={handleLevelChange} 
+                            currentValue={levels[keyName as keyof typeof levels]}
+                        />
+                })
+            }
             </LevelsWrapper>
-        </InputPageWrapper>
 }

@@ -1,14 +1,13 @@
 import { useState } from 'react';
 
 import { T_OfflinePeriod, T_TimeGroup,  T_GameState} from '../utils/types';
-import { calcDHMString, convertOfflineTimeToTimeId, convertTimeIdToTimeRemaining, convertTimeIdToDate, getDateDisplayStr, getStartTime } from '../utils/dateAndTimeHelpers';
-import { MAX_TIME } from '../utils/consts';
+import { convertOfflineTimeToTimeId, getStartTime } from '../utils/dateAndTimeHelpers';
 
 import UpgradeCard from './planner_upgradeCard';
 import TimeGroupMore from './planner_timeGroupMore';
 import TimeGroupHeading from './planner_timeGroupHeading';
+import { MoreButton } from './buttons';
 
-import { IconMoon } from './icons';
 
 interface I_TimeGroup {
     gameState : T_GameState, 
@@ -53,11 +52,13 @@ export default function TimeGroup({groupData, startPos, openUpgradePicker, offli
                         isDuringOfflinePeriod={isDuringOfflinePeriod}
                         openUpgradePicker={openUpgradePicker}
                     />
-                    <MoreButtonContainer 
-                        showMore={showMore}
-                        setShowMore={setShowMore}
-                        isDuringOfflinePeriod={isDuringOfflinePeriod}
-                    />
+                    <div className={"self-end pb-2 pl-1"}>
+                        <MoreButton 
+                            showMore={showMore}
+                            setShowMore={setShowMore}
+                            modeKey={isDuringOfflinePeriod ? 'moreOffline' : 'more'}
+                        />
+                    </div>
                 </div>
             </div>
             { showMore ?
@@ -81,8 +82,7 @@ export default function TimeGroup({groupData, startPos, openUpgradePicker, offli
 interface I_UpdateCardContainer extends Pick<T_TimeGroup, "upgrades">, 
                                         Pick<I_TimeGroup, "openUpgradePicker" | "startPos"> {
         isDuringOfflinePeriod : boolean,
-    }
-
+}
 function UpdateCardContainer({upgrades, startPos, isDuringOfflinePeriod, openUpgradePicker} 
     : I_UpdateCardContainer)
     : JSX.Element {
@@ -102,45 +102,5 @@ function UpdateCardContainer({upgrades, startPos, isDuringOfflinePeriod, openUpg
         </div>
     )
 }
-
-
-
-
-interface I_MoreButtonContainer {
-    showMore : boolean,
-    setShowMore : React.Dispatch<React.SetStateAction<boolean>>,
-    isDuringOfflinePeriod : boolean,
-}
-function MoreButtonContainer({showMore, setShowMore, isDuringOfflinePeriod,} 
-    : I_MoreButtonContainer)
-    : JSX.Element {
-
-    const COLOURS = {
-        normal: {
-            on:     "bg-violet-300      border-violet-400   text-violet-600     hover:bg-violet-200     hover:text-violet-400",
-            off:    "bg-violet-200      border-violet-200   text-white          hover:bg-violet-100     hover:text-violet-400",
-        },
-        offlineMode: {
-            on:     "bg-greyBlue-600    border-greyBlue-800 text-white          hover:bg-greyBlue-300   hover:text-greyBlue-100",
-            off:    "bg-greyBlue-400    border-greyBlue-400 text-white          hover:bg-greyBlue-300   hover:text-greyBlue-100",
-        }
-    }
-
-    const modeKey = isDuringOfflinePeriod ? 'offlineMode' : 'normal';
-    const onOffKey = showMore ? 'on' : 'off';
-    const toggleMoreCSS = COLOURS[modeKey][onOffKey];
-
-    return (
-        <div className={"self-end pb-2 pl-1"}>
-            <button className={"border-2 rounded-full flex align-center justify-center w-7 h-7" + " " + toggleMoreCSS} 
-                    onClick={() => setShowMore(prev => !prev)}
-                    >
-                <span aria-hidden={true}>...</span>
-                <span className={"sr-only"}>more info</span>
-            </button>
-        </div>
-    )
-}
-
 
 

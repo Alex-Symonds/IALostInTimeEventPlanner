@@ -1,8 +1,10 @@
 import { useId, useState } from 'react';
 
-import Modal, { ModalHeading, ModalSubmitButton, I_Modal } from './modal';
-import Select, { T_OptionData } from './select';
 import { SAVE_FILE_PREFIX } from '../utils/consts';
+
+import Modal, { ModalHeading, ModalSubmitButton, ModalFieldsWrapper, I_Modal } from './modal';
+import { SelectWithLabel, T_OptionData } from './select';
+
 
 interface I_PropsModalLoad extends Pick<I_Modal, "closeModal"> {
     loadInputs : (str : string) => void,
@@ -40,14 +42,28 @@ export default function ModalLoad({closeModal, loadInputs}
     return (
         <Modal closeModal={closeModal}>
             <ModalHeading>
-                Loading
+                Load Plan
             </ModalHeading>
             { options === null ?
-                <p>There is no saved data to load</p>
+                <ModalFieldsWrapper>
+                    <p>There are no saved plans</p>
+                </ModalFieldsWrapper>
                 :
-                <form onSubmit={() => handleSubmit()} className={"flex flex-col gap-1"}>
-                    <Select id={id} selectExtraCSS={"px-2 py-1"} labelDisplay={"Load"} options={options} handleChange={handleChange} initValue={options[0].valueStr} labelExtraCSS={undefined} />
-                    <ModalSubmitButton label={"load"} extraCSS={"mt-5"} disabled={false} />
+                <form onSubmit={() => handleSubmit()}>
+                    <ModalFieldsWrapper>
+                        <div className={"flex flex-col gap-1"}>
+                            <SelectWithLabel 
+                                id={id} 
+                                selectExtraCSS={"px-2 py-1"} 
+                                labelDisplay={"Plan to load"} 
+                                options={options} 
+                                handleChange={handleChange} 
+                                initValue={options[0].valueStr} 
+                                labelExtraCSS={undefined} 
+                            />
+                        </div>
+                    </ModalFieldsWrapper>
+                    <ModalSubmitButton label={"load"} extraCSS={''} disabled={false} />
                 </form>
             }
         </Modal>

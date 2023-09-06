@@ -2,7 +2,7 @@ import { useId, useState } from 'react';
 
 import { SAVE_FILE_PREFIX } from '../utils/consts';
 
-import Modal, { ModalHeading, ModalSubmitButton, I_Modal } from './modal';
+import Modal, { ModalHeading, ModalSubmitButton, ModalFieldsWrapper, I_Modal } from './modal';
 import { Button } from './buttons';
 
 
@@ -70,18 +70,24 @@ function SaveForm({name, handleChange, showWarning, handleSubmit}
     return(
         <>
         <ModalHeading>
-            Save
+            Save Plan
         </ModalHeading>
-        <form onSubmit={() => handleSubmit()} className={"flex flex-col gap-1"}>
-            <label htmlFor={id}>Name</label>
-            <input className={"px-2 py-1 border border-neutral-200"} type={"text"} id={id} value={name} onChange={(e) => handleChange(e)}/>
-            {
-                showWarning ?
-                <p>!: There is already a save called &quot;{name}&quot;</p>
-                : null
-            }
-            <ModalSubmitButton label={"save"} extraCSS={undefined} disabled={false} />
+        
+        <form onSubmit={() => handleSubmit()}>
+            <ModalFieldsWrapper>
+                <div className={"flex flex-col gap-1"}>
+                    <label htmlFor={id}>Save as</label>
+                    <input className={"px-2 py-1 border border-neutral-200"} type={"text"} id={id} value={name} onChange={(e) => handleChange(e)}/>
+                    {
+                        showWarning ?
+                        <p>!: There is already a save called &quot;{name}&quot;</p>
+                        : null
+                    }
+                </div>
+            </ModalFieldsWrapper>
+            <ModalSubmitButton label={"save"} extraCSS={''} disabled={false} />
         </form>
+        
         </>
     )
 }
@@ -100,9 +106,12 @@ function OverwriteQuestion({name, goBack, acceptOverwrite}
         <ModalHeading>
             Warning
         </ModalHeading>
-        <div className={"flex flex-col gap-1"}>
-            <p>There is already a save called &quot;{name}&quot;.</p>
-            <div className={"flex justify-between mt-3"}>
+        
+        <div className={"flex flex-col"}>
+            <ModalFieldsWrapper>
+                <p>There is already a save called &quot;{name}&quot;.</p>
+            </ModalFieldsWrapper>
+            <div className={"flex justify-between"}>
                 <Button 
                     size={'twin'}
                     colours={'secondary'}
@@ -119,6 +128,7 @@ function OverwriteQuestion({name, goBack, acceptOverwrite}
                 </Button>
             </div>
         </div>
+        
         </>
     )
 }

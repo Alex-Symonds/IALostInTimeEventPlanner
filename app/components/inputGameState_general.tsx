@@ -8,37 +8,56 @@ import { capitalise } from '../utils/formatting';
 
 import Select from './select';
 import { Button } from './buttons';
-import { InputPageWrapper, FormRow, Label, formatValueStr, getUpgradeOptions, InputNumberAsText, GAMESTATE_LABEL_CSS_FORMATTING } from "./inputGameState"
+import { formatValueStr, getUpgradeOptions, InputNumberAsText, Label } from "./inputGameState"
 
 
-interface I_InputGeneral extends I_TimeRemainingFieldset, I_Entered {
-    isVisible : boolean,
-    gameState : T_GameState, 
-    handleLevelChange : (e : React.ChangeEvent<HTMLSelectElement>) => void, 
-    hasAdBoost : boolean, 
-    toggleAdBoost : () => void,
-}
-export default function InputGeneral({isVisible, timeRemaining, setTimeRemaining, timeEntered, setStateOnChange, setTimeEntered, gameState, handleLevelChange, hasAdBoost, toggleAdBoost } 
+export interface I_InputGeneral extends I_TimeRemainingFieldset, I_Entered, I_AllEggs, I_AdBoost {}
+export default function InputGeneral({timeRemaining, setTimeRemaining, timeEntered, setStateOnChange, setTimeEntered, gameState, handleLevelChange, hasAdBoost, toggleAdBoost } 
     : I_InputGeneral)
     : JSX.Element {
 
-    return  <InputPageWrapper isVisible={isVisible} heading={"Times and Premium"}>
-        <div>
-                <FormRow extraCSS={"flex gap-2"}>
-                    <TimeRemainingFieldset timeRemaining={timeRemaining} setTimeRemaining={setTimeRemaining} />
-                </FormRow>
-                <FormRow extraCSS={"flex gap-2 items-center"}>
-                    <Entered timeEntered={timeEntered} setStateOnChange={setStateOnChange} setTimeEntered={setTimeEntered}/>
-                </FormRow>
-                <FormRow extraCSS={"flex gap-2"}>
-                    <Select labelExtraCSS={GAMESTATE_LABEL_CSS_FORMATTING} selectExtraCSS={undefined} id={"id_AllEggs"} labelDisplay={"All Eggs"} initValue={gameState === null ? undefined : formatValueStr("All", gameState.premiumInfo.allEggs)} options={getUpgradeOptions({ name: "All", max: 5 })} handleChange={handleLevelChange} />
-                </FormRow>
-                <FormRow extraCSS={"flex gap-2"}>
-                    <Label htmlFor={"id_adBoost"}>Ad Boost</Label>
-                    <input type="checkbox" id="id_adBoost" checked={hasAdBoost} onChange={ toggleAdBoost } />
-                </FormRow>
-                </div>
-            </InputPageWrapper>
+    return  <div className={"flex flex-col gap-6"}>
+                <TimeRemainingFieldset timeRemaining={timeRemaining} setTimeRemaining={setTimeRemaining} />
+                <Entered timeEntered={timeEntered} setStateOnChange={setStateOnChange} setTimeEntered={setTimeEntered} />
+                <AllEggs gameState={gameState} handleLevelChange={handleLevelChange} />
+                <AdBoost hasAdBoost={hasAdBoost} toggleAdBoost={toggleAdBoost} />
+            </div>
+
+}
+
+
+interface I_AllEggs {
+    gameState : T_GameState, 
+    handleLevelChange : (e : React.ChangeEvent<HTMLSelectElement>) => void,
+}
+function AllEggs({gameState, handleLevelChange} 
+    : I_AllEggs) 
+    : JSX.Element {
+
+    return  <div className={"flex gap-2"}>
+                <Label htmlFor={"id_AllEggs"}>All Eggs</Label>
+                <Select 
+                    selectExtraCSS={undefined} 
+                    id={"id_AllEggs"} 
+                    initValue={gameState === null ? undefined : formatValueStr("All", gameState.premiumInfo.allEggs)} 
+                    options={getUpgradeOptions({ name: "All", max: 5 })} handleChange={handleLevelChange} 
+                    />
+            </div>
+}
+
+
+interface I_AdBoost {
+    hasAdBoost : boolean, 
+    toggleAdBoost : () => void,
+}
+function AdBoost({hasAdBoost, toggleAdBoost}
+    : I_AdBoost)
+    : JSX.Element {
+
+    return  <div className={"flex gap-2"}>
+                <Label htmlFor={"id_adBoost"}>Ad Boost</Label>
+                <input type="checkbox" id="id_adBoost" checked={hasAdBoost} onChange={ toggleAdBoost } />
+            </div>
 }
 
 
@@ -54,7 +73,7 @@ function Entered({timeEntered, setStateOnChange, setTimeEntered}
     timeEntered = timeEntered ?? new Date();
 
     return(
-        <>
+        <div className={"flex gap-2 items-center"}>
             <Label htmlFor={"id_timeEntered"}>Entered</Label>
             <p suppressHydrationWarning={true}>{ getDateDisplayStr(timeEntered) }</p>
             <input hidden type="datetime-local" id={"id_timeEntered"} value={timeEntered == null ? "" : `${timeEntered}`} onChange={(e) => setStateOnChange(e, setTimeEntered)}/>
@@ -68,7 +87,7 @@ function Entered({timeEntered, setStateOnChange, setTimeEntered}
             >
                 &laquo;&nbsp;now
             </Button>
-        </>
+        </div>
     )
 }
 
@@ -85,8 +104,8 @@ function TimeRemainingFieldset({timeRemaining, setTimeRemaining}
 
     return (
         <fieldset className={"relative w-full pt-5" + " " + ""}>
-            <legend className={"absolute top-0 mb-2" + " " + GAMESTATE_LABEL_CSS_FORMATTING}>Remaining</legend>
-            <div className={'relative flex flex-col items-center gap-1 px-3 ml-1 mt-2'}>
+            <Label extraCSS={"absolute top-0 font-semibold"} htmlFor={''} tagName={'legend'}>Remaining</Label>
+            <div className={'relative flex flex-col items-center gap-1 px-3 ml-1'}>
                 <div className={'flex justify-center gap-2 mt-1'}>
                     <TimeRemainingUnit unitName={"days"} value={timeRemaining == null ? 0 : timeRemaining.days} handleChange={handleChangeDays} />
                     <TimeRemainingUnit unitName={"hours"} value={timeRemaining == null ? 0 : timeRemaining.hours} handleChange={handleChangeHours} />
@@ -122,6 +141,8 @@ function TimeRemainingUnit({unitName, value, handleChange}
         </div>
     )
 }
+
+
 
 
 type T_OutputUseTimeRemainingFieldset = {

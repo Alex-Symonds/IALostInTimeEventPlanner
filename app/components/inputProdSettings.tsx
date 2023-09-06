@@ -7,7 +7,7 @@ import { defaultProductionSettings } from '../utils/defaults';
 import { capitalise, resourceCSS } from '../utils/formatting';
 import { T_Levels, T_ProductionSettings, T_SwitchAction } from '../utils/types';
 
-import Modal, { ModalHeading, ModalSubmitButton, I_Modal } from './modal';
+import Modal, { ModalHeading, ModalSubmitButton, ModalFieldsWrapper, I_Modal } from './modal';
 import Radio from './radio';
 
 
@@ -39,24 +39,23 @@ export default function ModalProdSettings({closeModal, currentProdSettings, curr
 
     return(
         <Modal closeModal={closeModal}>
+            <ModalHeading>Switch Production</ModalHeading>
             <form onSubmit={handleSubmit} className={"flex flex-col w-full"}>
-                <ModalHeading>
-                    Switch Production
-                </ModalHeading>
-
-                <div className={"flex flex-col items-center gap-2 px-3 pb-4 mt-1"}>
-                {
-                    Object.keys(currentProdSettings).map((myKey : string) => {
-                        return <ProductionToggle key={myKey} 
-                                    myKey={myKey} 
-                                    toggledTo={toggles[myKey as keyof typeof toggles]} 
-                                    handleSelection={handleChange} 
-                                    disabled={levels[myKey as keyof typeof levels] === 0}
-                                />
-                    })
-                }
-                </div>
-                <ModalSubmitButton label={"submit"} extraCSS={"mt-2"} disabled={false} />
+                <ModalFieldsWrapper>
+                    <div className={"flex flex-col items-center gap-4 mt-1"}>
+                    {
+                        Object.keys(currentProdSettings).map((myKey : string) => {
+                            return <ProductionToggle key={myKey} 
+                                        myKey={myKey} 
+                                        toggledTo={toggles[myKey as keyof typeof toggles]} 
+                                        handleSelection={handleChange} 
+                                        disabled={levels[myKey as keyof typeof levels] === 0}
+                                    />
+                        })
+                    }
+                    </div>
+                </ModalFieldsWrapper>
+                <ModalSubmitButton label={"submit"} extraCSS={''} disabled={false} />
             </form>
         </Modal>
     )
@@ -97,27 +96,39 @@ function ProductionToggle({myKey, toggledTo, handleSelection, disabled}
         return null;
     }
 
-    let containerCSS = "w-32";
-    let labelCSS = "mb-1";
-    labelCSS += disabled ?
-                " " + "text-gray-300"
-                : "";
-    
+    let labelCSS = disabled ?
+                    " " + "text-gray-300"
+                    : "";
     return (
-        <fieldset className={containerCSS}>
-            <legend className={labelCSS} >
-                { capitalise(myKey) }&nbsp;&raquo;&nbsp;{
+        <fieldset className={"w-32"}>
+            <legend className={"mb-1 flex items-center" + labelCSS} >
+                { capitalise(myKey) }
+                <span aria-hidden={true}>&nbsp;&raquo;&nbsp;</span>
+                <span className={"sr-only"}>currently producing</span>
+                {
                     disabled ?
                     <span>n/a</span>
                     : <CurrentAsCircleBadge type={toggledTo} />
                 }
-                </legend>
+            </legend>
             <div className="flex">
             {
                 data.outputs.map((d, idx) => {
-                    return <Radio key={`${myKey}_${d}`} extraCSS={"w-2/4"} checked={d === toggledTo} disabled={false} handleSelection={() => handleSelection(myKey, d)} value={`${myKey}_${d}`}>
-                        <ToggleDisplay thisOption={d} activeOption={toggledTo} roundLeft={idx === 0} roundRight={idx === numOutputs - 1} disabled={disabled} />
-                    </Radio> 
+                    return  <Radio key={`${myKey}_${d}`} 
+                                extraCSS={"w-2/4"} 
+                                checked={d === toggledTo} 
+                                disabled={false} 
+                                handleSelection={() => handleSelection(myKey, d)} 
+                                value={`${myKey}_${d}`}
+                                >
+                                <ToggleDisplay 
+                                    thisOption={d} 
+                                    activeOption={toggledTo} 
+                                    roundLeft={idx === 0} 
+                                    roundRight={idx === numOutputs - 1} 
+                                    disabled={disabled} 
+                                />
+                            </Radio> 
                 })
             }
             </div>
@@ -131,12 +142,13 @@ function CurrentAsCircleBadge({type}
     : JSX.Element {
 
     let typeCSS = resourceCSS[type as keyof typeof resourceCSS];
+
     return(
         <>
             <div className={"inline-block w-3 h-3 rounded-full" + " " + typeCSS.badge}>             
             </div>
             <span className={"pl-1"}>
-                {type}
+                { type }
             </span>
         </>
     )
@@ -160,17 +172,19 @@ function ToggleDisplay({thisOption, activeOption, roundLeft, roundRight, disable
                             : roundRight ?
                                 "rounded-r-full"
                                 : "";
-    let opacityCSS = thisOption === activeOption && !disabled ?
-                        "" 
-                        : "opacity-20";
+    let opacityCSS = disabled ?
+                        "opacity-10"
+                        : thisOption !== activeOption ?
+                            "opacity-30" 
+                            : "";
     let hoverCSS = disabled ?
                     ""
                     : typeCSS.hover;
     let conditionalCSS = roundingCSS + " " + opacityCSS + " " + hoverCSS;
 
     return(
-        <div className={"flex justify-center content-center py-1 border-2" + " " + typeCSS.badge + " " + conditionalCSS}>
-            {thisOption.charAt(0).toUpperCase()}
+        <div className={"duration-75 ease-linear flex justify-center content-center py-1 border-2" + " " + typeCSS.badge + " " + conditionalCSS}>
+            { thisOption.charAt(0).toLowerCase() }
         </div>
     )
 }
