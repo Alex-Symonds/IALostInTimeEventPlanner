@@ -306,7 +306,7 @@ function offlineTimesInputKit({ handleSingleKeyChange, roleKey, gameState }
             // TODO: error handling for if the date isn't in the list of dates, somehow
             return;
         }
-        handleSingleKeyChange(roleKey, 'date', idx);
+        handleSingleKeyChange(roleKey, 'dateOffset', idx);
     }
 
     function calcValidDates(){
