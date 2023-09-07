@@ -1,9 +1,12 @@
-import calcEndInfo from '../utils/calcEndInfo';
-import { MAX_TIME, WIN_CONDITION } from "../utils/consts";
-import { toBillions } from '../utils/formatting';
-import { getProductionSettings } from "../utils/productionSettings";
-import { T_PurchaseData, T_GameState, T_Action, T_TimeGroup } from "../utils/types";
+import { useState, Dispatch, SetStateAction } from 'react';
 
+import { MAX_TIME, WIN_CONDITION, deepCopy } from "../utils/consts";
+import { toBillions } from '../utils/formatting';
+import { advanceStockpilesByTime, calcProductionRates } from '../utils/getPlanData';
+import { getProductionSettings } from "../utils/productionSettings";
+import { T_PurchaseData, T_GameState, T_Action, T_TimeGroup, T_ProductionSettings, T_Stockpiles } from "../utils/types";
+
+import Tooltip from './tooltip';
 
 interface I_ResultAtTop { 
     planData : T_PurchaseData[], 
@@ -15,39 +18,129 @@ export default function ResultAtTop({planData, gameState, actions, timeIdGroups}
     : I_ResultAtTop)
     : JSX.Element {
 
-    let dustAtEnd : number = calcDustAtEnd({planData, gameState, actions, timeIdGroups});
-    let tipStr : string | null =  getTipString({planData, dustAtEnd});
-    let hasWon : boolean = dustAtEnd >= WIN_CONDITION;
-    let conditionalCSS : string = 
-        hasWon ?
+    let resultOfPlan = calcResultOfPlan({planData, gameState, actions, timeIdGroups});
+    let conditionalCSS = 
+        resultOfPlan.hasWon ?
             "bg-green-700 text-white"
             : "bg-red-700 text-white";
 
     return(
         <div className={"sticky top-12 md:top-[7.5rem] shadow-md py-2 flex flex-col items-center w-full" + " " + conditionalCSS}>
             <div className={"font-bold text-lg"}>
-                { hasWon ? "WIN " : "LOSS " } PROJECTED
+                { resultOfPlan.hasWon ? "" : "NOT ENOUGH FOR " }1ST PRIZE
             </div>
-
-            <div className={"text-base"}>
-                { dustAtEnd.toLocaleString() } {`(${toBillions(dustAtEnd)})`}
-            </div>
-            { tipStr !== null ? 
-                <div className={"text-sm mt-1"}>
-                    { tipStr }
-                </div>
-                : null
+            { resultOfPlan.allToDust === null ?
+                <Result resultOfPlan={resultOfPlan} />
+                : <ResultWithRec dustAtEnd={resultOfPlan.dustAtEnd} suggestionData={resultOfPlan.allToDust} />
             }
         </div>
     )
 }
 
 
-function calcDustAtEnd({planData, gameState, actions, timeIdGroups} 
-    : I_ResultAtTop) 
-    : number {
+function Result({resultOfPlan} 
+    : { resultOfPlan: T_ResultData })
+    : JSX.Element {
 
-    let actionsIdx : number = findIndexLastActionInTime(planData, actions.length);
+    return  <div className={"text-base"}>
+                { resultOfPlan.dustAtEnd.toLocaleString() } {`(${toBillions(resultOfPlan.dustAtEnd)})`}
+            </div>
+}
+
+
+function ResultWithRec({dustAtEnd, suggestionData}
+    : { dustAtEnd: number, suggestionData : T_SuggestionData })
+    : JSX.Element {
+
+    const [showTooltip, setShowTooltip] = useState(false);
+
+    const suggestionProps = {
+        isVisible: showTooltip,
+        setVisibility: setShowTooltip,
+        position: suggestionData.position
+    }
+
+    return  <div className={"relative flex flex-col"}>
+                <ResultWithRecRow label={"now"} quantity={dustAtEnd} />
+                <ResultWithRecRow label={"rec."} quantity={suggestionData.dust} suggestionProps={suggestionProps} />
+            </div>
+}
+
+
+type T_SuggestionProps = { 
+    isVisible : boolean, 
+    setVisibility : Dispatch<SetStateAction<boolean>>,
+    position : number 
+}
+function ResultWithRecRow({label, quantity, suggestionProps} 
+    : { label : string, quantity : number, suggestionProps? : T_SuggestionProps}) 
+    : JSX.Element {
+
+    return  <div className={"grid grid-rows-1 [grid-template-columns:4rem_minmax(0,_1fr)_3rem_1.75rem]"}>
+                <div className={"font-semibold"}>{ label }</div>
+                <div className={"text-right"}>{ quantity.toLocaleString() }</div>
+                <div className={"text-right"}>{`(${toBillions(quantity)})`}</div>
+                { suggestionProps !== undefined ?
+                    <div className={"text-right relative"}>
+                        <button 
+                            onClick={() => suggestionProps.setVisibility(prev => !prev)} 
+                            className={"rounded-full w-5 h-5 bg-white hover:opacity-90 text-red-700 font-bold text-sm"}
+                            >
+                            ?
+                        </button>
+
+                    { suggestionProps !== undefined && suggestionProps.isVisible ?
+                        <Tooltip posAndWidthCSS={"-top-9 right-0"} close={() => suggestionProps.setVisibility(false)}>
+                            <div className={"text-xs font-bold min-w-max"}>
+                                Switch all to dust after position {suggestionProps.position}
+                            </div>
+                        </Tooltip>
+                        : null
+                    }
+                    </div>
+                    : null
+                }
+            </div>
+}
+
+
+type T_SuggestionData = { dust : number, position : number };
+type T_ResultData = {
+    hasWon : boolean,
+    dustAtEnd : number,
+    allToDust : T_SuggestionData | null,
+}
+function calcResultOfPlan({planData, gameState, actions, timeIdGroups} 
+    : I_ResultAtTop)
+    : T_ResultData {
+
+    let { timeRemaining, stockpiles, levels, productionSettings } 
+        = calcStatusAtLastInTime({planData, gameState, actions, timeIdGroups});
+
+    let stockpilesAtEnd = calcStockpilesAtEnd({
+        timeRemaining,
+        stockpiles,
+        levels,
+        premiumInfo: gameState.premiumInfo,
+        productionSettings 
+    });
+    let dustAtEnd = stockpilesAtEnd === null ? -1 : stockpilesAtEnd.dust;
+
+    let allToDust = calcBestAllToDust({planData, dustAtEnd});
+
+    return {
+        hasWon: dustAtEnd >= WIN_CONDITION,
+        dustAtEnd,
+        allToDust,
+    }
+}
+
+
+function calcStatusAtLastInTime({planData, gameState, actions, timeIdGroups} 
+    : I_ResultAtTop)
+    : Pick<T_GameState, "levels" | "timeRemaining" | "stockpiles"> & { productionSettings : T_ProductionSettings}{
+
+    let actionsIdx = findIndexLastActionInTime(planData, actions.length);
     let productionSettings = getProductionSettings({actions, index: actionsIdx});
 
     let timeRemaining = gameState.timeRemaining;
@@ -70,30 +163,12 @@ function calcDustAtEnd({planData, gameState, actions, timeIdGroups}
         }
     }
 
-    let endInfo = calcEndInfo({
-        timeRemaining: timeRemaining,
-        stockpiles: stockpiles,
-        levels: levels,
-        premiumInfo: gameState.premiumInfo,
+    return {
+        timeRemaining,
+        stockpiles,
+        levels,
         productionSettings 
-    });
-
-    return endInfo?.stockpiles?.dust ?? 0;
-}
-
-
-function getTipString({planData, dustAtEnd} 
-    : Pick<I_ResultAtTop, "planData"> & { dustAtEnd : number } )
-    : string | null {
-
-    let tipStr : string | null = null;
-    if(planData.length > 0){
-        let maxDustInfo = getMaxDustInfo(planData);
-        tipStr = maxDustInfo.max > dustAtEnd ? 
-                        `Current plan best: switch all to dust after #${maxDustInfo.index + 1} for ${ maxDustInfo.max.toLocaleString() } (${toBillions(maxDustInfo.max)})`
-                        : tipStr;
     }
-    return tipStr;
 }
 
 
@@ -109,9 +184,9 @@ function findIndexLastActionInTime(planData : T_PurchaseData[], numActions : num
             can't "see" switch actions (not directly, only in the shadows they leave on the 
             actionsIdx property).
 
-            So here's the plan: find the planData of the first out-of-time upgrade. Take its 
-            actionsIdx and subtract 1. That will be last in-time actions index, whether it's 
-            an upgrade or a switch.
+            So here's the plan: if we can find the planData of the first out-of-time upgrade, 
+            we can take its actionsIdx and subtract 1. That will be last in-time actions index, 
+            whether it's an upgrade or a switch.
 
             To find the planData for the first out-of-time upgrade, use the function to find the 
             planData index for the last in-time upgrade, then simply +1.
@@ -139,11 +214,42 @@ function getLastValidTimeIdInGroups(data : T_TimeGroup[])
 }
 
 
+function calcStockpilesAtEnd({timeRemaining, stockpiles, levels, premiumInfo, productionSettings}
+    : { productionSettings: T_ProductionSettings } & Pick<T_GameState, "timeRemaining" | "stockpiles"| "levels" | "premiumInfo">)
+    : T_Stockpiles | null {
+
+    let productionRates = calcProductionRates(levels, premiumInfo, productionSettings);
+    if(productionRates === null){
+        return null;
+    }
+
+    let newStockpiles = advanceStockpilesByTime(stockpiles, timeRemaining, productionRates);
+    return newStockpiles;
+}
+
+
+function calcBestAllToDust({planData, dustAtEnd} 
+    : Pick<I_ResultAtTop, "planData"> & { dustAtEnd : number } )
+    : T_SuggestionData | null {
+
+    if(planData.length > 0){
+        let maxDustInfo = getMaxDustInfo(planData);
+        if(maxDustInfo.max > dustAtEnd){
+            return { 
+                dust: maxDustInfo.max, 
+                position: maxDustInfo.index + 1
+            };
+        }
+    }
+    return null;
+}
+
+
 function getMaxDustInfo(planData : T_PurchaseData[])
-    : {max : number, index : number} {
+    : { max : number, index : number } {
 
     const idxLastPurchase = getIndexLastUpgradeWithinTime(planData);
-    const deepCopyPlanData = JSON.parse(JSON.stringify(planData));
+    const deepCopyPlanData = deepCopy(planData);
     let upgradesWithinTime : T_PurchaseData[] = deepCopyPlanData.slice(0, idxLastPurchase + 1);
     let maxDust = Math.max(...upgradesWithinTime.map(ele => ele.allToDust !== null ? ele.allToDust.value : 0));
     return {

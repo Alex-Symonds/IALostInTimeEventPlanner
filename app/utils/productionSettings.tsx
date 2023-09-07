@@ -3,7 +3,10 @@ import { defaultProductionSettings } from './defaults';
 import { T_Action, T_ProductionSettings, T_TimeGroup } from './types';
 
 
-export function getProductionSettings({actions, index} : {actions : T_Action[], index : number}){
+export function getProductionSettings({actions, index} 
+    : {actions : T_Action[], index : number})
+    : T_ProductionSettings {
+
     let prodSwitchesOnly = actions.slice(0, index).filter((ele) => ele.type === 'switch');
     let result = deepCopy(defaultProductionSettings);
 
