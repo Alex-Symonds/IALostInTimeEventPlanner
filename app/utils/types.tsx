@@ -122,7 +122,7 @@ export type T_ProductionSettings = {
     rex : string,
 }
 
-export type T_InterruptProductionSettings = 
+export type T_ProductionSettingsNow = 
     Pick<T_PurchaseData, "timeId"> &
     Pick<T_PurchaseData, "productionSettings">;
 
@@ -155,4 +155,11 @@ export type T_ViewToggle = {
     displayStr : string,
     value : any,
     toggle : () => void
+}
+
+
+export interface I_ProductionSwitcherModalUniversal {
+    isVisible : boolean,
+    closeModal : () => void,
+    updateProdSettings : (newSettings : T_ProductionSettings) => void,
 }

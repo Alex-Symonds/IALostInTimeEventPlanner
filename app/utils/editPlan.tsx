@@ -47,6 +47,7 @@ export function moveIsValid({srcIdx, dstIdx, purchaseData}
     }
 }
 
+
 interface I_SwapIsValidWithReason extends Pick<I_MoveIsValid, "purchaseData"> {
     idxBefore : number,
     idxAfter : number,

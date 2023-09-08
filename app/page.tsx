@@ -5,7 +5,7 @@ import { defaultActionsList, defaultLevels, defaultStockpiles } from './utils/de
 import { MAX_TIME, SAVE_FILE_PREFIX, deepCopy, TAILWIND_MD_BREAKPOINT } from './utils/consts';
 import getPlanData from './utils/getPlanData';
 import { groupByTimeId } from './utils/groupByTimeId';
-import { T_TimeGroup, T_OfflinePeriod, T_GameState, T_Action, T_InterruptProductionSettings, T_SwitchData, T_PremiumInfo, T_ViewToggle, T_PurchaseData } from './utils/types';
+import { T_TimeGroup, T_OfflinePeriod, T_GameState, T_Action, T_ProductionSettingsNow, T_SwitchData, T_PremiumInfo, T_ViewToggle, T_PurchaseData } from './utils/types';
 import useForcedVisibilityOnDesktop from './utils/useForcedVisibilityOnDesktop';
 
 import Planner from './components/planner';
@@ -22,7 +22,7 @@ export default function Home() {
   const [gameState, setGameState] = useState<T_GameState>(defaultGameState());
   const [offlinePeriods, setOfflinePeriods] = useState<T_OfflinePeriod[]>([]);
   const [actions, setActions] = useState<T_Action[]>(defaultActionsList());
-  const [prodSettingsAtTop, setProdSettingsAtTop] = useState<T_InterruptProductionSettings | null>(null);
+  const [prodSettingsNow, setProdSettingsNow] = useState<T_ProductionSettingsNow | null>(null);
   
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
@@ -30,8 +30,8 @@ export default function Home() {
   const [showOfflinePeriodsModal, setShowOfflinePeriodsModal] = useState<boolean>(false);
   const [offlinePeriodIdxEdit, setOfflinePeriodIdxEdit] = useState<number | null>(null);
 
-  const [purchaseData, setPurchaseData] = useState<T_PurchaseData[] | undefined>(getPlanData({ gameState, actions, offlinePeriods, prodSettingsAtTop })?.purchaseData);
-  const [switchData, setSwitchData] = useState<T_SwitchData | undefined>(getPlanData({ gameState, actions, offlinePeriods, prodSettingsAtTop })?.switchData);
+  const [purchaseData, setPurchaseData] = useState<T_PurchaseData[] | undefined>(getPlanData({ gameState, actions, offlinePeriods, prodSettingsNow })?.purchaseData);
+  const [switchData, setSwitchData] = useState<T_SwitchData | undefined>(getPlanData({ gameState, actions, offlinePeriods, prodSettingsNow })?.switchData);
 
   const [showGameState, setShowGameState] = useState(window.innerWidth >= TAILWIND_MD_BREAKPOINT);
   const [showOfflinePeriods, setShowOfflinePeriods] = useState(window.innerWidth >= TAILWIND_MD_BREAKPOINT);
@@ -118,7 +118,7 @@ export default function Home() {
 ]
 
   useEffect(() => {
-    let planAndSwitchData = getPlanData({ gameState, actions, offlinePeriods, prodSettingsAtTop });
+    let planAndSwitchData = getPlanData({ gameState, actions, offlinePeriods, prodSettingsNow });
     if(planAndSwitchData === null){
       return;
     }
@@ -126,7 +126,7 @@ export default function Home() {
     setPurchaseData(planAndSwitchData.purchaseData);
     setSwitchData(planAndSwitchData.switchData);
 
-  }, [prodSettingsAtTop, actions, gameState, offlinePeriods])
+  }, [prodSettingsNow, actions, gameState, offlinePeriods])
 
   if(purchaseData === undefined || switchData === undefined){
     return null;
@@ -194,8 +194,8 @@ export default function Home() {
                       offlinePeriods={offlinePeriods} 
                       purchaseData={purchaseData}
                       timeIdGroups={timeIdGroups}
-                      prodSettingsAtTop={prodSettingsAtTop}
-                      setProdSettingsAtTop={setProdSettingsAtTop}
+                      prodSettingsNow={prodSettingsNow}
+                      setProdSettingsNow={setProdSettingsNow}
             />
         }
       </div>
