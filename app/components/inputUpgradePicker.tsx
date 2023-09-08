@@ -12,7 +12,7 @@ import Modal, { ModalHeading, ModalSubmitButton, I_Modal, ModalFieldsWrapper } f
 import Radio from './radio';
 import { MoreButton } from "./buttons";
 import StockpilesDisplay from "./stockpilesStrip";
-
+import Tooltip from './tooltip';
 
 export interface I_UpgradePickerModal extends Pick<I_Modal, "closeModal"> {
     movePlanElement : (data : {oldIdx : number, newIdx : number}) => void, 
@@ -86,17 +86,21 @@ function MoreInfo({stockpiles}
                     <MoreButton showMore={showStockpiles} setShowMore={setShowStockpiles} modeKey={'primary'} />
                 </div>
                 { showStockpiles ?
-                    <button 
-                        className={'absolute top-0.5 right-8 z-30 border border-neutral-100 bg-white shadow-lg rounded-lg w-11/12 pt-2 pb-2.5 px-3'}
-                        onClick={() => setShowStockpiles(false)}
-                        type={'button'}
-                        >
+                    <Tooltip close={() => setShowStockpiles(false)} >
                         <StockpilesSection stockpiles={stockpiles} />
-                    </button>
+                    </Tooltip>
                     : null
                 }
             </div>
 }
+
+{/* <button 
+className={'absolute top-0.5 right-8 z-30 border border-neutral-100 bg-white shadow-lg rounded-lg w-11/12 pt-2 pb-2.5 px-3'}
+onClick={() => setShowStockpiles(false)}
+type={'button'}
+>
+<StockpilesSection stockpiles={stockpiles} />
+</button> */}
 
 
 function StockpilesSection({stockpiles} 
@@ -106,7 +110,7 @@ function StockpilesSection({stockpiles}
     return (
         <section className={"text-left"}>
             <h4 className={"text-sm"}>Current stockpiles</h4>
-            <div className={"mt-1"}>
+            <div className={"my-1"}>
                 <StockpilesDisplay 
                     stockpiles={stockpiles}
                     extraCSS={"overflow-hidden gap-1"}
