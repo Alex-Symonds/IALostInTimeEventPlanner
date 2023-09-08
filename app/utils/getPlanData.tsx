@@ -4,13 +4,13 @@ import { MAX_TIME, OUT_OF_TIME, deepCopy } from './consts';
 import { convertOfflineTimeToTimeId, getStartTime} from './dateAndTimeHelpers';
 import { getProductionSettings } from './productionSettings';
 
-import { T_AllToDustOutput, T_ProductionRates, T_PremiumInfo, T_PurchaseData, T_Levels, T_OfflinePeriod, T_UpgradeAction, T_ProductionSettings, T_Stockpiles, T_Action, T_SwitchData, T_InterruptProductionSettings} from './types';
+import { T_AllToDustOutput, T_ProductionRates, T_PremiumInfo, T_PurchaseData, T_Levels, T_OfflinePeriod, T_UpgradeAction, T_ProductionSettings, T_Stockpiles, T_Action, T_SwitchData, T_ProductionSettingsNow} from './types';
 
 interface I_GetPlanData {
     gameState : any,
     actions : T_Action[],
     offlinePeriods : T_OfflinePeriod[],
-    prodSettingsAtTop : T_InterruptProductionSettings | null
+    prodSettingsNow : T_ProductionSettingsNow | null
 }
 
 type T_OutputGetPlanData = {
@@ -18,7 +18,7 @@ type T_OutputGetPlanData = {
     switchData : T_SwitchData,
 }
 
-export default function getPlanData({ gameState, actions, offlinePeriods, prodSettingsAtTop } 
+export default function getPlanData({ gameState, actions, offlinePeriods, prodSettingsNow } 
     : I_GetPlanData)
     : T_OutputGetPlanData | null {
 
@@ -31,9 +31,10 @@ export default function getPlanData({ gameState, actions, offlinePeriods, prodSe
 
     let stockpiles : T_Stockpiles = deepCopy(gameState.stockpiles);
     let levels : T_Levels = deepCopy(gameState.levels);
-    let timeId : number = MAX_TIME - gameState.timeRemaining;
+    let timeId = MAX_TIME - gameState.timeRemaining;
     let currentProdSettings : T_ProductionSettings = getProductionSettings({actions, index: 0});
     let isFirstOnDisplay = true;
+    let startedAt : Date = getStartTime(gameState);
 
     for(let idx = 0; idx < actions.length; idx++){
 
@@ -92,7 +93,6 @@ export default function getPlanData({ gameState, actions, offlinePeriods, prodSe
             continue;
         }
 
-        let startedAt : Date = getStartTime(gameState);
         let purchaseResult = 
             buyUpgrade({ 
                 upgradeEle, 
@@ -103,15 +103,15 @@ export default function getPlanData({ gameState, actions, offlinePeriods, prodSe
                 productionSettings: currentProdSettings, 
                 premiumInfo: gameState.premiumInfo, 
                 startedAt,
-                prodSettingsAtTop,
+                prodSettingsNow,
                 isFirstOnDisplay
             });
         if(purchaseResult === null){
             return null;
         }
 
-        if(isFirstOnDisplay && prodSettingsAtTop !== null && timeId < prodSettingsAtTop.timeId && purchaseResult.timeId > prodSettingsAtTop.timeId){
-            currentProdSettings = deepCopy(prodSettingsAtTop.productionSettings);
+        if(isFirstOnDisplay && prodSettingsNow !== null && timeId < prodSettingsNow.timeId && purchaseResult.timeId > prodSettingsNow.timeId){
+            currentProdSettings = deepCopy(prodSettingsNow.productionSettings);
             isFirstOnDisplay = false;
         }
 
@@ -138,7 +138,7 @@ export default function getPlanData({ gameState, actions, offlinePeriods, prodSe
 
 
 interface I_BuyUpgrade extends 
-    Pick<I_GetPlanData, "offlinePeriods" | "prodSettingsAtTop">,
+    Pick<I_GetPlanData, "offlinePeriods" | "prodSettingsNow">,
     Pick<T_PurchaseData, "timeId" | "stockpiles" | "levels">{
     upgradeEle : T_UpgradeAction, 
     productionSettings : T_ProductionSettings, 
@@ -147,7 +147,7 @@ interface I_BuyUpgrade extends
     isFirstOnDisplay : boolean
 }
 
-function buyUpgrade({upgradeEle, stockpiles, timeId, levels, offlinePeriods, productionSettings, premiumInfo, startedAt, prodSettingsAtTop, isFirstOnDisplay} 
+function buyUpgrade({upgradeEle, stockpiles, timeId, levels, offlinePeriods, productionSettings, premiumInfo, startedAt, prodSettingsNow, isFirstOnDisplay} 
     : I_BuyUpgrade)
     : Pick<T_PurchaseData, "stockpiles" | "timeId"> | null {
         
@@ -163,7 +163,7 @@ function buyUpgrade({upgradeEle, stockpiles, timeId, levels, offlinePeriods, pro
         let eggsInStockpile = workingStockpiles[eggKey as keyof typeof workingStockpiles];
 
         if(eggQty > eggsInStockpile){
-            let purchaseTimeInfo = advanceToPurchaseTime({eggKey, eggQty, stockpiles: workingStockpiles, timeId: workingTimeId, offlinePeriods, levels, premiumInfo, productionSettings, startedAt, prodSettingsAtTop, isFirstOnDisplay});
+            let purchaseTimeInfo = advanceToPurchaseTime({eggKey, eggQty, stockpiles: workingStockpiles, timeId: workingTimeId, offlinePeriods, levels, premiumInfo, productionSettings, startedAt, prodSettingsNow, isFirstOnDisplay});
             if(purchaseTimeInfo === null){
                 return null;
             }
@@ -195,8 +195,8 @@ type T_OutputAdvanceToPurchaseTime = {
     rates : T_ProductionRates
 }
 
-function advanceToPurchaseTime({eggKey, eggQty, stockpiles, timeId, offlinePeriods, levels, premiumInfo, productionSettings, startedAt, prodSettingsAtTop, isFirstOnDisplay} 
-    : I_AdvanceToTime & Pick<I_BuyUpgrade, "prodSettingsAtTop"> & {isFirstOnDisplay : boolean})
+function advanceToPurchaseTime({eggKey, eggQty, stockpiles, timeId, offlinePeriods, levels, premiumInfo, productionSettings, startedAt, prodSettingsNow, isFirstOnDisplay} 
+    : I_AdvanceToTime & Pick<I_BuyUpgrade, "prodSettingsNow"> & {isFirstOnDisplay : boolean})
     : T_OutputAdvanceToPurchaseTime | null {
 
     let advanceWithSingleProdRate = calcAdvanceToPurchaseTime({eggKey, eggQty, stockpiles, timeId, offlinePeriods, levels, premiumInfo, productionSettings, startedAt});
@@ -208,14 +208,14 @@ function advanceToPurchaseTime({eggKey, eggQty, stockpiles, timeId, offlinePerio
         return advanceToEndOfEvent({stockpiles, levels, premiumInfo, productionSettings, timeId});
     }
 
-    if( prodSettingsAtTop !== null 
+    if( prodSettingsNow !== null 
         && isFirstOnDisplay
         && hasTwoProdRates({timeId, offlinePeriods, startedAt,
-            interruptProdSettings: prodSettingsAtTop,  
+            interruptProdSettings: prodSettingsNow,  
             purchaseTimeId: advanceWithSingleProdRate.timeReady})
-        && !isDuringOfflinePeriod(prodSettingsAtTop.timeId, offlinePeriods, startedAt)){
+        && !isDuringOfflinePeriod(prodSettingsNow.timeId, offlinePeriods, startedAt)){
 
-        return advanceWithTwoProdRates({levels, premiumInfo, productionSettings, stockpiles, timeId, prodSettingsAtTop, eggKey, eggQty, offlinePeriods, startedAt});
+        return advanceWithTwoProdRates({levels, premiumInfo, productionSettings, stockpiles, timeId, prodSettingsNow, eggKey, eggQty, offlinePeriods, startedAt});
     }
 
     return advanceWithSingleProdRate;
@@ -226,12 +226,11 @@ function calcAdvanceToPurchaseTime({eggKey, eggQty, stockpiles, timeId, offlineP
     : I_AdvanceToTime)
     : T_OutputAdvanceToPurchaseTime | null {
 
-    let eggsToProduce = eggQty - stockpiles[eggKey as keyof typeof stockpiles];
     let productionRates = calcProductionRates(levels, premiumInfo, productionSettings);
     if(productionRates === null){
         return null;
     }
-
+    let eggsToProduce = eggQty - stockpiles[eggKey as keyof typeof stockpiles];
     let timeToProduce = Math.ceil(eggsToProduce / productionRates[eggKey as keyof typeof productionRates]);
     let purchaseTimeId = nextOnlineTimeId(timeId + timeToProduce, offlinePeriods, startedAt);
     let timeToAdvance = purchaseTimeId - timeId;
@@ -263,11 +262,11 @@ function advanceToEndOfEvent({stockpiles, levels, premiumInfo, productionSetting
 }
 
 
-function advanceWithTwoProdRates({levels, premiumInfo, productionSettings, stockpiles, timeId, prodSettingsAtTop, eggKey, eggQty, offlinePeriods, startedAt} 
-    : I_AdvanceToTime & Pick<I_BuyUpgrade, "prodSettingsAtTop">)
+function advanceWithTwoProdRates({levels, premiumInfo, productionSettings, stockpiles, timeId, prodSettingsNow, eggKey, eggQty, offlinePeriods, startedAt} 
+    : I_AdvanceToTime & Pick<I_BuyUpgrade, "prodSettingsNow">)
     : T_OutputAdvanceToPurchaseTime | null {
 
-    if(prodSettingsAtTop == null){
+    if(prodSettingsNow == null){
         return null;
     }
 
@@ -279,7 +278,7 @@ function advanceWithTwoProdRates({levels, premiumInfo, productionSettings, stock
     let beforeSwitch = 
         advanceToTimeId({stockpiles, levels, premiumInfo, productionSettings,
             timeIdStart: timeId,
-            timeIdEnd: prodSettingsAtTop.timeId
+            timeIdEnd: prodSettingsNow.timeId
         })
     if(beforeSwitch === null){
         return null;
@@ -287,8 +286,8 @@ function advanceWithTwoProdRates({levels, premiumInfo, productionSettings, stock
 
     let advanceWithTwoProdRates = calcAdvanceToPurchaseTime({eggKey, eggQty, offlinePeriods, levels, premiumInfo, startedAt, 
         stockpiles: beforeSwitch.stockpiles, 
-        timeId: prodSettingsAtTop.timeId, 
-        productionSettings: prodSettingsAtTop.productionSettings
+        timeId: prodSettingsNow.timeId, 
+        productionSettings: prodSettingsNow.productionSettings
     });
     if(advanceWithTwoProdRates === null){
         return null;
@@ -322,7 +321,7 @@ function advanceToTimeId({stockpiles, timeIdStart, timeIdEnd, levels, premiumInf
 
 interface I_HasTwoProdRates extends 
     Pick<I_BuyUpgrade, "offlinePeriods" | "timeId"> {
-    interruptProdSettings : T_InterruptProductionSettings,
+    interruptProdSettings : T_ProductionSettingsNow,
     purchaseTimeId : number,
     startedAt : Date,
 }
