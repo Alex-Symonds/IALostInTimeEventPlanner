@@ -94,6 +94,7 @@ function getValidType(htmlType : string | undefined)
 }
 
 
+
 interface I_MoreButtonContainer {
     showMore : boolean,
     setShowMore : React.Dispatch<React.SetStateAction<boolean>>,
@@ -101,6 +102,38 @@ interface I_MoreButtonContainer {
 }
 export function MoreButton({showMore, setShowMore, modeKey,} 
     : I_MoreButtonContainer)
+    : JSX.Element {
+
+    return  <RoundToggleButtonWrapper
+                showMore={showMore}
+                setShowMore={setShowMore}
+                modeKey={modeKey}
+                extraCSS={""}
+                >
+                <span aria-hidden={true}>...</span>
+                <span className={"sr-only"}>more info</span>
+            </RoundToggleButtonWrapper>
+}
+
+
+export function InfoButton({showMore, setShowMore, modeKey,} 
+    : I_MoreButtonContainer)
+    : JSX.Element {
+
+    return <RoundToggleButtonWrapper
+                showMore={showMore}
+                setShowMore={setShowMore}
+                modeKey={modeKey}
+                extraCSS={"font-serif text-xl leading-none items-center"}
+                >
+                <span aria-hidden={true}>i</span>
+                <span className={"sr-only"}>see stockpiles</span>
+            </RoundToggleButtonWrapper>
+}
+
+
+function RoundToggleButtonWrapper({showMore, setShowMore, modeKey, extraCSS, children} 
+    : I_MoreButtonContainer & { extraCSS : string, children : React.ReactNode })
     : JSX.Element {
 
     const onOffKey = showMore ? 'toggledOn' : 'main';
@@ -114,17 +147,13 @@ export function MoreButton({showMore, setShowMore, modeKey,}
         colourTheme = COLOURS.more;
     }
     let CSS = colourTheme[onOffKey];
-    
-    return (
-        
-            <button className={"border-2 rounded-full flex align-center justify-center w-7 h-7" + " " + CSS} 
-                    onClick={() => setShowMore(prev => !prev)}
-                    type={'button'}
-                    >
-                <span aria-hidden={true}>...</span>
-                <span className={"sr-only"}>more info</span>
+
+    return  <button className={"rounded-full border-2 flex justify-center w-7 h-7" + " " + CSS + " " + extraCSS} 
+                onClick={() => setShowMore(prev => !prev)}
+                type={'button'}
+                >
+                { children }
             </button>
-       
-    )
 }
+
 

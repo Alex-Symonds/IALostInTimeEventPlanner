@@ -9,6 +9,7 @@ import { capitalise } from '../utils/formatting';
 import Select from './select';
 import { Button } from './buttons';
 import { formatValueStr, getUpgradeOptions, InputNumberAsText, Label } from "./inputGameState"
+import FieldsetWrapper from "./fieldsetWrapper";
 
 
 export interface I_InputGeneral extends I_TimeRemainingFieldset, I_Entered, I_AllEggs, I_AdBoost {}
@@ -73,24 +74,34 @@ function Entered({timeEntered, setStateOnChange, setTimeEntered}
     timeEntered = timeEntered ?? new Date();
 
     return(
-        <div className={"flex gap-2 items-center"}>
-            <Label htmlFor={"id_timeEntered"}>Entered</Label>
-            <p suppressHydrationWarning={true}>{ getDateDisplayStr(timeEntered) }</p>
-            <input hidden type="datetime-local" id={"id_timeEntered"} value={timeEntered == null ? "" : `${timeEntered}`} onChange={(e) => setStateOnChange(e, setTimeEntered)}/>
+        <div className={"flex items-center gap-2"}>
 
-            <Button 
-                htmlType={"button"}
-                onClick={() => { setTimeEntered(new Date()) }}
-                colours={"secondary"}
-                size={"inline"}
-                extraCSS={"ml-3"}
-            >
-                &laquo;&nbsp;now
-            </Button>
+            <Label htmlFor={"id_timeEntered"}>Entered</Label>
+                <Button 
+                    htmlType={"button"}
+                    onClick={() => { setTimeEntered(new Date()) }}
+                    colours={"secondary"}
+                    size={"inline"}
+                    extraCSS={"w-min"}
+                    >
+                    now
+                </Button>
+                <p 
+                    suppressHydrationWarning={true} 
+                    className={"ml-2"}
+                    >
+                    { getDateDisplayStr(timeEntered) }
+                </p>
+                <input 
+                    hidden 
+                    type="datetime-local" 
+                    id={"id_timeEntered"} 
+                    value={timeEntered == null ? "" : `${timeEntered}`} 
+                    onChange={(e) => setStateOnChange(e, setTimeEntered)}
+                />
         </div>
     )
 }
-
 
 interface I_TimeRemainingFieldset {
     timeRemaining: T_TimeRemainingDHM,
@@ -103,10 +114,10 @@ function TimeRemainingFieldset({timeRemaining, setTimeRemaining}
     const { isError, message, handleChangeDays, handleChangeHours, handleChangeMinutes } = useTimeRemainingFieldset({timeRemaining, setTimeRemaining});
 
     return (
-        <fieldset className={"relative w-full pt-5" + " " + ""}>
-            <Label extraCSS={"absolute top-0 font-semibold"} htmlFor={''} tagName={'legend'}>Remaining</Label>
-            <div className={'relative flex flex-col items-center gap-1 px-3 ml-1'}>
-                <div className={'flex justify-center gap-2 mt-1'}>
+        <FieldsetWrapper>
+            <Label extraCSS={"font-semibold w-min px-1"} htmlFor={''} tagName={'legend'}>Time&nbsp;Remaining</Label>
+            <div className={'w-full relative flex flex-col items-center gap-1 px-3 ml-1'}>
+                <div className={'w-full flex gap-2 mt-1  py-1 px-2 rounded-md'}>
                     <TimeRemainingUnit unitName={"days"} value={timeRemaining == null ? 0 : timeRemaining.days} handleChange={handleChangeDays} />
                     <TimeRemainingUnit unitName={"hours"} value={timeRemaining == null ? 0 : timeRemaining.hours} handleChange={handleChangeHours} />
                     <TimeRemainingUnit unitName={"minutes"} value={timeRemaining == null ? 0 : timeRemaining.minutes} handleChange={handleChangeMinutes} />
@@ -116,9 +127,10 @@ function TimeRemainingFieldset({timeRemaining, setTimeRemaining}
                     : null
                 }
             </div>
-        </fieldset>
+        </FieldsetWrapper>
     )
 }
+
 
 interface I_TimeRemainingUnitProps {
     unitName : string, 
@@ -135,14 +147,12 @@ function TimeRemainingUnit({unitName, value, handleChange}
 
     const idStr = `id_${unitName}`;
     return (
-        <div className={'flex items-center'}>
-            <InputNumberAsText cssStr={"w-12 pl-1"} idStr={idStr} value={value} handleChange={handleChange} />
-            <label className={"pl-1 pr-2"} htmlFor={idStr}>{unitName.charAt(0)}</label>
+        <div className={'flex items-center justify-items-stretch w-1/3'}>
+            <InputNumberAsText cssStr={"w-12 pl-1 bg-white"} idStr={idStr} value={value} handleChange={handleChange} />
+            <label className={"pl-1 pr-2 w-4"} htmlFor={idStr}>{unitName.charAt(0)}</label>
         </div>
     )
 }
-
-
 
 
 type T_OutputUseTimeRemainingFieldset = {

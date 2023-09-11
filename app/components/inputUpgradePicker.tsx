@@ -10,7 +10,7 @@ import { BadgeCost, BadgeMaxed } from "./badges";
 
 import Modal, { ModalHeading, ModalSubmitButton, I_Modal, ModalFieldsWrapper } from './modal';
 import Radio from './radio';
-import { MoreButton } from "./buttons";
+import { MoreButton, InfoButton } from "./buttons";
 import StockpilesDisplay from "./stockpilesStrip";
 import Tooltip from './tooltip';
 
@@ -83,7 +83,7 @@ function MoreInfo({stockpiles}
 
     return  <div className={"relative flex justify-end"}>                             
                 <div className={"self-end relative top-3"}>
-                    <MoreButton showMore={showStockpiles} setShowMore={setShowStockpiles} modeKey={'primary'} />
+                    <InfoButton showMore={showStockpiles} setShowMore={setShowStockpiles} modeKey={'primary'} />
                 </div>
                 { showStockpiles ?
                     <Tooltip close={() => setShowStockpiles(false)} >
