@@ -7,8 +7,9 @@ import { T_OfflinePeriod, T_GameState, T_TimeOfflinePeriod } from '../utils/type
 import { generateKey } from '../utils/uniqueKeys';
 
 import Modal, { ModalHeading, ModalSubHeading, ModalFieldsWrapper } from './modal';
-import { SelectWithLabel, T_OptionData } from './select';
+import Select, { T_OptionData } from './select';
 import { Button } from './buttons';
+import FieldsetWrapper from './fieldsetWrapper';
 
 /*
     Note: the dates on offline period times must be stored as an offset to the 
@@ -117,7 +118,9 @@ export default function OfflineForm({closeForm, offlinePeriod, gameState, pos, s
 
 
 function ErrorMessage(){
-    return <p className={"text-sm border-1 text-neutral-700 px-1 py-1 w-56"}>Error: offline period ends before it starts</p>
+    return  <p className={"text-sm border-l-4 border-red-500 bg-red-200 bg-opacity-30 text-black px-3 py-2"}>
+                Invalid input: offline period ends before it begins
+            </p>
 }
 
 
@@ -129,7 +132,6 @@ interface I_OfflineFormProps extends Pick<I_OfflineForm, "gameState">{
     dhm : T_TimeOfflinePeriod, 
     handleSingleKeyChange : (roleKey : string, unitKey : string, value : number) => void
 }
-
 function OfflineTimeInput({ legend, idStr, roleKey, dhm, handleSingleKeyChange, gameState, showError } 
     : I_OfflineFormProps)
     : JSX.Element {
@@ -146,46 +148,62 @@ function OfflineTimeInput({ legend, idStr, roleKey, dhm, handleSingleKeyChange, 
     } = offlineTimesInputKit({ handleSingleKeyChange, roleKey, gameState });
 
 
-    const LABEL_CSS = "pl-2 pr-1 text-sm";
     return (
-        <fieldset>
-            <legend className={"font-semibold ml-2 mb-1"}>{legend}</legend>
+        <FieldsetWrapper>
+            <legend className={"font-semibold ml-2 mb-1 px-1"}>{legend}</legend>
             <div className={"flex flex-nowrap text-sm items-center"}>
-                <SelectWithLabel
+                <SelectOffline
                     id={ID_D}
-                    labelDisplay={"d"}
-                    labelExtraCSS={LABEL_CSS}
                     selectExtraCSS={undefined}
                     handleChange={handleDateChange}
                     initValue={validDates[dhm.dateOffset].date.toString()}
                     options={convertValidDatesToOptions(validDates)} 
+                    visualLabel={""}
+                    srLabel={"date"}
+                    extraCSS={"pl-2 pr-1"}
                 />
-                <SelectWithLabel
+                <SelectOffline
                     id={ID_H}
-                    labelDisplay={"h"}
-                    labelExtraCSS={LABEL_CSS}
                     selectExtraCSS={undefined}
                     handleChange={(e : ChangeEvent<HTMLSelectElement>) => handleSingleKeyChange(roleKey, 'hours', parseInt(e.target.value))}
                     initValue={dhm.hours.toString()}
                     options={calcOptionsForNumberRange(0, 23)} 
+                    visualLabel={""}
+                    srLabel={"time: hour"}
+                    extraCSS={"px-2"}
                 />
-                <SelectWithLabel
+                <SelectOffline
                     id={ID_M}
-                    labelDisplay={"m"}
-                    labelExtraCSS={LABEL_CSS}
                     selectExtraCSS={undefined}
                     handleChange={(e : ChangeEvent<HTMLSelectElement>) => handleSingleKeyChange(roleKey, 'minutes', parseInt(e.target.value))}
                     initValue={dhm.minutes.toString()}
                     options={calcOptionsForNumberRange(0, 59)} 
+                    visualLabel={":"}
+                    srLabel={"time@ minute"}
+                    extraCSS={"px-1"}
                 />
                 {
                     showError ?
-                        <span className={"ml-2 text-red-500 font-bold font-lg"}>X</span>
+                        <span className={"ml-5 text-red-500 font-bold text-xl"}>X</span>
                         : null
                 }
             </div>
-        </fieldset>
+        </FieldsetWrapper>
     )
+}
+
+
+function SelectOffline({id, selectExtraCSS, options, handleChange, initValue, visualLabel, srLabel, extraCSS}
+    : any)
+    : JSX.Element {
+
+    return <div>
+        <label htmlFor={id} className={"text-sm" + " " + extraCSS}>
+            <span className={"sr-only"}>{srLabel}</span>
+            <span aria-hidden={true}>{visualLabel}</span>
+        </label>
+        <Select id={id} selectExtraCSS={selectExtraCSS} options={options} handleChange={handleChange} initValue={initValue} />
+    </div>
 }
 
 

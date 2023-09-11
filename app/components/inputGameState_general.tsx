@@ -9,6 +9,7 @@ import { capitalise } from '../utils/formatting';
 import Select from './select';
 import { Button } from './buttons';
 import { formatValueStr, getUpgradeOptions, InputNumberAsText, Label } from "./inputGameState"
+import FieldsetWrapper from "./fieldsetWrapper";
 
 
 export interface I_InputGeneral extends I_TimeRemainingFieldset, I_Entered, I_AllEggs, I_AdBoost {}
@@ -113,7 +114,7 @@ function TimeRemainingFieldset({timeRemaining, setTimeRemaining}
     const { isError, message, handleChangeDays, handleChangeHours, handleChangeMinutes } = useTimeRemainingFieldset({timeRemaining, setTimeRemaining});
 
     return (
-        <fieldset className={"relative rounded-sm max-w-full w-full pb-2 border border-violet-200 bg-violet-50 bg-opacity-40" + " " + ""}>
+        <FieldsetWrapper>
             <Label extraCSS={"font-semibold w-min px-1"} htmlFor={''} tagName={'legend'}>Time&nbsp;Remaining</Label>
             <div className={'w-full relative flex flex-col items-center gap-1 px-3 ml-1'}>
                 <div className={'w-full flex gap-2 mt-1  py-1 px-2 rounded-md'}>
@@ -126,7 +127,7 @@ function TimeRemainingFieldset({timeRemaining, setTimeRemaining}
                     : null
                 }
             </div>
-        </fieldset>
+        </FieldsetWrapper>
     )
 }
 
