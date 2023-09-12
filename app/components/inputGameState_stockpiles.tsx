@@ -4,7 +4,6 @@ import { resourceCSS } from '../utils/formatting';
 import { InputNumberAsText } from "./inputGameState";
 
 export interface I_InputStockpiles extends Pick<I_StockpileInput, "controlledStockpileValue" | "updateStockpiles"> {}
-
 export default function InputStockpiles({ controlledStockpileValue, updateStockpiles } 
     : I_InputStockpiles)
     : JSX.Element {
@@ -29,11 +28,12 @@ function StockpileWrapper({coloursCSS, idStr, label, children}
     : I_PropsStockpileWrapper)
     : JSX.Element {
 
-    return  <div className={"ml-2 flex py-1 px-2 items-center border" + " " + coloursCSS}>
+    return  <div className={"rounded ml-2 flex py-1 px-2 items-center border" + " " + coloursCSS}>
                 <label className={"block w-20"} htmlFor={idStr}>{label}</label>
                 {children}
             </div>
 }
+
 
 function extractBorderColourCSS(cssStr : string){
     const regEx = /border-\w*-\d{2,3}/g;

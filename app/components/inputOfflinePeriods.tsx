@@ -6,8 +6,8 @@ import { printOfflineTime, getStartTime, getMonthName, convertOfflineTimeToTimeI
 import { T_OfflinePeriod, T_GameState, T_TimeOfflinePeriod } from '../utils/types';
 import { generateKey } from '../utils/uniqueKeys';
 
-import Modal, { ModalHeading, ModalSubHeading, ModalFieldsWrapper } from './modal';
-import Select, { T_OptionData } from './select';
+import Modal, { ModalHeading, ModalLegend, ModalFieldsWrapper } from './modal';
+import Select, { I_SelectProps, T_OptionData } from './select';
 import { Button } from './buttons';
 import FieldsetWrapper from './fieldsetWrapper';
 
@@ -32,6 +32,11 @@ interface I_OfflineForm {
     offlinePeriods : T_OfflinePeriod[] | null
 }
 
+type T_AriaError = {
+    isInvalid : boolean,
+    errorMessageId : string,
+}
+
 type T_OfflinePeriodForm = 
     T_OfflinePeriod & {
         id: string,
@@ -41,6 +46,8 @@ export default function OfflineForm({closeForm, offlinePeriod, gameState, pos, s
     : I_OfflineForm)
     : JSX.Element {
 
+
+    let isNewOfflinePeriod = offlinePeriod === null;
     let initValue = offlinePeriod === null ?
                     defaultOfflinePeriodForm() 
                     : {
@@ -58,16 +65,25 @@ export default function OfflineForm({closeForm, offlinePeriod, gameState, pos, s
     
     const id = useId();
 
+    
+    const ariaError : T_AriaError = {
+        isInvalid: showError,
+        errorMessageId: "offlinePeriodsError"
+    }
     return  <Modal closeModal={closeForm}>
-                <ModalHeading>Enter Offline Period</ModalHeading>
+                <ModalHeading>
+                    { isNewOfflinePeriod ? `New Offline Period` : `Offline Period ${pos}` }
+                </ModalHeading>
                 <form onSubmit={ (e) => handleSubmit(e) } >
-                    <fieldset className={""}>
-                        <ModalSubHeading tagName={'legend'}>
-                            Time Range for Period #{pos}
-                        </ModalSubHeading>
-
-                        <ModalFieldsWrapper>
-                            <div className={"flex flex-col gap-5"}>
+                    <ModalFieldsWrapper>
+                        <fieldset
+                            aria-invalid={ariaError.isInvalid}
+                            aria-errormessage={ariaError.errorMessageId}
+                            >
+                            <ModalLegend>
+                                Set time range
+                            </ModalLegend>
+                            <div className={"flex flex-col gap-5 items-center"}>
                                 <OfflineTimeInput 
                                     legend={"from"} 
                                     idStr={id} 
@@ -88,37 +104,47 @@ export default function OfflineForm({closeForm, offlinePeriod, gameState, pos, s
                                 />
                             
                                 {showError && !formOfflinePeriod.isValid ?
-                                    <ErrorMessage />
+                                    <ErrorMessage idStr={ariaError.errorMessageId} />
                                     : null
                                 }
                             </div>
-                        </ModalFieldsWrapper>
-
-                        <div className={"flex justify-between"}>
+                        </fieldset>
+                    </ModalFieldsWrapper>
+                    <div className={"flex justify-between"}>
                             <Button 
                                 size={'twin'} 
                                 colours={'primary'}
                                 disabled={showError && !formOfflinePeriod.isValid}
+                                extraCSS={isNewOfflinePeriod ? "border-2" : undefined}
                                 >
-                                submit
+                                {  isNewOfflinePeriod ? "add" : "update" }
                             </Button>
-                            <Button 
-                                size={'twin'}
-                                colours={'warning'}
-                                htmlType={'button'}
-                                onClick={() => removeOfflinePeriod()}
-                                >
-                                delete
-                            </Button>
+                            { isNewOfflinePeriod ?
+                                null :
+                                <Button 
+                                    size={'twin'}
+                                    colours={'warning'}
+                                    htmlType={'button'}
+                                    onClick={() => removeOfflinePeriod()}
+                                    >
+                                    delete
+                                </Button>
+                            }
                         </div>
-                    </fieldset>
                 </form>
             </Modal>
 }
 
 
-function ErrorMessage(){
-    return  <p className={"text-sm border-l-4 border-red-500 bg-red-200 bg-opacity-30 text-black px-3 py-2"}>
+function ErrorMessage({idStr} 
+    : { idStr : string })
+    : JSX.Element {
+
+    return  <p 
+                id={idStr}
+                className={"text-sm border-l-4 border-red-500 bg-red-200 bg-opacity-30 text-black px-3 py-2"}
+                aria-live={"polite"}
+                >
                 Invalid input: offline period ends before it begins
             </p>
 }
@@ -146,7 +172,6 @@ function OfflineTimeInput({ legend, idStr, roleKey, dhm, handleSingleKeyChange, 
         convertValidDatesToOptions,
         calcOptionsForNumberRange,
     } = offlineTimesInputKit({ handleSingleKeyChange, roleKey, gameState });
-
 
     return (
         <FieldsetWrapper>
@@ -179,12 +204,12 @@ function OfflineTimeInput({ legend, idStr, roleKey, dhm, handleSingleKeyChange, 
                     initValue={dhm.minutes.toString()}
                     options={calcOptionsForNumberRange(0, 59)} 
                     visualLabel={":"}
-                    srLabel={"time@ minute"}
+                    srLabel={"time: minute"}
                     extraCSS={"px-1"}
                 />
                 {
                     showError ?
-                        <span className={"ml-5 text-red-500 font-bold text-xl"}>X</span>
+                        <span className={"ml-3 text-red-500 font-bold text-xl"}>X</span>
                         : null
                 }
             </div>
@@ -193,17 +218,22 @@ function OfflineTimeInput({ legend, idStr, roleKey, dhm, handleSingleKeyChange, 
 }
 
 
+interface I_SelectOffline extends I_SelectProps {
+    visualLabel: string,
+    srLabel : string,
+    extraCSS? : string,
+}
 function SelectOffline({id, selectExtraCSS, options, handleChange, initValue, visualLabel, srLabel, extraCSS}
-    : any)
+    : I_SelectOffline)
     : JSX.Element {
 
     return <div>
-        <label htmlFor={id} className={"text-sm" + " " + extraCSS}>
-            <span className={"sr-only"}>{srLabel}</span>
-            <span aria-hidden={true}>{visualLabel}</span>
-        </label>
-        <Select id={id} selectExtraCSS={selectExtraCSS} options={options} handleChange={handleChange} initValue={initValue} />
-    </div>
+                <label htmlFor={id} className={"text-sm" + " " + extraCSS}>
+                    <span className={"sr-only"}>{srLabel}</span>
+                    <span aria-hidden={true}>{visualLabel}</span>
+                </label>
+                <Select id={id} selectExtraCSS={selectExtraCSS} options={options} handleChange={handleChange} initValue={initValue} />
+            </div>
 }
 
 

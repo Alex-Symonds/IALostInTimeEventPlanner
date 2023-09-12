@@ -39,10 +39,10 @@ export default function ModalProdSettings({closeModal, currentProdSettings, curr
 
     return(
         <Modal closeModal={closeModal}>
-            <ModalHeading>Switch Production</ModalHeading>
+            <ModalHeading>Production Settings</ModalHeading>
             <form onSubmit={handleSubmit} className={"flex flex-col w-full"}>
                 <ModalFieldsWrapper>
-                    <div className={"flex flex-col items-center gap-4 mt-1"}>
+                    <div className={"flex flex-col items-center gap-6 mt-1"}>
                     {
                         Object.keys(currentProdSettings).map((myKey : string) => {
                             return <ProductionToggle key={myKey} 
@@ -55,7 +55,7 @@ export default function ModalProdSettings({closeModal, currentProdSettings, curr
                     }
                     </div>
                 </ModalFieldsWrapper>
-                <ModalSubmitButton label={"submit"} extraCSS={''} disabled={false} />
+                <ModalSubmitButton label={"set"} extraCSS={''} disabled={false} />
             </form>
         </Modal>
     )
@@ -100,18 +100,17 @@ function ProductionToggle({myKey, toggledTo, handleSelection, disabled}
                     " " + "text-gray-300"
                     : "";
     return (
-        <fieldset className={"w-32"}>
-            <legend className={"mb-1 flex items-center" + labelCSS} >
-                { capitalise(myKey) }
-                <span aria-hidden={true}>&nbsp;&raquo;&nbsp;</span>
-                <span className={"sr-only"}>currently producing</span>
+        <fieldset className={"w-full relative flex justify-end"}>
+            <legend className={"absolute top-0 left-0 mb-1 flex items-center gap-2 block" + labelCSS} >
+                <span className={"w-16 font-semibold"}>{ capitalise(myKey) }</span>
+                <span className={"sr-only"}>is producing</span>
                 {
                     disabled ?
                     <span>n/a</span>
                     : <CurrentAsCircleBadge type={toggledTo} />
                 }
             </legend>
-            <div className="flex">
+            <div className="flex w-24">
             {
                 data.outputs.map((d, idx) => {
                     return  <Radio key={`${myKey}_${d}`} 
@@ -144,13 +143,13 @@ function CurrentAsCircleBadge({type}
     let typeCSS = resourceCSS[type as keyof typeof resourceCSS];
 
     return(
-        <>
-            <div className={"inline-block w-3 h-3 rounded-full" + " " + typeCSS.badge}>             
+        <div>
+            <div className={"inline-block w-3 h-3 rounded-full border" + " " + typeCSS.badge}>             
             </div>
             <span className={"pl-1"}>
                 { type }
             </span>
-        </>
+        </div>
     )
 }
 
@@ -183,7 +182,7 @@ function ToggleDisplay({thisOption, activeOption, roundLeft, roundRight, disable
     let conditionalCSS = roundingCSS + " " + opacityCSS + " " + hoverCSS;
 
     return(
-        <div className={"duration-75 ease-linear flex justify-center content-center py-1 border-2" + " " + typeCSS.badge + " " + conditionalCSS}>
+        <div className={"duration-75 ease-linear flex justify-center content-center border-2" + " " + typeCSS.badge + " " + conditionalCSS}>
             { thisOption.charAt(0).toLowerCase() }
         </div>
     )

@@ -1,4 +1,4 @@
-interface I_SelectProps {
+export interface I_SelectProps {
     id : string,
     options : T_OptionData[],
     handleChange : (e: React.ChangeEvent<HTMLSelectElement>) => void,
