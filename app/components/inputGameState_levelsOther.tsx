@@ -39,7 +39,7 @@ export default function InputLevelsOther({gameState, levels, handleLevelChange}
 
 
     return  <>
-                <SubSection heading={"Egg Levels"}>
+                <SubSection heading={"Egg Levels"} extraCSS={"mt-0"}>
                     { productionUpgrades.map(ele => {
                             let initValue : string | undefined  = getInitValueForLevelSelect(ele.optionsProps.name, gameState);
                             let keyName = ele.optionsProps.name.toLowerCase();
@@ -82,11 +82,11 @@ export default function InputLevelsOther({gameState, levels, handleLevelChange}
 }
 
 
-function SubSection({ heading, children }
-    : { heading : string, children : React.ReactNode } )
+function SubSection({ heading, extraCSS, children }
+    : { heading : string, extraCSS? : string, children : React.ReactNode } )
     : JSX.Element {
 
-    return  <section className={"first:mt-0 mt-7"}>
+    return  <section className={extraCSS ?? "mt-7"}>
                 <h3 className={"font-semibold pb-3"}>{heading}</h3>
                 <LevelsWrapper>
                     { children }

@@ -1,5 +1,4 @@
 import { getDateDisplayStr, getStartTime, convertOfflineTimeToDate, printOfflineTime } from "../utils/dateAndTimeHelpers";
-import { nbsp } from "../utils/formatting";
 import { T_GameState, T_OfflinePeriod } from "../utils/types";
 
 import { InputResultsSection, EditButtonBox } from './sectionInputResults';
@@ -12,7 +11,6 @@ interface I_SectionOfflinePeriods {
     openModal : (idx : number | null) => void,
     idxEdit : number | null,
 }
-
 export default function SectionOfflinePeriods({offlinePeriods, openModal, gameState, idxEdit} 
     : I_SectionOfflinePeriods)
     : JSX.Element | null {
@@ -24,7 +22,7 @@ export default function SectionOfflinePeriods({offlinePeriods, openModal, gameSt
     return  <InputResultsSection title={"Offline Periods"}>
                 <div className={'overflow-y-auto overflow-x-hidden max-h-[calc(100vh-5rem)] px-2'}>
                     <OfflineDisplay offlinePeriods={offlinePeriods} gameState={gameState} openForm={openModal} idxEdit={idxEdit} />
-                    <EditButtonBox openEditForm={() => openModal(null)} label={`+${nbsp()}more`} />
+                    <EditButtonBox openEditForm={() => openModal(null)} label={`add`} />
                 </div>
             </InputResultsSection>
 

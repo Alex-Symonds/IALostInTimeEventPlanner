@@ -7,12 +7,12 @@ import { moveIsValid } from '../utils/editPlan';
 import { T_GameState, T_PurchaseData, T_Stockpiles, T_CostData, } from "../utils/types";
 
 import { BadgeCost, BadgeMaxed } from "./badges";
-
-import Modal, { ModalHeading, ModalSubmitButton, I_Modal, ModalFieldsWrapper } from './modal';
+import Modal, { ModalHeading, ModalLegend, ModalSubmitButton, I_Modal, ModalFieldsWrapper } from './modal';
 import Radio from './radio';
-import { MoreButton, InfoButton } from "./buttons";
+import { InfoButton } from "./buttons";
 import StockpilesDisplay from "./stockpilesStrip";
 import Tooltip from './tooltip';
+
 
 export interface I_UpgradePickerModal extends Pick<I_Modal, "closeModal"> {
     movePlanElement : (data : {oldIdx : number, newIdx : number}) => void, 
@@ -20,8 +20,6 @@ export interface I_UpgradePickerModal extends Pick<I_Modal, "closeModal"> {
     purchaseData : T_PurchaseData[], 
     gameState : T_GameState
 }
-
-
 export default function UpgradePickerModal({closeModal, movePlanElement, pickerTargetIdx, purchaseData, gameState } 
     : I_UpgradePickerModal)
     {
@@ -40,14 +38,16 @@ export default function UpgradePickerModal({closeModal, movePlanElement, pickerT
 
     return(
         <Modal closeModal={closeModal}>
+            <ModalHeading>
+                Upgrade Picker
+            </ModalHeading>
             <form className={"flex flex-col items-center h-auto"} onSubmit={handleClick}>
                 <fieldset className={"flex flex-col w-full"}> 
-                    <ModalHeading tagName={'legend'}>
-                        Select Upgrade
-                    </ModalHeading>
-                    
                     <ModalFieldsWrapper>
-                        <div className={"flex flex-col items-stretch"}>
+                        <ModalLegend>
+                            Pick an upgrade for Position { pickerTargetIdx + 1 }
+                        </ModalLegend>
+                        <div className={"flex flex-col px-2"}>
                             {
                                 radioData.map((data, idx : number) => {
                                     let result = moveIsValid({srcIdx: data.fromIdx, dstIdx: pickerTargetIdx, purchaseData});
@@ -64,10 +64,13 @@ export default function UpgradePickerModal({closeModal, movePlanElement, pickerT
                                 })
                             }
                         </div>
-                        <MoreInfo stockpiles={ calcStockpilesIncludingCurrentPurchase(purchaseData[pickerTargetIdx]) } />
+                        
                     </ModalFieldsWrapper>
                 </fieldset>
-                <ModalSubmitButton label={"submit"} disabled={false} extraCSS={''} />
+                <div className={"flex w-full justify-between relative"}>
+                    <ModalSubmitButton label={"pick"} disabled={false} extraCSS={''} />
+                    <MoreInfo stockpiles={ calcStockpilesIncludingCurrentPurchase(purchaseData[pickerTargetIdx]) } />
+                </div>
             </form>
         </Modal>
 
@@ -81,26 +84,19 @@ function MoreInfo({stockpiles}
 
     const [showStockpiles, setShowStockpiles] = useState<boolean>(false);
 
-    return  <div className={"relative flex justify-end"}>                             
-                <div className={"self-end relative top-3"}>
-                    <InfoButton showMore={showStockpiles} setShowMore={setShowStockpiles} modeKey={'primary'} />
-                </div>
+    return  <div className={"flex justify-end"}>                             
+                <InfoButton showMore={showStockpiles} setShowMore={setShowStockpiles} modeKey={'primary'} />
                 { showStockpiles ?
-                    <Tooltip close={() => setShowStockpiles(false)} >
+                    <Tooltip 
+                        posAndWidthCSS={"bottom-1 right-8 z-30 w-11/12"}
+                        close={() => setShowStockpiles(false)} 
+                        >
                         <StockpilesSection stockpiles={stockpiles} />
                     </Tooltip>
                     : null
                 }
             </div>
 }
-
-{/* <button 
-className={'absolute top-0.5 right-8 z-30 border border-neutral-100 bg-white shadow-lg rounded-lg w-11/12 pt-2 pb-2.5 px-3'}
-onClick={() => setShowStockpiles(false)}
-type={'button'}
->
-<StockpilesSection stockpiles={stockpiles} />
-</button> */}
 
 
 function StockpilesSection({stockpiles} 
@@ -128,7 +124,6 @@ interface I_UpgradeRadio {
     handleSelection : () => void, 
     disabled : boolean
 }
-
 function UpgradeRadio({checked, myKey, data, handleSelection, disabled} 
     : I_UpgradeRadio)
     : JSX.Element {
@@ -212,8 +207,8 @@ function getUpgradeRadioData({ targetIdx, purchaseData, gameState }
 
     let result : T_UpgradeRadioData[] = [];
 
-    // planData[#].levels displays the level of each unit after purchasing the planned upgrade.
-    // To get the levels before purchasing the planned upgrade, consult the previous element.
+    // planData[#].levels displays the level of each unit /after/ purchasing the planned upgrade.
+    // To get the levels /before/ purchasing this planned upgrade, we must consult the previous element.
     let levelsAtStart = targetIdx === 0 ? 
                         gameState.levels
                         : purchaseData[targetIdx - 1].levels;

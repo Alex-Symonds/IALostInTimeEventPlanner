@@ -44,10 +44,12 @@ export default function StatusForm({setGameState, gameState, closeModal}
 
     return (
         <Modal closeModal={closeModal}>
-            <ModalHeading>Enter Game Status</ModalHeading>
-
+            <ModalHeading>Game Status</ModalHeading>
             <form onSubmit={(e) => onSubmit(e)}>
-                <InputPageWrapper isVisible={ activePage === 1 } heading={`1/${MAX_PAGE_NUM}: Times and Premium`} >
+                <InputPageWrapper isVisible={ activePage === 1 } heading={`1/${MAX_PAGE_NUM}: Times and Premium`} 
+                    activePage={activePage} setActivePage={setActivePage}
+                    >
+
                     <InputGeneral
                         timeEntered={timeEntered}
                         setStateOnChange={setStateOnChange}
@@ -61,14 +63,18 @@ export default function StatusForm({setGameState, gameState, closeModal}
                     />
                 </InputPageWrapper>
 
-                <InputPageWrapper isVisible={ activePage === 2 } heading={`2/${MAX_PAGE_NUM}: Current Stockpiles`} >
+                <InputPageWrapper isVisible={ activePage === 2 } heading={`2/${MAX_PAGE_NUM}: Current Stockpiles`}  
+                    activePage={activePage} setActivePage={setActivePage}
+                    >
                     <InputStockpiles
                         controlledStockpileValue={controlledStockpileValue}
                         updateStockpiles={updateStockpiles}
                     />
                 </InputPageWrapper>
 
-                <InputPageWrapper isVisible={ activePage === 3 } heading={`3/${MAX_PAGE_NUM}: Worker Levels`} >
+                <InputPageWrapper isVisible={ activePage === 3 } heading={`3/${MAX_PAGE_NUM}: Worker Levels`}  
+                    activePage={activePage} setActivePage={setActivePage}
+                    >
                     <InputLevelsWorkers
                         handleLevelChange={handleLevelChange} 
                         gameState={gameState} 
@@ -76,7 +82,9 @@ export default function StatusForm({setGameState, gameState, closeModal}
                     />
                 </InputPageWrapper>
 
-                <InputPageWrapper isVisible={ activePage === MAX_PAGE_NUM } heading={`4/${MAX_PAGE_NUM}: Other Levels`} >
+                <InputPageWrapper isVisible={ activePage === MAX_PAGE_NUM } heading={`4/${MAX_PAGE_NUM}: Other Levels`}  
+                    activePage={activePage} setActivePage={setActivePage}
+                    >
                     <InputLevelsOther
                         handleLevelChange={handleLevelChange} 
                         gameState={gameState} 
@@ -84,8 +92,8 @@ export default function StatusForm({setGameState, gameState, closeModal}
                     />
                 </InputPageWrapper>
 
-                <ModalMultiPageNav activePage={activePage} changePage={setActivePage} numPages={MAX_PAGE_NUM} />
-                <ModalSubmitButton label={"submit"} extraCSS={'sr-only [padding:0]'} disabled={false}/>
+                <ModalMultiPageNav activePage={activePage} changePage={setActivePage} numPages={MAX_PAGE_NUM} submitLabel={"enter"}/>
+                <ModalSubmitButton label={"submit"} extraCSS={'sr-only [padding:0] [height:0]'} disabled={false}/>
             </form>
         </Modal>
     )
@@ -94,7 +102,7 @@ export default function StatusForm({setGameState, gameState, closeModal}
 
 
 function InputPageWrapper({ isVisible, heading, children }
-    : { isVisible : boolean, heading? : string, children : React.ReactNode })
+    : { isVisible : boolean, heading? : string, children : React.ReactNode } & any)
     : JSX.Element {
 
     const visibilityCSS = isVisible ? "" : "sr-only";

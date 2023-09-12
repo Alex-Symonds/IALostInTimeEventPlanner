@@ -1,10 +1,9 @@
 import { useState, Dispatch, SetStateAction } from "react";
 
-import { T_GameState, T_TimeRemainingDHM } from "../utils/types";
-
 import { MAX_DAYS } from '../utils/consts';
 import { getDateDisplayStr } from '../utils/dateAndTimeHelpers';
 import { capitalise } from '../utils/formatting';
+import { T_GameState, T_TimeRemainingDHM } from "../utils/types";
 
 import Select from './select';
 import { Button } from './buttons';
@@ -17,7 +16,7 @@ export default function InputGeneral({timeRemaining, setTimeRemaining, timeEnter
     : I_InputGeneral)
     : JSX.Element {
 
-    return  <div className={"flex flex-col gap-6"}>
+    return  <div className={"flex flex-col gap-6 mt-1"}>
                 <TimeRemainingFieldset timeRemaining={timeRemaining} setTimeRemaining={setTimeRemaining} />
                 <Entered timeEntered={timeEntered} setStateOnChange={setStateOnChange} setTimeEntered={setTimeEntered} />
                 <AllEggs gameState={gameState} handleLevelChange={handleLevelChange} />
@@ -75,33 +74,35 @@ function Entered({timeEntered, setStateOnChange, setTimeEntered}
 
     return(
         <div className={"flex items-center gap-2"}>
-
-            <Label htmlFor={"id_timeEntered"}>Entered</Label>
-                <Button 
-                    htmlType={"button"}
-                    onClick={() => { setTimeEntered(new Date()) }}
-                    colours={"secondary"}
-                    size={"inline"}
-                    extraCSS={"w-min"}
-                    >
-                    now
-                </Button>
-                <p 
-                    suppressHydrationWarning={true} 
-                    className={"ml-2"}
-                    >
-                    { getDateDisplayStr(timeEntered) }
-                </p>
-                <input 
-                    hidden 
-                    type="datetime-local" 
-                    id={"id_timeEntered"} 
-                    value={timeEntered == null ? "" : `${timeEntered}`} 
-                    onChange={(e) => setStateOnChange(e, setTimeEntered)}
-                />
+            <Label htmlFor={"id_timeEntered"}>
+                Entered
+            </Label>
+            <Button 
+                htmlType={"button"}
+                onClick={() => { setTimeEntered(new Date()) }}
+                colours={"secondary"}
+                size={"inline"}
+                extraCSS={"w-min"}
+                >
+                now
+            </Button>
+            <p 
+                suppressHydrationWarning={true} 
+                className={"ml-2"}
+                >
+                { getDateDisplayStr(timeEntered) }
+            </p>
+            <input 
+                hidden 
+                type="datetime-local" 
+                id={"id_timeEntered"} 
+                value={timeEntered == null ? "" : `${timeEntered}`} 
+                onChange={(e) => setStateOnChange(e, setTimeEntered)}
+            />
         </div>
     )
 }
+
 
 interface I_TimeRemainingFieldset {
     timeRemaining: T_TimeRemainingDHM,
@@ -162,7 +163,6 @@ type T_OutputUseTimeRemainingFieldset = {
     handleChangeHours : (e : React.ChangeEvent<HTMLInputElement>) => void, 
     handleChangeMinutes : (e : React.ChangeEvent<HTMLInputElement>) => void, 
 }
-
 function useTimeRemainingFieldset({timeRemaining, setTimeRemaining}
     : I_TimeRemainingFieldset)
     : T_OutputUseTimeRemainingFieldset {
