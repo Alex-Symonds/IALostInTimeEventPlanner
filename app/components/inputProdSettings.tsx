@@ -42,7 +42,7 @@ export default function ModalProdSettings({closeModal, currentProdSettings, curr
             <ModalHeading>Production Settings</ModalHeading>
             <form onSubmit={handleSubmit} className={"flex flex-col w-full"}>
                 <ModalFieldsWrapper>
-                    <div className={"flex flex-col items-center gap-6 mt-1"}>
+                    <div className={"flex flex-col items-center gap-6 my-1 mx-1"}>
                     {
                         Object.keys(currentProdSettings).map((myKey : string) => {
                             return <ProductionToggle key={myKey} 
