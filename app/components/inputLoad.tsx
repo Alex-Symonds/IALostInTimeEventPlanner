@@ -16,8 +16,6 @@ export default function ModalLoad({closeModal, loadInputs, loadOptions}
 
     const [toLoad, setToLoad] = useState<null | string>(options === null ? null : options[0].valueStr);
 
-    const id = useId();
-
     function handleChange(e : React.ChangeEvent<HTMLSelectElement>){
         setToLoad(e.target.value);
     }
@@ -30,8 +28,7 @@ export default function ModalLoad({closeModal, loadInputs, loadOptions}
         closeModal();
     }
 
-
-
+    const id = useId();
     return (
         <Modal closeModal={closeModal}>
             <ModalHeading>

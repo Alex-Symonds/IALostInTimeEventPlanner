@@ -7,23 +7,6 @@ export const defaultTimeRemaining : T_TimeRemainingDHM = {
     minutes: 0
 }
 
-export const defaultLevels : T_Levels = {
-    trinity : 0,
-    bronte : 0,
-    anne : 0,
-    petra : 0,
-    manny : 0,
-    tony : 0,
-    ruth : 0,
-    rex : 0,
-    blue : 0,
-    green : 0,
-    red : 0,
-    yellow : 0,
-    speed : 0,
-    dust : 0
-  }
-
 export const defaultStockpiles : T_Stockpiles = {
     dust: 0,
     blue: 0,
@@ -41,6 +24,40 @@ export const defaultProductionSettings : T_ProductionSettings = {
     tony: "yellow",
     ruth: "red",
     rex: "dust",
+}
+
+export const defaultLevels : T_Levels = {
+    trinity : 0,
+    bronte : 0,
+    anne : 0,
+    petra : 0,
+    manny : 0,
+    tony : 0,
+    ruth : 0,
+    rex : 0,
+    blue : 0,
+    green : 0,
+    red : 0,
+    yellow : 0,
+    speed : 0,
+    dust : 0
+}
+
+export const maxLevels : T_Levels = {
+    trinity: 10,
+    bronte: 10,
+    anne: 8,
+    petra: 10,
+    tony: 10,
+    manny: 10,
+    ruth: 8,
+    rex: 10,  
+    blue: 4,
+    green: 3,
+    red: 2,
+    yellow: 1,
+    speed: 5,
+    dust: 6,
 }
 
 export const defaultOfflinePeriodStart : T_TimeOfflinePeriod = {
@@ -123,3 +140,4 @@ export const lateGameSettings : any = {
         dust: 2,
     }
 }
+

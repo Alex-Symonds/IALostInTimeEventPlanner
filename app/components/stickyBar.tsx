@@ -1,9 +1,7 @@
-import { useState } from 'react';
-
 import { T_ModalWithToggle, T_ViewToggle} from '../utils/types';
 
-
 import { Button } from './buttons';
+
 
 interface I_StickyBar {
     saveLoadToggles : T_ModalWithToggle[],
@@ -14,7 +12,7 @@ export default function StickyBar({saveLoadToggles, viewToggles}
     : I_StickyBar)
     : JSX.Element {    
    
-    return  <div className={'bg-white px-3 py-2 w-full flex flex-col border-b border-neutral-200 sticky top-0 relative z-40 md:[top:calc(4.5rem-1px)] md:[grid-area:buttons]'}>
+    return  <div className={'bg-white px-3 py-2 w-full flex flex-col border-b border-neutral-200 sticky top-0 relative z-40 md:[top:calc(4.5rem)] md:[grid-area:buttons]'}>
                 <HeaderButtonsContainer viewToggles={viewToggles} saveLoadToggles={saveLoadToggles} />
             </div>
 }

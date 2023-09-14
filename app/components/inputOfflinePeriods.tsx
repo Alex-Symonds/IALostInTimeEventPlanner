@@ -64,8 +64,6 @@ export default function OfflineForm({closeForm, offlinePeriod, gameState, pos, s
         } = useOfflineForm({initValue, idxToEdit, setOfflinePeriods, closeForm, offlinePeriods, gameState});
     
     const id = useId();
-
-    
     const ariaError : T_AriaError = {
         isInvalid: showError,
         errorMessageId: "offlinePeriodsError"
@@ -270,7 +268,7 @@ function useOfflineForm({initValue, idxToEdit, setOfflinePeriods, closeForm, off
         }
     }
 
-    function removeOfflinePeriod() : void{
+    function removeOfflinePeriod() : void {
         if(idxToEdit === null){
             closeForm();
             return;

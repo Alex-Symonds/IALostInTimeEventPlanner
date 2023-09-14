@@ -3,6 +3,8 @@ import { T_ModalData } from './utils/types';
 import useSaveAndLoad from './utils/useSaveAndLoad';
 import useOfflinePeriodsModal from './utils/useOfflinePeriodsModal';
 import useGameStateModal from './utils/useGameStateModal';
+import usePlanner from './utils/usePlanner';
+import useToggledDisplay from './utils/useToggledDisplay';
 
 import Planner from './components/planner';
 import ModalSave from './components/inputSave';
@@ -11,9 +13,7 @@ import StatusForm from './components/inputGameState';
 import OfflineForm from './components/inputOfflinePeriods';
 import StickyBar from './components/stickyBar';
 import DisplayUserInput from './components/sectionDisplayUserInput';
-import usePlanner from './utils/usePlanner';
-import useToggledDisplay from './utils/useToggledDisplay';
-
+import ErrorWithPlanner from './components/errorWithPlanner';
 
 export default function Home() {
   
@@ -34,7 +34,7 @@ export default function Home() {
   const { save : saveModal, load: loadModal } = useSaveAndLoad({actions, setActions, offlinePeriods, setOfflinePeriods, gameState, setGameState});
 
   return (
-    <main className={"flex justify-center bg-neutral-50"}>
+    <main className={"flex justify-center bg-neutral-50 min-h-screen"}>
 
       <Modals modals={ {
                 save: saveModal,
@@ -63,21 +63,21 @@ export default function Home() {
           offlinePeriodIdxEdit = { offlinePeriodsModal.data.idxToEdit }
         />
 
-        { gameState === null ?
-            null 
-            : purchaseData === undefined || switchData === undefined || timeIdGroups === null ?
-              <NoPlanner />
-              :
-              <Planner  gameState={ gameState } 
-                        actions={ actions } 
-                        setActions={ setActions } 
-                        offlinePeriods={ offlinePeriods } 
-                        purchaseData={ purchaseData }
-                        timeIdGroups={ timeIdGroups }
-                        prodSettingsNow={ prodSettingsNow }
-                        setProdSettingsNow={ setProdSettingsNow }
-              />
+        <div className={"bg-white [min-height:calc(100vh-4.5rem-1px-3rem)]"}>
+        { gameState === null || purchaseData === undefined || switchData === undefined || timeIdGroups === null ?
+          <ErrorWithPlanner />
+          :
+          <Planner  gameState={ gameState } 
+                    actions={ actions } 
+                    setActions={ setActions } 
+                    offlinePeriods={ offlinePeriods } 
+                    purchaseData={ purchaseData }
+                    timeIdGroups={ timeIdGroups }
+                    prodSettingsNow={ prodSettingsNow }
+                    setProdSettingsNow={ setProdSettingsNow }
+          />
         }
+        </div>
       </div>
     </main>
   )
@@ -85,7 +85,7 @@ export default function Home() {
 
 
 function MainPageHeading(){
-  return  <h1 className={"flex flex-col px-3 pt-1 pb-3 block bg-white md:sticky md:top-0 md:relative md:[grid-area:heading]"}>
+  return  <h1 className={"[height:4.5rem] flex flex-col px-3 pt-1 pb-3 block bg-white md:sticky md:top-0 md:relative md:[grid-area:heading]"}>
             <span className={"text-3xl font-extrabold block leading-snug text-violet-700"}>Event&nbsp;Planner</span>
             <span className={"text-sm block leading-none"}>Idle&nbsp;Apocalypse: Lost&nbsp;in&nbsp;Time&nbsp;</span>
           </h1>
@@ -127,28 +127,6 @@ function Modals({modals} : { modals : { [key : string] :  T_ModalData} }){
           </>
 
 }
-
-
-function NoPlanner(){
-  return  <div>
-            <h2>Error</h2>
-            <p>Something went wrong with working out a plan.</p>
-            <h3>Possible fixes</h3>
-            <ul>
-              <li>Re-enter game status</li>
-              <li>Re-enter offline periods</li>
-              <li>Start again by refreshing the page</li>
-            </ul>
-            <p>If none of these work, it&apos;s a problem on our end. Sorry! Try again later.</p>
-          </div>
-}
-
-
-
-
-
-
-
 
 
 

@@ -1,4 +1,5 @@
 import { MAX_TIME } from '../utils/consts';
+import { defaultProductionSettings } from '../utils/defaults';
 import { T_OfflinePeriod, T_ProductionSettings, T_PurchaseData, T_TimeGroup, T_Action, T_GameState, T_ProductionSettingsNow } from '../utils/types';
 
 import { useSwitchProductionNow, T_PropsSwitchProdNowModal } from '../utils/useSwitchProductionNow';
@@ -11,6 +12,7 @@ import ControlsRow from './planner_controlsRow';
 import TimeGroup from './planner_timeGroup';
 import PlannerFooter from './planner_footer';
 import ResultAtTop from './resultAtTop';
+import AllUpgradesPurchased from './allUpgradesPurchased';
 
 
 
@@ -31,63 +33,62 @@ export default function Planner({timeIdGroups, gameState, actions, setActions, o
 
     const numValid : number = purchaseData.filter(ele => ele.timeId < MAX_TIME).length;
 
-    let initialProdSettings : T_ProductionSettings = prodSettingsNow === null ?
-                                timeIdGroups[0].productionSettings
-                                : prodSettingsNow.productionSettings;
+    let initialProdSettings : T_ProductionSettings = 
+                            timeIdGroups.length === 0 ?
+                                defaultProductionSettings
+                                : prodSettingsNow === null ?
+                                    timeIdGroups[0].productionSettings
+                                    : prodSettingsNow.productionSettings;
 
     const { openModal: openUpgradePicker, props: upgradePickerProps } = useUpgradePicker({purchaseData, actions, setActions});
     const { openModal: openSwitchFutureModal, props: switchProdFutureProps } = useSwitchProductionFuture({ actions, setActions });
     const { openModal: openSwitchNowModal, props: switchProdNowProps } = useSwitchProductionNow({ initialProdSettings, setProdSettingsNow, gameState, timeIdGroups });
     
     return(
-        <div className={"flex flex-col items-center bg-white"}>
+        <div className={"flex flex-col items-center"}>
             <ResultAtTop 
                 planData={purchaseData} 
                 gameState={gameState} 
                 actions={actions} 
                 timeIdGroups={timeIdGroups} 
             />
-            <Modals 
-                purchaseData={purchaseData} 
-                gameState={gameState} 
-                upgradePickerProps={upgradePickerProps}
-                switchProdFutureProps={switchProdFutureProps}
-                switchProdNowProps={switchProdNowProps}
-            />
-
-            <div className={"flex flex-col gap-1 w-min"}>
-            {
-                timeIdGroups.length === 0 ?
-                    null
-                    : 
-                    <>
+            { timeIdGroups.length === 0 ?
+                <AllUpgradesPurchased />
+            : <>
+                <Modals 
+                    purchaseData={purchaseData} 
+                    gameState={gameState} 
+                    upgradePickerProps={upgradePickerProps}
+                    switchProdFutureProps={switchProdFutureProps}
+                    switchProdNowProps={switchProdNowProps}
+                />
+                <div className={"flex flex-col gap-1 w-min"}>
                         { gameState.levels.trinity > 0 ?
                             <ControlsRow 
-                                displaySwitches={timeIdGroups[0].switches.filter(ele => {
-                                    let data = timeIdGroups[0];
-                                    return data.productionSettings[ele.key as keyof typeof data.productionSettings] !== ele.to;
-                                })}
+                                displaySwitches={timeIdGroups.length === 0 ? [] : 
+                                        timeIdGroups[0].switches.filter(ele => {
+                                            let data = timeIdGroups[0];
+                                            return data.productionSettings[ele.key as keyof typeof data.productionSettings] !== ele.to;
+                                        })}
                                 handleProductionClick={openSwitchNowModal} 
                                 handleUpgradeClick={() => openUpgradePicker(0)}
                                 showUpgradeButton={true}
                             />
                             : null
                         }
-
-                        <TimeGroupsList
-                            gameState={gameState}
-                            offlinePeriods={offlinePeriods}
-                            timeIdGroups={timeIdGroups}
-                            openUpgradePicker={openUpgradePicker}
-                            openProdSwitcherModal={openSwitchFutureModal}
-                            purchasesPassTimeLimit={numValid < purchaseData.length}
-                        />
-                    </>
+                    <TimeGroupsList
+                        gameState={gameState}
+                        offlinePeriods={offlinePeriods}
+                        timeIdGroups={timeIdGroups}
+                        openUpgradePicker={openUpgradePicker}
+                        openProdSwitcherModal={openSwitchFutureModal}
+                        purchasesPassTimeLimit={numValid < purchaseData.length}
+                    />
+                </div>
+            </>
             }
-            </div>
 
-            {
-                purchaseData !== null && purchaseData.length > 0 ?
+            { purchaseData !== null && purchaseData.length > 0 ?
                 <PlannerFooter unboughtUpgrades={purchaseData.length - numValid} />
                 : null
             }
@@ -178,3 +179,5 @@ function TimeGroupsList({timeIdGroups, offlinePeriods, gameState, openUpgradePic
             })}
         </>
 }
+
+

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { T_TimeGroup, T_GameState } from '../utils/types';
-import { calcDHMString, convertOfflineTimeToTimeId, convertTimeIdToTimeRemaining, convertTimeIdToDate, getDateDisplayStr, getStartTime } from '../utils/dateAndTimeHelpers';
+import { calcDHMString, convertTimeIdToTimeRemaining, convertTimeIdToDate, getDateDisplayStr } from '../utils/dateAndTimeHelpers';
 import { MAX_TIME } from '../utils/consts';
 
 import { IconMoon } from './icons';

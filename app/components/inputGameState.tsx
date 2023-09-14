@@ -4,7 +4,7 @@ import UPGRADE_DATA from '../upgrades.json';
 
 import { deepCopy } from '../utils/consts';
 import { convertTimeRemainingToMinutes, convertTimeIdToDHM } from '../utils/dateAndTimeHelpers';
-import { defaultLevels, defaultStockpiles, defaultTimeRemaining, lateGameSettings } from '../utils/defaults';
+import { defaultLevels, defaultStockpiles, defaultTimeRemaining, lateGameSettings, maxLevels } from '../utils/defaults';
 import { T_Stockpiles, T_Levels, T_TimeRemainingDHM, T_GameState } from '../utils/types';
 
 import { SelectWithLabel, T_OptionData } from './select';
@@ -42,6 +42,7 @@ export default function StatusForm({setGameState, gameState, closeModal}
             updateStockpiles,
             setStateOnChange,
         } = useGameStatusForm({setGameState, gameState, closeModal});
+
 
     return (
         <Modal closeModal={closeModal}>
@@ -299,7 +300,6 @@ type T_OutputUseGameStatusForm =
         "handleLevelChange"> &
     I_InputStockpiles & {
     onSubmit : (e : React.SyntheticEvent) => void,
-
 }
 
 function useGameStatusForm({gameState, setGameState, closeModal}
@@ -328,6 +328,15 @@ function useGameStatusForm({gameState, setGameState, closeModal}
     //     setAllEggsLevel(lateGameSettings.allEggs);
     //     setStockpiles(lateGameSettings.stockpiles);
     //     setLevels(lateGameSettings.levels);
+    // }
+
+    // function testLevelsDone(){
+    //     setTimeEntered(new Date(new Date().getTime() - 5 * 60 * 1000));
+    //     setTimeRemaining(lateGameSettings.timeRemainingDHM);
+    //     setHasAdBoost(lateGameSettings.hasAdBoost);
+    //     setAllEggsLevel(lateGameSettings.allEggs);
+    //     setStockpiles(lateGameSettings.stockpiles);
+    //     setLevels(maxLevels);
     // }
 
     function updateStockpiles(e : React.ChangeEvent<HTMLInputElement>, key : string){
@@ -386,7 +395,7 @@ function useGameStatusForm({gameState, setGameState, closeModal}
         setTimeRemaining,
         levels,
         controlledStockpileValue,
-        updateStockpiles
+        updateStockpiles,
     }
 }
 

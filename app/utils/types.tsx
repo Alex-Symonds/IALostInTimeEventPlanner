@@ -129,25 +129,6 @@ export type T_ProductionSettingsNow =
     Pick<T_PurchaseData, "productionSettings">;
 
 
-
-
-
-
-
-
-
-
-
-
-// type T_ProductionSettings = {
-//     [key : string] : T_ProductionStatus,
-// }
-
-// type T_MaxDustInfo = {
-//     planDataIndex : number,
-//     dust : number
-// }
-
 export type T_AllToDustOutput = {
     value : number,
     rate : number
@@ -159,14 +140,11 @@ export type T_ViewToggle = {
     toggle : () => void
 }
 
-
 export interface I_ProductionSwitcherModalUniversal {
     isVisible : boolean,
     closeModal : () => void,
     updateProdSettings : (newSettings : T_ProductionSettings) => void,
 }
-
-
 
 export type T_ModalData =
     T_ModalDataShared & (
