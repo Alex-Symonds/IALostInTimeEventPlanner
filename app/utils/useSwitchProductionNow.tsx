@@ -30,6 +30,7 @@
 import { useState } from 'react';
 
 import { convertDateToTimeId } from './dateAndTimeHelpers';
+import { maxLevels } from './defaults';
 import { I_ProductionSwitcherModalUniversal, T_ProductionSettings, T_TimeGroup, T_GameState, T_Levels, T_ProductionSettingsNow } from './types';
 
 
@@ -70,7 +71,7 @@ export function useSwitchProductionNow({initialProdSettings, setProdSettingsNow,
         closeModal: () => setIsVisible(false),
         initialProdSettings,
         updateProdSettings: updateSettings,
-        levelsAtStart: timeIdGroups[0].levels
+        levelsAtStart: timeIdGroups.length > 0 ? timeIdGroups[0].levels : maxLevels
     }
 
     return {

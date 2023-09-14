@@ -13,7 +13,6 @@ export function convertOfflineTimeToDate(offlineTime : T_TimeOfflinePeriod, star
     return result;
 }
 
-
 export function convertOfflineTimeToTimeId(offlineTime : T_TimeOfflinePeriod, startedAt : Date)
     : number {
 
@@ -39,13 +38,28 @@ export function convertTimeIdToDate(targetTimeId : number, gameState : T_GameSta
     return new Date(startedAt.getTime() + targetTimeId * msPerMin);
 }
 
+export function convertTimeIdToDHM(timeId: number)
+    : T_TimeRemainingDHM {
 
-export function convertTimeRemainingToMinutes(timeAsDHM : T_TimeRemainingDHM) 
-    : number {
+    let days : number = Math.floor(timeId / 60 / 24);
+    let hours : number, minutes : number;
 
-    return timeAsDHM.days * 24 * 60 + timeAsDHM.hours * 60 + timeAsDHM.minutes;
+    if(days === 3){
+        return {
+            days: 3,
+            hours: 0,
+            minutes: 0
+        }
+    }
+
+    let remainingTime = timeId - days * 24 * 60;
+    minutes = remainingTime % 60;
+    hours = (remainingTime - minutes) / 60;
+
+    return{
+        days, hours, minutes
+    }
 }
-
 
 export function convertTimeIdToTimeRemaining(
     timeId : number)
@@ -59,6 +73,18 @@ export function convertTimeIdToTimeRemaining(
         minutes: timeId % 60
     } 
 }
+
+
+export function convertTimeRemainingToMinutes(timeAsDHM : T_TimeRemainingDHM) 
+    : number {
+
+    const days = isNaN(timeAsDHM.days) ? 0 : timeAsDHM.days;
+    const hours = isNaN(timeAsDHM.hours) ? 0 : timeAsDHM.hours;
+    const minutes = isNaN(timeAsDHM.minutes) ? 0 : timeAsDHM.minutes;
+    return days * 24 * 60 + hours * 60 + minutes;
+}
+
+
 
 export function calcDHMString(timeAsDHM : T_TimeRemainingDHM) : string {
     return `${timeAsDHM.days}d${nbsp()}${timeAsDHM.hours}h${nbsp()}${timeAsDHM.minutes}m`

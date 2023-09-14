@@ -1,7 +1,7 @@
 import { getDateDisplayStr, getStartTime, convertOfflineTimeToDate, printOfflineTime } from "../utils/dateAndTimeHelpers";
 import { T_GameState, T_OfflinePeriod } from "../utils/types";
 
-import { InputResultsSection, EditButtonBox } from './sectionInputResults';
+import { DisplayInputSection, EditButtonBox } from './sectionDisplayUserInput';
 import { Button } from './buttons';
 
 
@@ -19,12 +19,12 @@ export default function SectionOfflinePeriods({offlinePeriods, openModal, gameSt
         return null;
     }
 
-    return  <InputResultsSection title={"Offline Periods"}>
+    return  <DisplayInputSection title={"Offline Periods"}>
                 <div className={'overflow-y-auto overflow-x-hidden max-h-[calc(100vh-5rem)] px-2'}>
                     <OfflineDisplay offlinePeriods={offlinePeriods} gameState={gameState} openForm={openModal} idxEdit={idxEdit} />
                     <EditButtonBox openEditForm={() => openModal(null)} label={`add`} />
                 </div>
-            </InputResultsSection>
+            </DisplayInputSection>
 
 }
 

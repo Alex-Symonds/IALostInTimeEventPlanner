@@ -3,7 +3,8 @@ import { Dispatch, SetStateAction, useState, ChangeEvent } from 'react';
 import UPGRADE_DATA from '../upgrades.json';
 
 import { deepCopy } from '../utils/consts';
-import { defaultLevels, defaultStockpiles, defaultTimeRemaining, lateGameSettings } from '../utils/defaults';
+import { convertTimeRemainingToMinutes, convertTimeIdToDHM } from '../utils/dateAndTimeHelpers';
+import { defaultLevels, defaultStockpiles, defaultTimeRemaining, lateGameSettings, maxLevels } from '../utils/defaults';
 import { T_Stockpiles, T_Levels, T_TimeRemainingDHM, T_GameState } from '../utils/types';
 
 import { SelectWithLabel, T_OptionData } from './select';
@@ -42,12 +43,14 @@ export default function StatusForm({setGameState, gameState, closeModal}
             setStateOnChange,
         } = useGameStatusForm({setGameState, gameState, closeModal});
 
+
     return (
         <Modal closeModal={closeModal}>
             <ModalHeading>Game Status</ModalHeading>
             <form onSubmit={(e) => onSubmit(e)}>
-                <InputPageWrapper isVisible={ activePage === 1 } heading={`1/${MAX_PAGE_NUM}: Times and Premium`} 
-                    activePage={activePage} setActivePage={setActivePage}
+                <InputPageWrapper 
+                    isVisible={ activePage === 1 } 
+                    heading={`1/${MAX_PAGE_NUM}: Times and Premium`} 
                     >
 
                     <InputGeneral
@@ -63,8 +66,9 @@ export default function StatusForm({setGameState, gameState, closeModal}
                     />
                 </InputPageWrapper>
 
-                <InputPageWrapper isVisible={ activePage === 2 } heading={`2/${MAX_PAGE_NUM}: Current Stockpiles`}  
-                    activePage={activePage} setActivePage={setActivePage}
+                <InputPageWrapper 
+                    isVisible={ activePage === 2 } 
+                    heading={`2/${MAX_PAGE_NUM}: Current Stockpiles`}  
                     >
                     <InputStockpiles
                         controlledStockpileValue={controlledStockpileValue}
@@ -72,8 +76,9 @@ export default function StatusForm({setGameState, gameState, closeModal}
                     />
                 </InputPageWrapper>
 
-                <InputPageWrapper isVisible={ activePage === 3 } heading={`3/${MAX_PAGE_NUM}: Worker Levels`}  
-                    activePage={activePage} setActivePage={setActivePage}
+                <InputPageWrapper 
+                    isVisible={ activePage === 3 } 
+                    heading={`3/${MAX_PAGE_NUM}: Worker Levels`}  
                     >
                     <InputLevelsWorkers
                         handleLevelChange={handleLevelChange} 
@@ -82,8 +87,9 @@ export default function StatusForm({setGameState, gameState, closeModal}
                     />
                 </InputPageWrapper>
 
-                <InputPageWrapper isVisible={ activePage === MAX_PAGE_NUM } heading={`4/${MAX_PAGE_NUM}: Other Levels`}  
-                    activePage={activePage} setActivePage={setActivePage}
+                <InputPageWrapper 
+                    isVisible={ activePage === MAX_PAGE_NUM } 
+                    heading={`4/${MAX_PAGE_NUM}: Other Levels`}  
                     >
                     <InputLevelsOther
                         handleLevelChange={handleLevelChange} 
@@ -92,8 +98,17 @@ export default function StatusForm({setGameState, gameState, closeModal}
                     />
                 </InputPageWrapper>
 
-                <ModalMultiPageNav activePage={activePage} changePage={setActivePage} numPages={MAX_PAGE_NUM} submitLabel={"enter"}/>
-                <ModalSubmitButton label={"submit"} extraCSS={'sr-only [padding:0] [height:0]'} disabled={false}/>
+                <ModalMultiPageNav 
+                    activePage={activePage} 
+                    changePage={setActivePage} 
+                    numPages={MAX_PAGE_NUM} 
+                    submitLabel={"enter"}
+                />
+                <ModalSubmitButton 
+                    label={"submit"} 
+                    extraCSS={'sr-only [padding:0] [height:0]'} 
+                    disabled={false}
+                />
             </form>
         </Modal>
     )
@@ -102,7 +117,7 @@ export default function StatusForm({setGameState, gameState, closeModal}
 
 
 function InputPageWrapper({ isVisible, heading, children }
-    : { isVisible : boolean, heading? : string, children : React.ReactNode } & any)
+    : { isVisible : boolean, heading? : string, children : React.ReactNode })
     : JSX.Element {
 
     const visibilityCSS = isVisible ? "" : "sr-only";
@@ -245,30 +260,6 @@ export function getUpgradeOptions({name, max}
 }
 
 
-function convertTimeIdToDHM(timeId: number)
-    : { days : number, hours : number, minutes : number} {
-
-    let days : number = Math.floor(timeId / 60 / 24);
-    let hours : number, minutes : number;
-
-    if(days === 3){
-        return {
-            days: 3,
-            hours: 0,
-            minutes: 0
-        }
-    }
-
-    let remainingTime = timeId - days * 24 * 60;
-    minutes = remainingTime % 60;
-    hours = (remainingTime - minutes) / 60;
-
-    return{
-        days, hours, minutes
-    }
-}
-
-
 interface I_PropsConvertFormInputsToGameState {
     timeEntered : Date,
     timeRemaining : T_TimeRemainingDHM, 
@@ -281,14 +272,9 @@ function convertFormInputsToGameState({timeEntered, timeRemaining, hasAdBoost, a
     : I_PropsConvertFormInputsToGameState)
     : T_GameState {
 
-    const days = isNaN(timeRemaining.days) ? 0 : timeRemaining.days;
-    const hours = isNaN(timeRemaining.hours) ? 0 : timeRemaining.hours;
-    const minutes = isNaN(timeRemaining.minutes) ? 0 : timeRemaining.minutes;
-    const timeRemainingInMins = days * 24 * 60 + hours * 60 + minutes;
-
     return {
         timeEntered,
-        timeRemaining: timeRemainingInMins,
+        timeRemaining: convertTimeRemainingToMinutes(timeRemaining),
         premiumInfo: {
             adBoost: hasAdBoost,
             allEggs: allEggsLevel,
@@ -314,7 +300,6 @@ type T_OutputUseGameStatusForm =
         "handleLevelChange"> &
     I_InputStockpiles & {
     onSubmit : (e : React.SyntheticEvent) => void,
-
 }
 
 function useGameStatusForm({gameState, setGameState, closeModal}
@@ -343,6 +328,15 @@ function useGameStatusForm({gameState, setGameState, closeModal}
     //     setAllEggsLevel(lateGameSettings.allEggs);
     //     setStockpiles(lateGameSettings.stockpiles);
     //     setLevels(lateGameSettings.levels);
+    // }
+
+    // function testLevelsDone(){
+    //     setTimeEntered(new Date(new Date().getTime() - 5 * 60 * 1000));
+    //     setTimeRemaining(lateGameSettings.timeRemainingDHM);
+    //     setHasAdBoost(lateGameSettings.hasAdBoost);
+    //     setAllEggsLevel(lateGameSettings.allEggs);
+    //     setStockpiles(lateGameSettings.stockpiles);
+    //     setLevels(maxLevels);
     // }
 
     function updateStockpiles(e : React.ChangeEvent<HTMLInputElement>, key : string){
@@ -401,7 +395,7 @@ function useGameStatusForm({gameState, setGameState, closeModal}
         setTimeRemaining,
         levels,
         controlledStockpileValue,
-        updateStockpiles
+        updateStockpiles,
     }
 }
 

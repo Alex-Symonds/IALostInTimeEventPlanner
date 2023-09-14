@@ -5,7 +5,7 @@ import SectionGameState from './sectionGameState';
 import SectionOfflinePeriods from './sectionOfflinePeriods';
 
 
-interface I_InputResults {
+interface I_DisplayUserInput {
     gameState : T_GameState,
     openGameStateModal : () => void,
     offlinePeriods : T_OfflinePeriod[],
@@ -15,8 +15,8 @@ interface I_InputResults {
     showOfflinePeriods : boolean
 }
 
-export default function InputResults({gameState, openGameStateModal, offlinePeriods, openOfflinePeriodsModal, offlinePeriodIdxEdit, showGameState, showOfflinePeriods}
-    : I_InputResults)
+export default function DisplayUserInput({gameState, openGameStateModal, offlinePeriods, openOfflinePeriodsModal, offlinePeriodIdxEdit, showGameState, showOfflinePeriods}
+    : I_DisplayUserInput)
     : JSX.Element {
 
     const gameStateVisibilityCSS = calcVisibilityCSS(showGameState);
@@ -63,7 +63,7 @@ function StickyBarSection({extraCSS, children}
     )
 }
 
-export function InputResultsSection({title, children} 
+export function DisplayInputSection({title, children} 
     : {title : string, children : React.ReactNode})
     : JSX.Element {
 

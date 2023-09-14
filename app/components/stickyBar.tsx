@@ -1,12 +1,10 @@
-import { useState } from 'react';
-
-import { T_ViewToggle} from '../utils/types';
-
+import { T_ModalWithToggle, T_ViewToggle} from '../utils/types';
 
 import { Button } from './buttons';
 
+
 interface I_StickyBar {
-    saveLoadToggles : T_ViewToggle[],
+    saveLoadToggles : T_ModalWithToggle[],
     viewToggles : T_ViewToggle[]
 }
 
@@ -14,7 +12,7 @@ export default function StickyBar({saveLoadToggles, viewToggles}
     : I_StickyBar)
     : JSX.Element {    
    
-    return  <div className={'bg-white px-3 py-2 w-full flex flex-col border-b border-neutral-200 sticky top-0 relative z-40 md:[top:calc(4.5rem-1px)] md:[grid-area:buttons]'}>
+    return  <div className={'bg-white px-3 py-2 w-full flex flex-col border-b border-neutral-200 sticky top-0 relative z-40 md:[top:calc(4.5rem)] md:[grid-area:buttons]'}>
                 <HeaderButtonsContainer viewToggles={viewToggles} saveLoadToggles={saveLoadToggles} />
             </div>
 }
@@ -43,12 +41,12 @@ function HeaderButtonsContainer({viewToggles, saveLoadToggles} : I_HeaderButtons
                 <div className={"flex gap-2"}>
                     {
                         saveLoadToggles.map(ele => {
-                            return  <Button key={ele.displayStr}
+                            return  <Button key={ele.data.displayStr}
                                         size={'stickyBar'}
                                         colours={'secondary'}
-                                        onClick={ele.toggle}
+                                        onClick={ ele.toggle }
                                         >
-                                        {ele.displayStr}
+                                        {ele.data.displayStr}
                                     </Button>
                         })
                     }
