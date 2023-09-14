@@ -1,15 +1,14 @@
 import { useId, useState } from 'react';
 
-import { SAVE_FILE_PREFIX } from '../utils/consts';
-
 import Modal, { ModalHeading, ModalSubmitButton, ModalFieldsWrapper, I_Modal } from './modal';
 import { Button } from './buttons';
 
 
 interface I_ModalSave extends Pick<I_Modal, "closeModal"> {
-    saveInputs : (keyName : string) => void
+    saveInputs : (keyName : string) => void,
+    convertToKeyName : (keyName : string) => string,
 }
-export default function ModalSave({closeModal, saveInputs} 
+export default function ModalSave({closeModal, saveInputs, convertToKeyName} 
     : I_ModalSave)
     : JSX.Element {
 
@@ -19,7 +18,7 @@ export default function ModalSave({closeModal, saveInputs}
     
     function handleChange(e : React.ChangeEvent<HTMLInputElement>){
         let proposedKey = convertToValidKey(e.target.value);
-        let nameExists = SAVE_FILE_PREFIX + proposedKey in Object.keys(localStorage);
+        let nameExists = convertToKeyName(proposedKey) in Object.keys(localStorage);
 
         if(nameExists){
             setShowWarning(true);
@@ -31,7 +30,7 @@ export default function ModalSave({closeModal, saveInputs}
     }
 
     function handleSubmit(){
-        let nameExists = Object.keys(localStorage).includes(SAVE_FILE_PREFIX + name);
+        let nameExists = Object.keys(localStorage).includes(convertToKeyName(name));
         if(nameExists){
             setShowOverwrite(true)
         }
@@ -41,7 +40,7 @@ export default function ModalSave({closeModal, saveInputs}
     }
 
     function saveAndClose(){
-        saveInputs(SAVE_FILE_PREFIX + name);
+        saveInputs(name);
         closeModal();
     }
 

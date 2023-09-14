@@ -1,3 +1,5 @@
+import { SetStateAction, Dispatch } from "react";
+
 export type T_GameState = {
     timeEntered : Date,
     timeRemaining : number,
@@ -162,4 +164,33 @@ export interface I_ProductionSwitcherModalUniversal {
     isVisible : boolean,
     closeModal : () => void,
     updateProdSettings : (newSettings : T_ProductionSettings) => void,
+}
+
+
+
+export type T_ModalData =
+    T_ModalDataShared & (
+        T_ModalOpen | T_ModalToggle | (T_ModalToggle & T_ModalOpen)
+    )
+
+type T_ModalDataShared = {
+    isVisible : boolean,
+    closeModal : () => void,
+    action : (data : any) => void | Dispatch<SetStateAction<any>>,
+    data? : any
+}
+export type T_ModalWithOpen =
+    T_ModalDataShared & T_ModalOpen;
+    
+export type T_ModalWithToggle =
+    T_ModalDataShared & T_ModalToggle;
+
+export type T_ModalWithOpenAndToggle =
+    T_ModalDataShared & T_ModalToggle & T_ModalOpen;
+
+type T_ModalToggle = {
+    toggle : () => void,
+}
+type T_ModalOpen = {
+    openModal : (data : any) => void | Dispatch<SetStateAction<any>>
 }
