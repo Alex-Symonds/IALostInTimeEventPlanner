@@ -2,7 +2,8 @@ import {useState, useId, ChangeEvent, SyntheticEvent } from 'react';
 
 import { deepCopy } from '../utils/consts';
 import { defaultOfflinePeriodStart, defaultOfflinePeriodEnd } from '../utils/defaults';
-import { printOfflineTime, getStartTime, getMonthName, convertOfflineTimeToTimeId } from '../utils/dateAndTimeHelpers';
+import { printOfflineTime, calcStartTime, getMonthName } from '../utils/dateAndTimeHelpers';
+import { convertOfflineTimeToTimeID } from '../utils/offlinePeriodHelpers';
 import { T_OfflinePeriod, T_GameState, T_TimeOfflinePeriod } from '../utils/types';
 import { generateKey } from '../utils/uniqueKeys';
 
@@ -303,11 +304,11 @@ function useOfflineForm({initValue, idxToEdit, setOfflinePeriods, closeForm, off
         let newDataDeepCopy = deepCopy(formOfflinePeriod);
         newDataDeepCopy[roleKey][unitKey] = newValue;
 
-        const startedAt = getStartTime(gameState);
-        let startTimeId = convertOfflineTimeToTimeId(newDataDeepCopy.start, startedAt);
-        let endTimeId = convertOfflineTimeToTimeId(newDataDeepCopy.end, startedAt);
+        const startedAt = calcStartTime(gameState);
+        let startTimeID = convertOfflineTimeToTimeID(newDataDeepCopy.start, startedAt);
+        let endTimeID = convertOfflineTimeToTimeID(newDataDeepCopy.end, startedAt);
 
-        newDataDeepCopy.isValid = startTimeId < endTimeId;
+        newDataDeepCopy.isValid = startTimeID < endTimeID;
         handleChange(newDataDeepCopy);
     }
 
@@ -356,7 +357,7 @@ function offlineTimesInputKit({ handleSingleKeyChange, roleKey, gameState }
     }
 
     function calcValidDates(){
-        let startTime = getStartTime(gameState);
+        let startTime = calcStartTime(gameState);
         let endTime = new Date(startTime.getTime() + 3 * 24 * 60 * 60 * 1000);
 
         let validDates : { date: number, month: number }[] = [];

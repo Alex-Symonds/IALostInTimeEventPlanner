@@ -1,9 +1,8 @@
 import { useState } from "react";
 
-import UPGRADE_DATA from '../upgrades.json';
-
 import { deepCopy } from "../utils/consts";
 import { moveIsValid } from '../utils/editPlan';
+import { T_DATA_KEYS, getEntriesFromJSON, getProductionCostsFromJSON } from "../utils/getDataFromJSON";
 import { T_GameState, T_PurchaseData, T_Stockpiles, T_CostData, } from "../utils/types";
 
 import { BadgeCost, BadgeMaxed } from "./badges";
@@ -17,7 +16,7 @@ import Tooltip from './tooltip';
 export interface I_UpgradePickerModal extends Pick<I_Modal, "closeModal"> {
     movePlanElement : (data : {oldIdx : number, newIdx : number}) => void, 
     pickerTargetIdx : number | null, 
-    purchaseData : T_PurchaseData[], 
+    purchaseData : T_PurchaseData[],
     gameState : T_GameState
 }
 export default function UpgradePickerModal({closeModal, movePlanElement, pickerTargetIdx, purchaseData, gameState } 
@@ -206,14 +205,11 @@ function getUpgradeRadioData({ targetIdx, purchaseData, gameState }
     : T_UpgradeRadioData[] {
 
     let result : T_UpgradeRadioData[] = [];
-
-    // planData[#].levels displays the level of each unit /after/ purchasing the planned upgrade.
-    // To get the levels /before/ purchasing this planned upgrade, we must consult the previous element.
     let levelsAtStart = targetIdx === 0 ? 
                         gameState.levels
-                        : purchaseData[targetIdx - 1].levels;
+                        : purchaseData[targetIdx].levelsAbove;
 
-    for(const [k, v] of Object.entries(UPGRADE_DATA)){
+    for(const [k, v] of getEntriesFromJSON()){
         let levelAtStart = levelsAtStart[k as keyof typeof levelsAtStart];
         let maxLevel = v.upgrades.length;
         let newLevel = levelAtStart + 1;
@@ -242,8 +238,7 @@ function calcStockpilesIncludingCurrentPurchase(purchaseData
     : T_Stockpiles {
 
     let stockpiles = deepCopy(purchaseData.stockpiles);
-    let data = UPGRADE_DATA[purchaseData.key as keyof typeof UPGRADE_DATA];
-    let costs = data.upgrades[purchaseData.level - 1].costs;
+    const costs = getProductionCostsFromJSON(purchaseData.key as T_DATA_KEYS, purchaseData.level);
 
     for(let i = 0; i < costs.length; i++){
         let loopKey = costs[i].egg;

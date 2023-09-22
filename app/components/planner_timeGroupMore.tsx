@@ -1,9 +1,8 @@
-import UPGRADE_DATA from '../upgrades.json';
-
 import { MAX_TIME, WIN_CONDITION, deepCopy } from '../utils/consts';
-import { calcDHMString, getMonthName, convertTimeIdToTimeRemaining, convertTimeIdToDate } from '../utils/dateAndTimeHelpers';
+import { calcDHMString, getMonthName, convertTimeIDToTimeRemaining, convertTimeIDToDate } from '../utils/dateAndTimeHelpers';
 import { resourceCSS, nbsp, toThousands, toBillions } from "../utils/formatting";
-import { T_AllToDustOutput, T_ProductionSettings, T_TimeGroup, T_Levels, T_Stockpiles, T_ProductionRates, T_GameState, T_PurchaseData } from "../utils/types";
+import { T_DATA_KEYS, getUpgradeDataFromJSON } from '../utils/getDataFromJSON';
+import { T_AllToDustOutput, T_ProductionSettings, T_TimeGroup, T_Levels, T_Stockpiles, T_ProductionRates, T_GameState } from "../utils/types";
 
 import ProductionSettingsSummary from './productionSummary';
 
@@ -92,7 +91,7 @@ function ProductionTableSection({moreData, gameState, leftHeadingWidth, isDuring
         if(num === 0){
             return "done";
         }
-        let date = convertTimeIdToDate(num, gameState);
+        let date = convertTimeIDToDate(num, gameState);
         return [
                 `${date.getDate()}`, 
                 `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`
@@ -271,18 +270,18 @@ function DustStatsSection({moreData, gameState, leftHeadingWidth, isDuringOfflin
                             : "text-neutral-600";
 
     function finishTimeAsStr(){
-        function convertTimeIdToSt(){
-            let date = convertTimeIdToDate(moreData.finishAt, gameState);
+        function convertTimeIDToStr(){
+            let date = convertTimeIDToDate(moreData.finishAt, gameState);
             let dateStr = date.getDate().toString().padStart(2, "0");
             let timeStr = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
            
-            let DHM = convertTimeIdToTimeRemaining(MAX_TIME - moreData.finishAt);
+            let DHM = convertTimeIDToTimeRemaining(MAX_TIME - moreData.finishAt);
             return `${calcDHMString(DHM)} ${dateStr}${nbsp()}${getMonthName(date.getMonth())}${nbsp()}${timeStr}`;
         }
 
         return moreData.finishAt === -1 ?
                 "-"
-                : convertTimeIdToSt();
+                : convertTimeIDToStr();
     }
 
     return(
@@ -369,23 +368,22 @@ type T_ResourceColours = {
 function convertDataForDisplay(data : T_TimeGroup, remainingTimeGroups : T_TimeGroup[])
     : T_MoreData {
 
-    let lastUpgrade = data.upgrades[data.upgrades.length - 1];
-    let rates = deepCopy(lastUpgrade.rates);
+    let rates = deepCopy(data.rates);
     let spendRemaining = calcSpendRemaining(remainingTimeGroups);
-    let eggStockpiles = deepCopy(lastUpgrade.stockpiles);
+    let eggStockpiles = deepCopy(data.stockpiles);
     delete eggStockpiles.dust;
-    let totalAtRates = calcTotalAtRates(rates, lastUpgrade.stockpiles, data.timeId);
-    let doneAt = calcTimeIdProductionIsDone(spendRemaining, rates, lastUpgrade.stockpiles, totalAtRates, data.timeId);
-    let finishAt = calcTimeDustDone(lastUpgrade, data.timeId);
+    let totalAtRates = calcTotalAtRates(rates, data.stockpiles, data.timeID);
+    let doneAt = calcTimeIDProductionIsDone(spendRemaining, rates, data.stockpiles, totalAtRates, data.timeID);
+    let finishAt = calcTimeDustDone(data, data.timeID);
 
     return {
         stockpiles: eggStockpiles,
-        rates: lastUpgrade.rates,
+        rates: data.rates,
         spendRemaining: spendRemaining,
         totalAtRates,
         doneAt,
-        dustNow: lastUpgrade.stockpiles.dust,
-        allToDust: lastUpgrade.allToDust ?? {value: 0, rate: 0},
+        dustNow: data.stockpiles.dust,
+        allToDust: data.allToDust,
         finishAt
     }
 }
@@ -399,7 +397,7 @@ function calcSpendRemaining(timeGroups : T_TimeGroup[])
     return timeGroups.reduce((mainAcc, currentTimeGroup) => {
 
         let groupResult = currentTimeGroup.upgrades.reduce((groupAcc, currentUpgrade) => {
-            let data = UPGRADE_DATA[currentUpgrade.key as keyof typeof UPGRADE_DATA].upgrades[currentUpgrade.level - 1];
+            const data = getUpgradeDataFromJSON(currentUpgrade.key as T_DATA_KEYS, currentUpgrade.level);
             for(let i = 0; i < data.costs.length; i++){
                 let keyName = data.costs[i].egg;
                 groupAcc[keyName as keyof typeof groupAcc] += parseInt(data.costs[i].quantity);
@@ -416,10 +414,10 @@ function calcSpendRemaining(timeGroups : T_TimeGroup[])
 }
 
 
-function calcTotalAtRates(rates : T_ProductionRates, stockpiles : T_Stockpiles, timeId : number)
+function calcTotalAtRates(rates : T_ProductionRates, stockpiles : T_Stockpiles, timeID : number)
     : T_ResourceColours{
 
-    let minutesRemaining = MAX_TIME - timeId;
+    let minutesRemaining = MAX_TIME - timeID;
     return {
         blue: Math.floor(minutesRemaining * rates.blue) + stockpiles.blue,
         green: Math.floor(minutesRemaining * rates.green) + stockpiles.green,
@@ -429,7 +427,7 @@ function calcTotalAtRates(rates : T_ProductionRates, stockpiles : T_Stockpiles, 
 }
 
 
-function calcTimeIdProductionIsDone(spendRemaining : T_ResourceColours, rates : T_ProductionRates, stockpiles : T_Stockpiles, projectedTotal : T_ResourceColours, timeId : number)
+function calcTimeIDProductionIsDone(spendRemaining : T_ResourceColours, rates : T_ProductionRates, stockpiles : T_Stockpiles, projectedTotal : T_ResourceColours, timeID : number)
     : T_ResourceColours {
 
     return Object.keys(spendRemaining).reduce((attrs, key) => {
@@ -444,22 +442,22 @@ function calcTimeIdProductionIsDone(spendRemaining : T_ResourceColours, rates : 
                     -1
                     : current > goal ?
                         0
-                        : Math.round((goal - current) / rate) + timeId
+                        : Math.round((goal - current) / rate) + timeID
         }
     }, { blue: -1, green: -1, red: -1, yellow: -1 })
 }
 
 
-function calcTimeDustDone(lastUpgrade : T_PurchaseData, timeId : number)
+function calcTimeDustDone(data : T_TimeGroup, timeID : number)
     : number {
 
     let finishTime : number = -1;
-    if(lastUpgrade.allToDust !== null){
-        if(lastUpgrade.allToDust.value > WIN_CONDITION){
-            let rate = lastUpgrade.allToDust.rate;
-            let difference = WIN_CONDITION - lastUpgrade.stockpiles.dust;
-            let timeIdAtFinish = Math.round(difference / rate) + timeId;
-            return timeIdAtFinish;
+    if(data.allToDust !== null){
+        if(data.allToDust.value > WIN_CONDITION){
+            let rate = data.allToDust.rate;
+            let difference = WIN_CONDITION - data.stockpiles.dust;
+            let timeIDAtFinish = Math.round(difference / rate) + timeID;
+            return timeIDAtFinish;
         }
     }
     return finishTime;

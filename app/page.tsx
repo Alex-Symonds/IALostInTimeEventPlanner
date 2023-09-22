@@ -23,7 +23,8 @@ export default function Home() {
           prodSettingsNow, setProdSettingsNow, 
           purchaseData, 
           switchData, 
-          timeIdGroups
+          timeIDGroups,
+          prodSettingsBeforeNow,
         } 
         = usePlanner();
 
@@ -64,17 +65,17 @@ export default function Home() {
         />
 
         <div className={"bg-white [min-height:calc(100vh-4.5rem-1px-3rem)]"}>
-        { gameState === null || purchaseData === undefined || switchData === undefined || timeIdGroups === null ?
+        { gameState === null || purchaseData === undefined || switchData === undefined || timeIDGroups === null || prodSettingsBeforeNow === undefined ?
           <ErrorWithPlanner />
           :
           <Planner  gameState={ gameState } 
                     actions={ actions } 
                     setActions={ setActions } 
-                    offlinePeriods={ offlinePeriods } 
                     purchaseData={ purchaseData }
-                    timeIdGroups={ timeIdGroups }
+                    timeIDGroups={ timeIDGroups }
                     prodSettingsNow={ prodSettingsNow }
                     setProdSettingsNow={ setProdSettingsNow }
+                    prodSettingsBeforeNow={ prodSettingsBeforeNow }
           />
         }
         </div>

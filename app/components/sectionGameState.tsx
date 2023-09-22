@@ -1,13 +1,10 @@
-
-
-import UPGRADE_DATA from '../upgrades.json';
-
-import { getDateDisplayStr, convertTimeIdToTimeRemaining } from '../utils/dateAndTimeHelpers';
+import { getDateDisplayStr, convertTimeIDToTimeRemaining } from '../utils/dateAndTimeHelpers';
 import { maxedLevelCSS, capitalise, resourceCSS, toBillions, nbsp } from '../utils/formatting';
 import { T_GameState, T_Levels, T_Stockpiles } from '../utils/types';
 
 import StockpilesDisplay from './stockpilesStrip';
 import { DisplayInputSection, EditButtonBox } from './sectionDisplayUserInput';
+import { T_DATA_KEYS, getMaxLevelFromJSON, getUnitDataFromJSON } from '../utils/getDataFromJSON';
 
 
 interface I_SectionGameState {
@@ -40,7 +37,7 @@ function TimeAndPremiumStatus({gameState}
     : Pick<I_SectionGameState, "gameState">) 
     : JSX.Element {
 
-    const remTimeObj = convertTimeIdToTimeRemaining(gameState.timeRemaining);
+    const remTimeObj = convertTimeIDToTimeRemaining(gameState.timeRemaining);
     return  <div className={"gameStateDisplayTimeAndPremium gap-1"}>
 
                 <GridRowWrapper title={"Remaining"}>
@@ -175,7 +172,7 @@ function getFilteredLevelsData(typeStr : string, levels : T_Levels)
 
     return Object.keys(levels)
                     .filter(keyName => {
-                        let data = UPGRADE_DATA[keyName as keyof typeof UPGRADE_DATA];
+                        const data = getUnitDataFromJSON(keyName as T_DATA_KEYS);
                         return data.type === typeStr;
                     })
                     .map(keyName => {
@@ -193,12 +190,11 @@ type T_LevelData = {
 function getLevelsData(keyName : string, levels : T_Levels, keyToDisplayStr : (str : string) => string) 
     : T_LevelData{
 
-    let data = UPGRADE_DATA[keyName as keyof typeof UPGRADE_DATA];
     return {
             key: keyName,
             displayStr: keyToDisplayStr(keyName),
             level: levels[keyName as keyof typeof levels],
-            max: data.upgrades.length
+            max: getMaxLevelFromJSON(keyName as T_DATA_KEYS)
         }
 }
 

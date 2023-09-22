@@ -1,10 +1,10 @@
-import { T_SwitchAction } from '../utils/types';
+import { T_DisplaySwitch } from '../utils/types';
 
 import ProductionSwitchButton from './planner_prodSwitchButton';
 import { Button } from './buttons';
 
 interface I_PropsControlsRow {
-    displaySwitches : T_SwitchAction[],
+    displaySwitches : T_DisplaySwitch[],
     showUpgradeButton : boolean,
     handleProductionClick: () => void,
     handleUpgradeClick : () => void,

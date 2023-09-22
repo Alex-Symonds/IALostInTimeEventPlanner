@@ -3,36 +3,39 @@
 */
 import { useState, useEffect } from "react";
 
-import { MAX_TIME, deepCopy } from './consts';
-import { defaultActionsList, defaultLevels, defaultStockpiles } from './defaults';
-import getPlanData from './getPlanData';
-import { groupByTimeId } from './groupByTimeId';
+import { defaultActionsList, defaultGameState } from './defaults';
+import { calcStartTime } from "./dateAndTimeHelpers";
+import calcPlanData from './calcPlanData';
+import { calcTimeGroups } from './calcTimeGroups';
 import { T_TimeGroup, T_OfflinePeriod, T_GameState, T_Action, T_ProductionSettingsNow } from './types';
 
 
 export default function usePlanner(){
-    const [gameState, setGameState] = useState<T_GameState>(defaultGameState());
+    const [gameState, setGameState] = useState<T_GameState>(defaultGameState);
     const [offlinePeriods, setOfflinePeriods] = useState<T_OfflinePeriod[]>([]);
     const [actions, setActions] = useState<T_Action[]>(defaultActionsList());
     const [prodSettingsNow, setProdSettingsNow] = useState<T_ProductionSettingsNow | null>(null);
 
-    const planData = getPlanData({ gameState, actions, offlinePeriods, prodSettingsNow });
+    const planData = calcPlanData({ gameState, actions, offlinePeriods, prodSettingsNow });
     const [purchaseData, setPurchaseData] = useState(planData?.purchaseData);
     const [switchData, setSwitchData] = useState(planData?.switchData);
-    
+    const [prodSettingsBeforeNow, setProdSettingsBeforeNow] = useState(planData?.productionSettingsBeforeNow);
+    const [timeData, setTimeData] = useState(planData?.timeData);
+
     useEffect(() => {
-        let updatedPlan = getPlanData({ gameState, actions, offlinePeriods, prodSettingsNow });
+        let updatedPlan = calcPlanData({ gameState, actions, offlinePeriods, prodSettingsNow });
         if(updatedPlan === null){
           return;
         }
         setPurchaseData(updatedPlan.purchaseData);
         setSwitchData(updatedPlan.switchData);
-
+        setProdSettingsBeforeNow(updatedPlan.productionSettingsBeforeNow);
+        setTimeData(updatedPlan.timeData);
       }, [prodSettingsNow, actions, gameState, offlinePeriods]);
     
-    const timeIdGroups : T_TimeGroup[] | null = purchaseData === undefined || switchData === undefined ?
+    const timeIDGroups : T_TimeGroup[] | null = purchaseData === undefined || switchData === undefined || timeData === undefined ?
         null 
-        : groupByTimeId({purchaseData, switchData});
+        : calcTimeGroups({purchaseData, switchData, offlinePeriods, timeData, startedAt: calcStartTime(gameState)});
 
     return {
         gameState, 
@@ -45,19 +48,7 @@ export default function usePlanner(){
         setProdSettingsNow,
         purchaseData,
         switchData,
-        timeIdGroups
+        timeIDGroups,
+        prodSettingsBeforeNow
     }
 }
-
-function defaultGameState() : T_GameState {
-    return {
-      timeEntered : new Date(),
-      timeRemaining : MAX_TIME,
-      premiumInfo :  {
-        adBoost : false,
-        allEggs : 0,
-      },
-      stockpiles : deepCopy(defaultStockpiles),
-      levels : deepCopy(defaultLevels),
-    }
-  }

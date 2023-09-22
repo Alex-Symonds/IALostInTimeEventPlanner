@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { T_TimeGroup, T_GameState } from '../utils/types';
-import { calcDHMString, convertTimeIdToTimeRemaining, convertTimeIdToDate, getDateDisplayStr } from '../utils/dateAndTimeHelpers';
+import { calcDHMString, convertTimeIDToTimeRemaining, convertTimeIDToDate, getDateDisplayStr } from '../utils/dateAndTimeHelpers';
 import { MAX_TIME } from '../utils/consts';
 
 import { IconMoon } from './icons';
@@ -9,16 +9,15 @@ import { IconMoon } from './icons';
 interface I_TimeGroupHeading {
     gameState : T_GameState, 
     data : T_TimeGroup,
-    startOfOfflinePeriod : number | null,
 }
-export default function TimeGroupHeading({data, startOfOfflinePeriod, gameState} : I_TimeGroupHeading){
+export default function TimeGroupHeading({data, gameState} : I_TimeGroupHeading){
     const [showFullOfflinePeriod, setShowFullOfflinePeriod] = useState<boolean>(false);
     const [isHover, setIsHover] = useState(false);
 
-    const timeAsDHM = convertTimeIdToTimeRemaining(MAX_TIME - data.timeId);
-    const timeAsDate = convertTimeIdToDate(data.timeId, gameState);
+    const timeAsDHM = convertTimeIDToTimeRemaining(MAX_TIME - data.timeID);
+    const timeAsDate = convertTimeIDToDate(data.timeID, gameState);
 
-    const isDuringOfflinePeriod = startOfOfflinePeriod !== null;
+    const isDuringOfflinePeriod = data.startOfflinePeriodTimeID !== null;
 
     const conditionalClass = isDuringOfflinePeriod ?
                                 "bg-greyBlue-500 border-greyBlue-600 text-white"
@@ -27,8 +26,8 @@ export default function TimeGroupHeading({data, startOfOfflinePeriod, gameState}
                                     "text-sm"
                                     : "";
     
-    let startAsDate = isDuringOfflinePeriod ?
-                        convertTimeIdToDate(startOfOfflinePeriod, gameState)
+    let startAsDate = data.startOfflinePeriodTimeID !== null ?
+                        convertTimeIDToDate(data.startOfflinePeriodTimeID, gameState)
                         : null;
 
     let shortDisplayStr = getDateDisplayStr(timeAsDate);
