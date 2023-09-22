@@ -1,12 +1,12 @@
-import UPGRADE_DATA from '../upgrades.json';
-
 import { MAX_TIME } from '../utils/consts';
+import { T_DATA_KEYS, getUnitDataFromJSON } from '../utils/getDataFromJSON';
+import { T_PurchaseData } from '../utils/types';
 
 import { BadgeCost } from './badges';
 import { Button } from './buttons';
 
 interface I_UpgradeCard {
-    data : any, 
+    data : T_PurchaseData, 
     pos : number, 
     openUpgradePicker : any, 
     isDuringOfflinePeriod : boolean
@@ -16,7 +16,7 @@ export default function UpgradeCard({data, pos, openUpgradePicker, isDuringOffli
     : I_UpgradeCard)
     : JSX.Element {
 
-    const targetData = UPGRADE_DATA[data.key as keyof typeof UPGRADE_DATA];
+    const targetData = getUnitDataFromJSON(data.key as T_DATA_KEYS);
     const name = targetData.name;
     const costData = targetData.upgrades[data.level - 1].costs;
     const indexPlanData = pos - 1;
@@ -25,7 +25,7 @@ export default function UpgradeCard({data, pos, openUpgradePicker, isDuringOffli
     const offlineClass = "bg-gray-50 border-greyBlue-300";
     const defaultClass = "bg-gray-100 border-gray-200";
 
-    const conditionalClass = MAX_TIME < data.timeId ?
+    const conditionalClass = MAX_TIME < data.purchaseTimeID ?
                                 outOfTimeClass
                                 : isDuringOfflinePeriod ?
                                     offlineClass

@@ -27,18 +27,19 @@
 */
 
 
-import { useState } from 'react';
+import { MutableRefObject, useState } from 'react';
 
-import { convertDateToTimeId } from './dateAndTimeHelpers';
+import { convertDateToTimeID } from './dateAndTimeHelpers';
 import { maxLevels } from './defaults';
 import { I_ProductionSwitcherModalUniversal, T_ProductionSettings, T_TimeGroup, T_GameState, T_Levels, T_ProductionSettingsNow } from './types';
-
+import { exactMatch } from './productionSettings';
 
 interface I_UseSwitchProductionNow {
     initialProdSettings : T_ProductionSettings,
     gameState : T_GameState, 
-    timeIdGroups : T_TimeGroup[],
-    setProdSettingsNow : React.Dispatch<React.SetStateAction<T_ProductionSettingsNow | null>>
+    timeIDGroups : T_TimeGroup[],
+    setProdSettingsNow : React.Dispatch<React.SetStateAction<T_ProductionSettingsNow | null>>,
+    prodSettingsBeforeNowRef : MutableRefObject<T_ProductionSettings | undefined>
 }
 
 export type T_PropsSwitchProdNowModal = 
@@ -51,7 +52,7 @@ type T_OutputUseSwitchProductionNow = {
     openModal : () => void,
     props : T_PropsSwitchProdNowModal,
 }
-export function useSwitchProductionNow({initialProdSettings, setProdSettingsNow, gameState, timeIdGroups}
+export function useSwitchProductionNow({ initialProdSettings, setProdSettingsNow, gameState, timeIDGroups, prodSettingsBeforeNowRef }
     : I_UseSwitchProductionNow)
     : T_OutputUseSwitchProductionNow {
 
@@ -60,9 +61,13 @@ export function useSwitchProductionNow({initialProdSettings, setProdSettingsNow,
     function updateSettings(newSettings : T_ProductionSettings) 
         : void {
 
+        if(prodSettingsBeforeNowRef.current !== undefined && exactMatch(newSettings, prodSettingsBeforeNowRef.current)){
+            setProdSettingsNow(null);
+            return;
+        }
         setProdSettingsNow({
             productionSettings: newSettings,
-            timeId: convertDateToTimeId(new Date(), gameState)
+            timeID: convertDateToTimeID(new Date(), gameState),
         })
     }
 
@@ -71,7 +76,7 @@ export function useSwitchProductionNow({initialProdSettings, setProdSettingsNow,
         closeModal: () => setIsVisible(false),
         initialProdSettings,
         updateProdSettings: updateSettings,
-        levelsAtStart: timeIdGroups.length > 0 ? timeIdGroups[0].levels : maxLevels
+        levelsAtStart: timeIDGroups.length > 0 ? timeIDGroups[0].levels : maxLevels()
     }
 
     return {

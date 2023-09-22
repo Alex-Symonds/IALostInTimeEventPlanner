@@ -1,4 +1,4 @@
-import UPGRADE_DATA from '../upgrades.json';
+import { T_DATA_KEYS, getUnitDataFromJSON } from './getDataFromJSON';
 import { T_PurchaseData } from './types';
 
 export type T_ValidMoveOutput = { 
@@ -58,7 +58,7 @@ function swapIsValidWithReason({idxBefore, idxAfter, purchaseData}
 
     function getCheckData(idx : number){
         let thisPlanData = purchaseData[idx];
-        let thisFullData = UPGRADE_DATA[thisPlanData.key as keyof typeof UPGRADE_DATA];
+        const thisFullData = getUnitDataFromJSON(thisPlanData.key as T_DATA_KEYS);
         let thisUpgrade = thisFullData.upgrades[thisPlanData.level - 1];
         return {
             key: thisPlanData.key,
@@ -88,8 +88,8 @@ function swapIsValidWithReason({idxBefore, idxAfter, purchaseData}
 
     if(dataBefore.costs.length > 0){
         for(let c = 0; c < dataBefore.costs.length; c++){
-            let eggKey = dataBefore.costs[c].egg;
-            let eggData = UPGRADE_DATA[eggKey as keyof typeof UPGRADE_DATA];
+            const eggKey = dataBefore.costs[c].egg;
+            const eggData = getUnitDataFromJSON(eggKey as T_DATA_KEYS);
             
             if('firstCreatedBy' in eggData && eggData.firstCreatedBy === dataAfter.key && dataAfter.level === 1){
                 return {

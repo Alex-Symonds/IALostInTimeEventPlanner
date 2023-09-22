@@ -1,4 +1,5 @@
-import { getDateDisplayStr, getStartTime, convertOfflineTimeToDate, printOfflineTime } from "../utils/dateAndTimeHelpers";
+import { getDateDisplayStr, calcStartTime, printOfflineTime } from "../utils/dateAndTimeHelpers";
+import { convertOfflineTimeToDate } from "../utils/offlinePeriodHelpers";
 import { T_GameState, T_OfflinePeriod } from "../utils/types";
 
 import { DisplayInputSection, EditButtonBox } from './sectionDisplayUserInput';
@@ -39,7 +40,7 @@ function OfflineDisplay({offlinePeriods, gameState, openForm, idxEdit}
     : I_OfflineDisplay)
     : JSX.Element {
 
-    let startedAt = getStartTime(gameState);
+    let startedAt = calcStartTime(gameState);
 
     return <div>
             { (offlinePeriods === undefined || offlinePeriods.length === 0) ?

@@ -75,18 +75,27 @@ export type T_Action = {
         to : string,
         actionsIdx : number
     }
-
+export type T_DisplaySwitch = Pick<T_SwitchAction, "key" | "to">
 
 
 export type T_PurchaseData = 
     T_UpgradeAction & {
     actionsIdx : number,
+    readyTimeID : number,
+    purchaseTimeID : number,
+    levelsAbove: T_Levels,
     stockpiles : T_Stockpiles,
-    timeId : number,
+}
+
+export type T_TimeData = {
+    [key : string] : T_TimeDataUnit,
+}
+type T_TimeDataUnit = {
+    stockpiles: T_Stockpiles,
     levels: T_Levels,
-    allToDust : T_AllToDustOutput | null,
     rates: T_ProductionRates,
-    productionSettings : T_ProductionSettings
+    productionSettings : T_ProductionSettings,
+    allToDust : T_AllToDustOutput,
 }
 
 export type T_SwitchData = {
@@ -107,10 +116,12 @@ export type T_ProductionRates = {
 }
 
 export type T_TimeGroup = 
-    Pick<T_PurchaseData, "timeId" | "productionSettings"> & {
+    T_TimeDataUnit & {
+    timeID : number,
+    startPos : number,
     upgrades : T_PurchaseData[],
     switches : T_SwitchAction[],
-    levels : T_Levels,
+    startOfflinePeriodTimeID : number | null
 };
 
 export type T_ProductionSettings = {
@@ -124,10 +135,10 @@ export type T_ProductionSettings = {
     rex : string,
 }
 
-export type T_ProductionSettingsNow = 
-    Pick<T_PurchaseData, "timeId"> &
-    Pick<T_PurchaseData, "productionSettings">;
-
+export type T_ProductionSettingsNow = {
+    timeID : number,
+    productionSettings : T_ProductionSettings
+};
 
 export type T_AllToDustOutput = {
     value : number,
@@ -171,4 +182,11 @@ type T_ModalToggle = {
 }
 type T_ModalOpen = {
     openModal : (data : any) => void | Dispatch<SetStateAction<any>>
+}
+
+export type T_SuggestionData = { dust : number, position : number };
+export type T_ResultData = {
+    hasWon : boolean,
+    dustAtEnd : number,
+    allToDust : T_SuggestionData | null,
 }

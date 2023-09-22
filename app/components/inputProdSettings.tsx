@@ -1,10 +1,9 @@
 import { useState } from "react";
 
-import UPGRADE_DATA from '../upgrades.json';
-
 import { deepCopy } from "../utils/consts";
 import { defaultProductionSettings } from '../utils/defaults';
 import { capitalise, resourceCSS } from '../utils/formatting';
+import { T_DATA_KEYS, getWorkerOutputsFromJSON } from "../utils/getDataFromJSON";
 import { T_Levels, T_ProductionSettings, T_SwitchAction } from '../utils/types';
 
 import Modal, { ModalHeading, ModalSubmitButton, ModalFieldsWrapper, I_Modal } from './modal';
@@ -86,11 +85,11 @@ function ProductionToggle({myKey, toggledTo, handleSelection, disabled}
     : I_ProductionToggle)
     : JSX.Element | null {
 
-    let data = UPGRADE_DATA[myKey as keyof typeof UPGRADE_DATA];
-    if(!('outputs' in data)){
+    let outputs = getWorkerOutputsFromJSON(myKey as T_DATA_KEYS);
+    if(outputs === null){
         return null;
     }
-    let numOutputs = data.outputs.length;
+    let numOutputs = outputs.length;
 
     if(numOutputs === 1){
         return null;
@@ -112,16 +111,16 @@ function ProductionToggle({myKey, toggledTo, handleSelection, disabled}
             </legend>
             <div className="flex w-24">
             {
-                data.outputs.map((d, idx) => {
-                    return  <Radio key={`${myKey}_${d}`} 
+                outputs.map((output, idx) => {
+                    return  <Radio key={`${myKey}_${output}`} 
                                 extraCSS={"w-2/4"} 
-                                checked={d === toggledTo} 
+                                checked={output === toggledTo} 
                                 disabled={false} 
-                                handleSelection={() => handleSelection(myKey, d)} 
-                                value={`${myKey}_${d}`}
+                                handleSelection={() => handleSelection(myKey, output)} 
+                                value={`${myKey}_${output}`}
                                 >
                                 <ToggleDisplay 
-                                    thisOption={d} 
+                                    thisOption={output} 
                                     activeOption={toggledTo} 
                                     roundLeft={idx === 0} 
                                     roundRight={idx === numOutputs - 1} 

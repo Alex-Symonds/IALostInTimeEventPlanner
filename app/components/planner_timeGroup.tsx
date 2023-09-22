@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-import { T_OfflinePeriod, T_TimeGroup,  T_GameState} from '../utils/types';
-import { convertOfflineTimeToTimeId, getStartTime } from '../utils/dateAndTimeHelpers';
+import {T_TimeGroup,  T_GameState} from '../utils/types';
 
 import UpgradeCard from './planner_upgradeCard';
 import TimeGroupMore from './planner_timeGroupMore';
@@ -11,23 +10,19 @@ import { MoreButton } from './buttons';
 
 interface I_TimeGroup {
     gameState : T_GameState, 
-    offlinePeriods : T_OfflinePeriod[],
     groupData : T_TimeGroup, 
     startPos : number, 
     openUpgradePicker: (idx : number) => void, 
     remainingGroups : T_TimeGroup[]
 }
 
-export default function TimeGroup({groupData, startPos, openUpgradePicker, offlinePeriods, gameState, remainingGroups} 
+export default function TimeGroup({groupData, startPos, openUpgradePicker, gameState, remainingGroups} 
     : I_TimeGroup)
     : JSX.Element {
 
     const [showMore, setShowMore] = useState(false);
     
-    const startedAt = getStartTime(gameState);
-    const activeOfflinePeriodIdx = offlinePeriods.findIndex(ele => convertOfflineTimeToTimeId(ele.end, startedAt) === groupData.timeId);
-    const isDuringOfflinePeriod = activeOfflinePeriodIdx !== -1;
-
+    const isDuringOfflinePeriod = groupData.startOfflinePeriodTimeID !== null;
     const offlineCSS = isDuringOfflinePeriod ?
                             "bg-greyBlue-200"
                             : "";
@@ -39,7 +34,6 @@ export default function TimeGroup({groupData, startPos, openUpgradePicker, offli
         <>
             <TimeGroupHeading 
                 data={groupData} 
-                startOfOfflinePeriod={isDuringOfflinePeriod ? convertOfflineTimeToTimeId(offlinePeriods[activeOfflinePeriodIdx].start, startedAt) : null} 
                 gameState={gameState}
             />
         <div className={"flex flex-col mt-1 border-b border-t shadow w-72" + " " + offlineCSS + " " + borderColour}>
@@ -91,7 +85,7 @@ function UpdateCardContainer({upgrades, startPos, isDuringOfflinePeriod, openUpg
         <div className={"flex flex-col gap-1 pt-1.5 pb-2"}>
         {
             upgrades.map((data, idx) => {
-                return <UpgradeCard key={data.timeId + "_" + data.key + "_" + data.level} 
+                return <UpgradeCard key={data.readyTimeID + "_" + data.key + "_" + data.level} 
                             data={data} 
                             pos={startPos + idx} 
                             openUpgradePicker={openUpgradePicker} 

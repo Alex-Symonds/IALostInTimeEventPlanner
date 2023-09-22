@@ -1,15 +1,15 @@
 import { deepCopy } from './consts';
 import { defaultProductionSettings } from './defaults';
-import { T_Action, T_ProductionSettings, T_TimeGroup } from './types';
+import { T_Action, T_DisplaySwitch as T_SwitchDisplay, T_ProductionSettings, T_SwitchAction, T_TimeGroup } from './types';
 
 
 export function getProductionSettings({actions, index} 
     : {actions : T_Action[], index : number})
     : T_ProductionSettings {
 
-    let prodSwitchesOnly = actions.slice(0, index).filter((ele) => ele.type === 'switch');
     let result = deepCopy(defaultProductionSettings);
 
+    let prodSwitchesOnly = actions.slice(0, index).filter((ele) => ele.type === 'switch');
     for(let i = 0; i < prodSwitchesOnly.length; i++){
         let thisSwitch = prodSwitchesOnly[i];
 
@@ -57,7 +57,7 @@ export function countInternalProductionSwitches({ timeGroupData }
 
 
 export function getNewSwitchActions({ startSettings, newSettings, insertIdx } 
-    : {startSettings : T_ProductionSettings, newSettings : T_ProductionSettings, insertIdx : number}) 
+    : { startSettings : T_ProductionSettings, newSettings : T_ProductionSettings, insertIdx : number }) 
     : T_Action[]{
 
     let newSwitchActions : T_Action[] = [];
@@ -78,4 +78,35 @@ export function getNewSwitchActions({ startSettings, newSettings, insertIdx }
     }
 
     return newSwitchActions;
+}
+
+
+export function getNewSwitchDisplay({ startSettings, newSettings } 
+    : { startSettings : T_ProductionSettings, newSettings : T_ProductionSettings}) 
+    : T_SwitchDisplay[]{
+
+    let newSwitchActions : T_SwitchDisplay[] = [];
+    for(const [newK, newV] of Object.entries(newSettings)){
+        let wantSwitch = newV !== startSettings[newK as keyof typeof startSettings];
+
+        if(wantSwitch){
+            let newSwitch : T_SwitchDisplay = {
+                key: newK,
+                to: newV,
+            }
+            newSwitchActions.push(newSwitch);
+        }
+    }
+
+    return newSwitchActions;
+}
+
+
+export function exactMatch(A : T_ProductionSettings, B : T_ProductionSettings){
+    for(const [k, v] of Object.entries(A)){
+        if(B[k as keyof typeof B] !== v){
+            return false;
+        }
+    }
+    return true;
 }

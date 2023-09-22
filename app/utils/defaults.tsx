@@ -1,5 +1,6 @@
-import UPGRADE_DATA from '../upgrades.json';
-import { T_Action, T_TimeRemainingDHM, T_Levels, T_Stockpiles, T_ProductionSettings, T_TimeOfflinePeriod } from './types';
+import { deepCopy, MAX_TIME } from './consts';
+import { T_DATA_KEYS, getMainKeysFromJSON, getMaxLevelFromJSON, getUpgradesDataFromJSON } from './getDataFromJSON';
+import { T_GameState, T_Action, T_TimeRemainingDHM, T_Levels, T_Stockpiles, T_ProductionSettings, T_TimeOfflinePeriod } from './types';
 
 export const defaultTimeRemaining : T_TimeRemainingDHM = {
     days: 3,
@@ -43,21 +44,23 @@ export const defaultLevels : T_Levels = {
     dust : 0
 }
 
-export const maxLevels : T_Levels = {
-    trinity: 10,
-    bronte: 10,
-    anne: 8,
-    petra: 10,
-    tony: 10,
-    manny: 10,
-    ruth: 8,
-    rex: 10,  
-    blue: 4,
-    green: 3,
-    red: 2,
-    yellow: 1,
-    speed: 5,
-    dust: 6,
+export const defaultGameState : T_GameState = {
+    timeEntered : new Date(),
+    timeRemaining : MAX_TIME,
+    premiumInfo :  {
+    adBoost : false,
+    allEggs : 0,
+    },
+    stockpiles : deepCopy(defaultStockpiles),
+    levels : deepCopy(defaultLevels),
+}
+
+export const maxLevels = () => {
+    let maxLevels = deepCopy(defaultLevels);
+    Object.keys(maxLevels).forEach(key => {
+        maxLevels[key] = getMaxLevelFromJSON(key as T_DATA_KEYS);
+    });
+    return maxLevels;
 }
 
 export const defaultOfflinePeriodStart : T_TimeOfflinePeriod = {
@@ -84,9 +87,8 @@ export function defaultActionsList()
     let unlockAllColours : T_Action[] = [];
     let afterUnlockingColours : T_Action[] = [];
 
-    for(let key in UPGRADE_DATA){
-        let upgrades = UPGRADE_DATA[key as keyof typeof UPGRADE_DATA].upgrades;
-
+    getMainKeysFromJSON().forEach(key => {
+        let upgrades = getUpgradesDataFromJSON(key as T_DATA_KEYS);
         for(let idx = 0; idx < upgrades.length; idx++){
             if(!(key === 'trinity' && idx < 3)){
                 let object = {
@@ -103,7 +105,8 @@ export function defaultActionsList()
                 }
             }
         }
-    }
+    });
+
     let result : T_Action[] = defaultPlanStart.concat(unlockAllColours).concat(afterUnlockingColours);
     return result;
 }

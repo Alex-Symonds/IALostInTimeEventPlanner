@@ -1,44 +1,25 @@
 import { nbsp } from './formatting';
 import { T_GameState, T_TimeOfflinePeriod, T_TimeRemainingDHM } from "./types";
+import { MS_PER_MINUTE } from './consts';
 
-const msPerMin = 60000;
 
-export function convertOfflineTimeToDate(offlineTime : T_TimeOfflinePeriod, startedAt : Date)
-    : Date {
-        
-    let result = new Date(startedAt.getTime());
-    let toDate = startedAt.getDate() + offlineTime.dateOffset;
-    result.setDate(toDate);
-    result.setHours(offlineTime.hours, offlineTime.minutes);
-    return result;
-}
-
-export function convertOfflineTimeToTimeId(offlineTime : T_TimeOfflinePeriod, startedAt : Date)
+export function convertDateToTimeID(targetTime : Date, gameState : T_GameState) 
     : number {
 
-    let targetDate = convertOfflineTimeToDate(offlineTime, startedAt);
-    let differenceInMs = targetDate.getTime() - startedAt.getTime();
-    return Math.round(differenceInMs / msPerMin);
-}
-
-
-export function convertDateToTimeId(targetTime : Date, gameState : T_GameState) 
-    : number {
-
-    let startedAt : Date = getStartTime(gameState);
+    let startedAt : Date = calcStartTime(gameState);
     let difference =  Math.abs(targetTime.getTime() - startedAt.getTime());
-    return Math.round(difference / msPerMin);
+    return Math.round(difference / MS_PER_MINUTE);
 }
 
 
-export function convertTimeIdToDate(targetTimeId : number, gameState : T_GameState) 
+export function convertTimeIDToDate(targetTimeID : number, gameState : T_GameState) 
     : Date {
 
-    let startedAt : Date = getStartTime(gameState);
-    return new Date(startedAt.getTime() + targetTimeId * msPerMin);
+    let startedAt : Date = calcStartTime(gameState);
+    return new Date(startedAt.getTime() + targetTimeID * MS_PER_MINUTE);
 }
 
-export function convertTimeIdToDHM(timeId: number)
+export function convertTimeIDToDHM(timeId: number)
     : T_TimeRemainingDHM {
 
     let days : number = Math.floor(timeId / 60 / 24);
@@ -61,7 +42,7 @@ export function convertTimeIdToDHM(timeId: number)
     }
 }
 
-export function convertTimeIdToTimeRemaining(
+export function convertTimeIDToTimeRemaining(
     timeId : number)
     : T_TimeRemainingDHM {
 
@@ -91,7 +72,7 @@ export function calcDHMString(timeAsDHM : T_TimeRemainingDHM) : string {
 }
 
 
-export function getStartTime(
+export function calcStartTime(
     gameState : T_GameState) 
     : Date {
         
@@ -102,7 +83,7 @@ export function getStartTime(
         startedAt = gameState.timeEntered;
     }
     else{
-        let timePassed = (TIME_REMAINING_AT_START - gameState.timeRemaining) * msPerMin;
+        let timePassed = (TIME_REMAINING_AT_START - gameState.timeRemaining) * MS_PER_MINUTE;
         startedAt = new Date(gameState.timeEntered.getTime() - timePassed);
     }
     return startedAt;

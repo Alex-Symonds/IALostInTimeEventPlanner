@@ -1,4 +1,3 @@
-
 import { resourceCSS } from '../utils/formatting';
 
 import { InputNumberAsText } from "./inputGameState";

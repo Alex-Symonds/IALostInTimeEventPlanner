@@ -1,9 +1,7 @@
 import { Dispatch, SetStateAction, useState, ChangeEvent } from 'react';
 
-import UPGRADE_DATA from '../upgrades.json';
-
 import { deepCopy } from '../utils/consts';
-import { convertTimeRemainingToMinutes, convertTimeIdToDHM } from '../utils/dateAndTimeHelpers';
+import { convertTimeRemainingToMinutes, convertTimeIDToDHM } from '../utils/dateAndTimeHelpers';
 import { defaultLevels, defaultStockpiles, defaultTimeRemaining, lateGameSettings, maxLevels } from '../utils/defaults';
 import { T_Stockpiles, T_Levels, T_TimeRemainingDHM, T_GameState } from '../utils/types';
 
@@ -15,13 +13,15 @@ import InputGeneral, { I_InputGeneral } from './inputGameState_general';
 import InputStockpiles, { I_InputStockpiles } from './inputGameState_stockpiles';
 import InputLevelsWorkers from './inputGameState_levelsWorkers';
 import InputLevelsOther, { I_InputLevelsOther } from './inputGameState_levelsOther';
+import { T_DATA_KEYS, getUnitDataFromJSON } from '../utils/getDataFromJSON';
+
+
 
 interface I_StatusFormProps {
     setGameState : Dispatch<SetStateAction<T_GameState>>,
     gameState : T_GameState,
     closeModal : () => void,
 }
-
 export default function StatusForm({setGameState, gameState, closeModal}
     : I_StatusFormProps)
     : JSX.Element {
@@ -169,7 +169,7 @@ export function UnitLevelInput({keyName, idStr, labelStr, initValue, options, ha
     : I_PropsUnitLevelInput)
     : JSX.Element {
 
-    let data = UPGRADE_DATA[keyName as keyof typeof UPGRADE_DATA];
+    const data = getUnitDataFromJSON(keyName as T_DATA_KEYS);
     return <div className={"flex"}>
                 <SelectWithLabel
                     selectExtraCSS={"w-16"}
@@ -307,7 +307,7 @@ function useGameStatusForm({gameState, setGameState, closeModal}
     : T_OutputUseGameStatusForm {
 
     const [timeEntered, setTimeEntered] = useState<Date>(new Date())
-    const [timeRemaining, setTimeRemaining] = useState<T_TimeRemainingDHM>(gameState === null ? defaultTimeRemaining : convertTimeIdToDHM(gameState.timeRemaining))
+    const [timeRemaining, setTimeRemaining] = useState<T_TimeRemainingDHM>(gameState === null ? defaultTimeRemaining : convertTimeIDToDHM(gameState.timeRemaining))
     const [hasAdBoost, setHasAdBoost] = useState<boolean>(gameState === null ? false : gameState.premiumInfo.adBoost)
     const [allEggsLevel, setAllEggsLevel] = useState<number>(gameState === null ? 0 : gameState.premiumInfo.allEggs)
     const [stockpiles, setStockpiles] = useState<T_Stockpiles>(gameState === null ? deepCopy(defaultStockpiles) : gameState.stockpiles)
