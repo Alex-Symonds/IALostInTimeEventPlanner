@@ -35,7 +35,7 @@ export default function usePlanner(){
     
     const timeIDGroups : T_TimeGroup[] | null = purchaseData === undefined || switchData === undefined || timeData === undefined ?
         null 
-        : calcTimeGroups({purchaseData, switchData, offlinePeriods, timeData, startedAt: calcStartTime(gameState)});
+        : calcTimeGroups({purchaseData, switchData, timeData});
 
     return {
         gameState, 

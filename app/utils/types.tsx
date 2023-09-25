@@ -90,12 +90,13 @@ export type T_PurchaseData =
 export type T_TimeData = {
     [key : string] : T_TimeDataUnit,
 }
-type T_TimeDataUnit = {
+export type T_TimeDataUnit = {
     stockpilesAtEnd: T_Stockpiles,
     levelsAtEnd: T_Levels,
     ratesDuring: T_ProductionRates,
     productionSettingsDuring : T_ProductionSettings,
     allToDustAfter : T_AllToDustOutput,
+    startOfflinePeriodTimeID : number | null,
 }
 
 export type T_SwitchData = {
@@ -121,7 +122,6 @@ export type T_TimeGroup =
     startPos : number,
     upgrades : T_PurchaseData[],
     switches : T_SwitchAction[],
-    startOfflinePeriodTimeID : number | null
 };
 
 export type T_ProductionSettings = {
