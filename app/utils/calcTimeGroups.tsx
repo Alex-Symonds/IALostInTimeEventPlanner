@@ -1,19 +1,15 @@
 import { deepCopy } from "./consts";
-import { T_TimeData, T_OfflinePeriod, T_PurchaseData, T_SwitchAction, T_SwitchData, T_TimeGroup } from "./types";
-import { getOfflinePeriodAsTimeIDs } from "./offlinePeriodHelpers";
+import { T_TimeData, T_PurchaseData, T_SwitchAction, T_SwitchData, T_TimeGroup, T_TimeDataUnit } from "./types";
 
 
 
 interface I_GroupByTimeID {
     purchaseData : T_PurchaseData[],
     switchData : T_SwitchData,
-    offlinePeriods : T_OfflinePeriod[],
-    startedAt : Date,
     timeData : T_TimeData
 }
 
-
-export function calcTimeGroups({purchaseData, switchData, offlinePeriods, startedAt, timeData} 
+export function calcTimeGroups({purchaseData, switchData, timeData} 
     : I_GroupByTimeID ) 
     : T_TimeGroup[]{
 
@@ -51,14 +47,8 @@ export function calcTimeGroups({purchaseData, switchData, offlinePeriods, starte
 
         let switches : T_SwitchAction[] = getSwitchesAtThisTimeID(timeID);
 
-        let startOfflinePeriodTimeID : null | number = null;
-        const offlinePeriodTimeIDs = getOfflinePeriodAsTimeIDs({ timeID: purchases[0].readyTimeID, offlinePeriods, startedAt });
-        if(offlinePeriodTimeIDs !== null){
-            startOfflinePeriodTimeID = offlinePeriodTimeIDs.start;
-        }
-
         let key = timeID.toString();
-        const timeDataThis = deepCopy(timeData[key]);
+        const timeDataThis : T_TimeDataUnit = deepCopy(timeData[key]);
 
         let newGroup = {
             timeID,
@@ -66,7 +56,6 @@ export function calcTimeGroups({purchaseData, switchData, offlinePeriods, starte
             startPos: startIdx + 1,
             upgrades: purchases,
             switches: Array.from(new Set(switches)),
-            startOfflinePeriodTimeID,
         }
 
         return newGroup;

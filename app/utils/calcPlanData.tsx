@@ -33,6 +33,7 @@ type T_UpgradeLoop = {
 }
 
 type T_ActiveOfflinePeriod = {
+    startTimeID : number,
     endTimeID : number,
     levels : T_Levels,
     productionSettings : T_ProductionSettings
@@ -274,6 +275,7 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
             return;
         }
         activeOfflinePeriod = {
+            startTimeID: periodTimeIDs.start,
             endTimeID: periodTimeIDs.end,
             productionSettings: deepCopy(productionSettings),
             levels: deepCopy(levels),
@@ -305,7 +307,8 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
             ratesDuring: deepCopy(productionRates),
             levelsAtEnd: deepCopy(levels),
             stockpilesAtEnd: deepCopy(stockpiles),
-            allToDustAfter: allToDust
+            allToDustAfter: allToDust,
+            startOfflinePeriodTimeID: activeOfflinePeriod ? activeOfflinePeriod.startTimeID : null,
         }
     }
 
