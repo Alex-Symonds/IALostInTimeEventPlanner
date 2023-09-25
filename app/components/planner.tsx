@@ -8,7 +8,7 @@ import { useSwitchProductionNow, T_PropsSwitchProdNowModal } from '../utils/useS
 import { useSwitchProductionFuture, T_PropsSwitchProdFutureModal } from '../utils/useSwitchProductionFuture';
 import { useUpgradePicker, T_PropsUpgradePickerModal } from '../utils/useUpgradePicker';
 
-import { getNewSwitchDisplay } from '../utils/productionSettings';
+import { calcNewSwitchDisplay } from '../utils/productionSettings';
 
 import ProductionSwitcher from './inputProdSettings';
 import UpgradePicker from './inputUpgradePicker';
@@ -36,25 +36,25 @@ export default function Planner({timeIDGroups, gameState, actions, setActions, p
 
     const numValid : number = purchaseData.filter(ele => ele.readyTimeID < MAX_TIME).length;
 
-    let initialProdSettingsForModal : T_ProductionSettings = 
-                            timeIDGroups.length === 0 ?
-                                defaultProductionSettings
-                                : prodSettingsNow === null ?
-                                    timeIDGroups[0].productionSettings
-                                    : prodSettingsNow.productionSettings;
+    let initialProdSettingsForNowModal : T_ProductionSettings = 
+                            prodSettingsNow !== null ?
+                            prodSettingsNow.productionSettings
+                                : timeIDGroups.length === 0 ?
+                                    defaultProductionSettings
+                                    : timeIDGroups[0].productionSettingsDuring;
 
     const prodSettingsBeforeNowRef : MutableRefObject<T_ProductionSettings | undefined>  = useRef();
     prodSettingsBeforeNowRef.current = prodSettingsBeforeNow;
 
     const { openModal: openUpgradePicker, props: upgradePickerProps } = useUpgradePicker({purchaseData, actions, setActions});
     const { openModal: openSwitchFutureModal, props: switchProdFutureProps } = useSwitchProductionFuture({ actions, setActions });
-    const { openModal: openSwitchNowModal, props: switchProdNowProps } = useSwitchProductionNow({ initialProdSettings: initialProdSettingsForModal, setProdSettingsNow, gameState, timeIDGroups, prodSettingsBeforeNowRef });
+    const { openModal: openSwitchNowModal, props: switchProdNowProps } = useSwitchProductionNow({ initialProdSettings: initialProdSettingsForNowModal, setProdSettingsNow, gameState, timeIDGroups, prodSettingsBeforeNowRef });
 
     function calcDisplaySwitchesForProdSettingsNow(){
         if(prodSettingsNow === null){
             return [];
         }
-        return getNewSwitchDisplay({ 
+        return calcNewSwitchDisplay({ 
                 startSettings: prodSettingsBeforeNow, 
                 newSettings: prodSettingsNow.productionSettings
             });
@@ -128,15 +128,15 @@ function Modals({ purchaseData, gameState, upgradePickerProps, switchProdFutureP
             : switchFuture.isVisible && switchFuture.data !== null ?
                 <ProductionSwitcher 
                     closeModal={ switchFuture.closeModal } 
-                    currentProdSettings={ switchFuture.data.productionSettings } 
+                    initialProdSettings={ switchFuture.data.productionSettingsDuring } 
                     currentSwitches={ switchFuture.data.switches } 
                     updateProdSettings={ switchFuture.updateProdSettings }
-                    levels={ switchFuture.data.levels }
+                    levels={ switchFuture.data.levelsAtEnd }
                 />
                 : switchNow.isVisible ?
                     <ProductionSwitcher 
                         closeModal={ switchNow.closeModal } 
-                        currentProdSettings={ switchNow.initialProdSettings } 
+                        initialProdSettings={ switchNow.initialProdSettings } 
                         currentSwitches={ [] } 
                         updateProdSettings={ switchNow.updateProdSettings }
                         levels={ switchNow.levelsAtStart }
@@ -162,7 +162,7 @@ function TimeGroupsList({timeIDGroups, gameState, openUpgradePicker, openProdSwi
                 }
 
                 const displaySwitches = data.switches.filter(ele => {
-                    return data.productionSettings[ele.key as keyof typeof data.productionSettings] !== ele.to;
+                    return data.productionSettingsDuring[ele.key as keyof typeof data.productionSettingsDuring] !== ele.to;
                 });
 
                 let nextPos = data.startPos + data.upgrades.length;

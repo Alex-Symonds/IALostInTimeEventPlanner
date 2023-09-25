@@ -5,8 +5,8 @@ import { MAX_TIME, OUT_OF_TIME, deepCopy } from './consts';
 import { calcStartTime as calcStartTime} from './dateAndTimeHelpers';
 import { T_DATA_COSTS, T_DATA_KEYS, getProductionCostsFromJSON } from './getDataFromJSON';
 import { isDuringOfflinePeriod, getOfflinePeriodAsTimeIDs } from './offlinePeriodHelpers';
-import { getProductionSettings as calcProductionSettings } from './productionSettings';
-import { T_SwitchAction, T_ProductionRates, T_PurchaseData, T_Levels, T_OfflinePeriod, T_UpgradeAction, T_ProductionSettings, T_Stockpiles, T_Action, T_SwitchData, T_ProductionSettingsNow, T_GameState, T_TimeData} from './types';
+import { calcProductionSettings as calcProductionSettings } from './productionSettings';
+import { T_SwitchAction, T_ProductionRates, T_PurchaseData, T_Levels, T_OfflinePeriod, T_UpgradeAction, T_ProductionSettings, T_Stockpiles, T_Action, T_SwitchData, T_ProductionSettingsNow, T_GameState, T_TimeData, T_TimeDataUnit } from './types';
 
 interface I_CalcPlanData {
     gameState : T_GameState,
@@ -162,7 +162,11 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
 
 
     function addToTimeData(keyTimeID : number) : void {
-        timeData[keyTimeID.toString() as keyof typeof timeData] = createTimeData(keyTimeID);
+        if(!(keyTimeID.toString() in timeData)){
+            timeData[keyTimeID.toString() as keyof typeof timeData] = createTimeData(keyTimeID);
+            return;
+        }
+        updateTimeData(keyTimeID);
     }
 
 
@@ -290,17 +294,14 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
     }
 
 
-    function createTimeData(timeID : number){
-        let allToDust = { value: 0, rate: 0 };
-        if(timeID < OUT_OF_TIME){
-            allToDust = calcDustAtEndWithMaxDustProduction({timeID, stockpiles, levels, premiumInfo: gameState.premiumInfo, productionSettings});
-        }
+    function createTimeData(timeID : number) : T_TimeDataUnit {
+        const allToDust = calcDustAtEndWithMaxDustProduction({timeID, stockpiles, levels, premiumInfo: gameState.premiumInfo, productionSettings});
         return {
-            levels: deepCopy(levels),
-            productionSettings: deepCopy(productionSettings),
-            rates: deepCopy(productionRates),
-            stockpiles: deepCopy(stockpiles),
-            allToDust
+            productionSettingsDuring: deepCopy(productionSettings),
+            ratesDuring: deepCopy(productionRates),
+            levelsAtEnd: deepCopy(levels),
+            stockpilesAtEnd: deepCopy(stockpiles),
+            allToDustAfter: allToDust
         }
     }
 
@@ -416,6 +417,17 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
             return;
         }
         updateProductionRates();
+    }
+
+
+    function updateTimeData(timeID : number){
+        const timeDataNow = createTimeData(timeID);
+        const oldTimeData = timeData[timeID.toString() as keyof typeof timeData];
+        const oldProdSettings = deepCopy(oldTimeData.productionSettingsDuring);
+        const oldRates = deepCopy(oldTimeData.ratesDuring);
+        Object.assign(oldTimeData, timeDataNow);
+        oldTimeData.productionSettingsDuring = oldProdSettings;
+        oldTimeData.ratesDuring = oldRates;
     }
 }
 

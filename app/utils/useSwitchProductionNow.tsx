@@ -76,7 +76,7 @@ export function useSwitchProductionNow({ initialProdSettings, setProdSettingsNow
         closeModal: () => setIsVisible(false),
         initialProdSettings,
         updateProdSettings: updateSettings,
-        levelsAtStart: timeIDGroups.length > 0 ? timeIDGroups[0].levels : maxLevels()
+        levelsAtStart: timeIDGroups.length > 0 ? timeIDGroups[0].levelsAtEnd : maxLevels()
     }
 
     return {

@@ -21,7 +21,7 @@
 import { useState } from 'react';
 
 import { deepCopy } from './consts';
-import { removeAllSwitchActionsInTimeGroup, countInternalProductionSwitches, getNewSwitchActions } from './productionSettings';
+import { removeAllSwitchActionsInTimeGroup, countInternalProductionSwitches, calcNewSwitchActions } from './productionSettings';
 import { I_ProductionSwitcherModalUniversal, T_ProductionSettings, T_TimeGroup, T_Action } from './types';
 
 
@@ -70,8 +70,8 @@ export function useSwitchProductionFuture({actions, setActions}
         let lastUpgrade = targetTimeGroup.upgrades[targetTimeGroup.upgrades.length - 1];
         let insertIdx = lastUpgrade.actionsIdx + 1 - numInternalSwitches;
 
-        let newSwitchActions = getNewSwitchActions({
-            startSettings: targetTimeGroup.productionSettings,
+        let newSwitchActions = calcNewSwitchActions({
+            startSettings: targetTimeGroup.productionSettingsDuring,
             newSettings,
             insertIdx
         });

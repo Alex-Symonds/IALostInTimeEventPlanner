@@ -1,9 +1,9 @@
 import { deepCopy } from './consts';
 import { defaultProductionSettings } from './defaults';
-import { T_Action, T_DisplaySwitch as T_SwitchDisplay, T_ProductionSettings, T_SwitchAction, T_TimeGroup } from './types';
+import { T_Action, T_DisplaySwitch as T_SwitchDisplay, T_ProductionSettings, T_TimeGroup } from './types';
 
 
-export function getProductionSettings({actions, index} 
+export function calcProductionSettings({actions, index} 
     : {actions : T_Action[], index : number})
     : T_ProductionSettings {
 
@@ -56,7 +56,7 @@ export function countInternalProductionSwitches({ timeGroupData }
 }
 
 
-export function getNewSwitchActions({ startSettings, newSettings, insertIdx } 
+export function calcNewSwitchActions({ startSettings, newSettings, insertIdx } 
     : { startSettings : T_ProductionSettings, newSettings : T_ProductionSettings, insertIdx : number }) 
     : T_Action[]{
 
@@ -81,7 +81,7 @@ export function getNewSwitchActions({ startSettings, newSettings, insertIdx }
 }
 
 
-export function getNewSwitchDisplay({ startSettings, newSettings } 
+export function calcNewSwitchDisplay({ startSettings, newSettings } 
     : { startSettings : T_ProductionSettings, newSettings : T_ProductionSettings}) 
     : T_SwitchDisplay[]{
 

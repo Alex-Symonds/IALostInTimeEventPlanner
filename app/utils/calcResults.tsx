@@ -3,7 +3,7 @@ import { calcProductionRates, calcProductionRate } from "./calcProductionRates";
 import { calcStockpilesAdvancedByTime } from './calcStockpilesAdvancedByTime';
 import { T_DATA_KEYS, getWorkerOutputsFromJSON } from "./getDataFromJSON";
 import { T_Levels, T_SuggestionData, T_ResultData, T_Action, T_PurchaseData, T_PremiumInfo, T_ProductionSettings, T_AllToDustOutput, T_GameState, T_TimeGroup, T_Stockpiles } from "./types";
-import { getProductionSettings } from "./productionSettings";
+import { calcProductionSettings } from "./productionSettings";
 
 
 
@@ -87,12 +87,12 @@ function calcStatusAtLastInTime({ gameState, actions, timeIDGroups }
             timeRemaining: gameState.timeRemaining,
             stockpiles: gameState.stockpiles,
             levels: gameState.levels,
-            productionSettings: getProductionSettings({ actions, index: actions.length - 1 })
+            productionSettings: calcProductionSettings({ actions, index: actions.length - 1 })
         }
     }
 
     const timeGroupData = timeIDGroups[idxLastValid];
-    const productionSettings = deepCopy(timeGroupData.productionSettings);
+    const productionSettings = deepCopy(timeGroupData.productionSettingsDuring);
     if(timeGroupData.switches.length > 0){
         for(let i = 0; i < timeGroupData.switches.length; i++){
             let loopSwitch = timeGroupData.switches[i];
@@ -102,8 +102,8 @@ function calcStatusAtLastInTime({ gameState, actions, timeIDGroups }
 
     return {
         timeRemaining: MAX_TIME - timeGroupData.timeID,
-        stockpiles: timeGroupData.stockpiles,
-        levels: timeGroupData.levels,
+        stockpiles: timeGroupData.stockpilesAtEnd,
+        levels: timeGroupData.levelsAtEnd,
         productionSettings 
     }
 }
@@ -156,8 +156,8 @@ function calcMaxDustInfo(timeIDGroups : T_TimeGroup[])
 
     const idxLastPurchase = findIndexLastTimeGroupInTime(timeIDGroups);
     const validTimeGroups : T_TimeGroup[] = timeIDGroups.slice(0, idxLastPurchase + 1);
-    const maxDust = Math.max(...validTimeGroups.map(ele => ele.allToDust !== null ? ele.allToDust.value : 0));
-    const maxDustTimeGroupIdx = validTimeGroups.findIndex(ele => ele.allToDust !== null && maxDust === ele.allToDust.value);
+    const maxDust = Math.max(...validTimeGroups.map(ele => ele.allToDustAfter !== null ? ele.allToDustAfter.value : 0));
+    const maxDustTimeGroupIdx = validTimeGroups.findIndex(ele => ele.allToDustAfter !== null && maxDust === ele.allToDustAfter.value);
     const timeGroupWithMaxDust = timeIDGroups[maxDustTimeGroupIdx];
     return {
         max: maxDust,
