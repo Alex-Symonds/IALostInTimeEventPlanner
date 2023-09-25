@@ -6,11 +6,11 @@ import useGameStateModal from './utils/useGameStateModal';
 import usePlanner from './utils/usePlanner';
 import useToggledDisplay from './utils/useToggledDisplay';
 
-import Planner from './components/planner';
-import ModalSave from './components/inputSave';
-import ModalLoad from './components/inputLoad';
-import StatusForm from './components/inputGameState';
-import OfflineForm from './components/inputOfflinePeriods';
+import Planner from './components/planner/planner';
+import ModalSave from './components/forms/save';
+import ModalLoad from './components/forms/load';
+import StatusForm from './components/forms/gameState/gameState';
+import OfflineForm from './components/forms/offlinePeriods';
 import StickyBar from './components/stickyBar';
 import DisplayUserInput from './components/sectionDisplayUserInput';
 import ErrorWithPlanner from './components/errorWithPlanner';
