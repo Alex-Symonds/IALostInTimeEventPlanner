@@ -11,16 +11,16 @@ import Radio from './radio';
 
 
 interface I_ModalProdSettings extends Pick<I_Modal, "closeModal"> {
-    currentProdSettings : T_ProductionSettings, 
+    initialProdSettings : T_ProductionSettings, 
     currentSwitches : T_SwitchAction[], 
     updateProdSettings : (data : T_ProductionSettings) => void, 
     levels : T_Levels
 }
-export default function ModalProdSettings({closeModal, currentProdSettings, currentSwitches, updateProdSettings, levels} 
+export default function ModalProdSettings({closeModal, initialProdSettings, currentSwitches, updateProdSettings, levels} 
     : I_ModalProdSettings)
     : JSX.Element {
 
-    const [toggles, setToggles] = useState<T_ProductionSettings>(getInitSettingsForModal(currentProdSettings, currentSwitches));
+    const [toggles, setToggles] = useState<T_ProductionSettings>(getInitSettingsForModal(initialProdSettings, currentSwitches));
 
     function handleChange(key : string, changeTo : string){
         setToggles(prev => {
@@ -43,7 +43,7 @@ export default function ModalProdSettings({closeModal, currentProdSettings, curr
                 <ModalFieldsWrapper>
                     <div className={"flex flex-col items-center gap-6 my-1 mx-1"}>
                     {
-                        Object.keys(currentProdSettings).map((myKey : string) => {
+                        Object.keys(initialProdSettings).map((myKey : string) => {
                             return <ProductionToggle key={myKey} 
                                         myKey={myKey} 
                                         toggledTo={toggles[myKey as keyof typeof toggles]} 

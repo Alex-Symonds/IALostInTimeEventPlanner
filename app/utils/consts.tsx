@@ -9,7 +9,7 @@ export const TAILWIND_MD_BREAKPOINT = 768;
 export const MS_PER_MINUTE = 60000;
 
 export function deepCopy(target : any){
-    return JSON.parse(JSON.stringify(target));
+    return structuredClone(target);
 }
 
 

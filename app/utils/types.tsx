@@ -91,11 +91,11 @@ export type T_TimeData = {
     [key : string] : T_TimeDataUnit,
 }
 type T_TimeDataUnit = {
-    stockpiles: T_Stockpiles,
-    levels: T_Levels,
-    rates: T_ProductionRates,
-    productionSettings : T_ProductionSettings,
-    allToDust : T_AllToDustOutput,
+    stockpilesAtEnd: T_Stockpiles,
+    levelsAtEnd: T_Levels,
+    ratesDuring: T_ProductionRates,
+    productionSettingsDuring : T_ProductionSettings,
+    allToDustAfter : T_AllToDustOutput,
 }
 
 export type T_SwitchData = {

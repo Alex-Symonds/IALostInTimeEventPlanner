@@ -3,10 +3,11 @@ import { useState } from 'react';
 import {T_TimeGroup,  T_GameState} from '../utils/types';
 
 import UpgradeCard from './planner_upgradeCard';
-import TimeGroupMore from './planner_timeGroupMore';
+
 import TimeGroupHeading from './planner_timeGroupHeading';
 import { MoreButton } from './buttons';
 
+import TimeGroupMore from './timeGroupMore/timeGroupMore';
 
 interface I_TimeGroup {
     gameState : T_GameState, 
@@ -58,8 +59,6 @@ export default function TimeGroup({groupData, startPos, openUpgradePicker, gameS
             { showMore ?
                 <TimeGroupMore 
                     data={groupData} 
-                    productionSettings={groupData.productionSettings} 
-                    levels={groupData.levels} 
                     remainingTimeGroups={remainingGroups}
                     gameState={gameState}
                     borderColour={borderColour}

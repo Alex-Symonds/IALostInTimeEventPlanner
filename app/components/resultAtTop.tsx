@@ -13,7 +13,7 @@ interface I_ResultAtTop {
     actions : T_Action[],
     timeIDGroups : T_TimeGroup[]
 }
-export default function ResultAtTop({planData, gameState, actions, timeIDGroups} 
+export default function ResultAtTop({gameState, actions, timeIDGroups} 
     : I_ResultAtTop)
     : JSX.Element {
 
