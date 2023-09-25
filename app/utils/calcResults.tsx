@@ -3,7 +3,7 @@ import { calcProductionRates, calcProductionRate } from "./calcProductionRates";
 import { calcStockpilesAdvancedByTime } from './calcStockpilesAdvancedByTime';
 import { T_DATA_KEYS, getWorkerOutputsFromJSON } from "./getDataFromJSON";
 import { T_Levels, T_SuggestionData, T_ResultData, T_Action, T_PurchaseData, T_PremiumInfo, T_ProductionSettings, T_AllToDustOutput, T_GameState, T_TimeGroup, T_Stockpiles } from "./types";
-import { calcProductionSettings } from "./productionSettings";
+import { calcProductionSettings } from "./productionSettingsHelpers";
 
 
 

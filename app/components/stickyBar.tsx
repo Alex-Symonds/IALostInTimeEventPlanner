@@ -1,6 +1,6 @@
 import { T_ModalWithToggle, T_ViewToggle} from '../utils/types';
 
-import { Button } from './buttons';
+import { Button } from './forms/subcomponents/buttons';
 
 
 interface I_StickyBar {

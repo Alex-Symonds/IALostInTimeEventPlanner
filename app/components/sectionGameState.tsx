@@ -2,7 +2,7 @@ import { getDateDisplayStr, convertTimeIDToTimeRemaining } from '../utils/dateAn
 import { maxedLevelCSS, capitalise, resourceCSS, toBillions, nbsp } from '../utils/formatting';
 import { T_GameState, T_Levels, T_Stockpiles } from '../utils/types';
 
-import StockpilesDisplay from './stockpilesStrip';
+import StockpilesDisplay from './subcomponents/stockpilesStrip';
 import { DisplayInputSection, EditButtonBox } from './sectionDisplayUserInput';
 import { T_DATA_KEYS, getMaxLevelFromJSON, getUnitDataFromJSON } from '../utils/getDataFromJSON';
 

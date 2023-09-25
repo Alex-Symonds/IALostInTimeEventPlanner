@@ -1,6 +1,6 @@
 import { T_GameState, T_OfflinePeriod } from '../utils/types';
 
-import { Button } from './buttons';
+import { Button } from './forms/subcomponents/buttons';
 import SectionGameState from './sectionGameState';
 import SectionOfflinePeriods from './sectionOfflinePeriods';
 

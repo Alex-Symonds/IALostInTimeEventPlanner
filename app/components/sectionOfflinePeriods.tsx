@@ -3,7 +3,7 @@ import { convertOfflineTimeToDate } from "../utils/offlinePeriodHelpers";
 import { T_GameState, T_OfflinePeriod } from "../utils/types";
 
 import { DisplayInputSection, EditButtonBox } from './sectionDisplayUserInput';
-import { Button } from './buttons';
+import { Button } from './forms/subcomponents/buttons';
 
 
 interface I_SectionOfflinePeriods {

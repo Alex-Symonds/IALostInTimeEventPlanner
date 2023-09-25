@@ -5,7 +5,7 @@ import { MAX_TIME, OUT_OF_TIME, deepCopy } from './consts';
 import { calcStartTime as calcStartTime} from './dateAndTimeHelpers';
 import { T_DATA_COSTS, T_DATA_KEYS, getProductionCostsFromJSON } from './getDataFromJSON';
 import { isDuringOfflinePeriod, getOfflinePeriodAsTimeIDs } from './offlinePeriodHelpers';
-import { calcProductionSettings as calcProductionSettings } from './productionSettings';
+import { calcProductionSettings as calcProductionSettings } from './productionSettingsHelpers';
 import { T_SwitchAction, T_ProductionRates, T_PurchaseData, T_Levels, T_OfflinePeriod, T_UpgradeAction, T_ProductionSettings, T_Stockpiles, T_Action, T_SwitchData, T_ProductionSettingsNow, T_GameState, T_TimeData, T_TimeDataUnit } from './types';
 
 interface I_CalcPlanData {
@@ -161,12 +161,15 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
     }
 
 
-    function addToTimeData(keyTimeID : number) : void {
+    function addToTimeData(keyTimeID : number) 
+        : void {
+
         if(!(keyTimeID.toString() in timeData)){
             timeData[keyTimeID.toString() as keyof typeof timeData] = createTimeData(keyTimeID);
-            return;
         }
-        updateTimeData(keyTimeID);
+        else {
+            updateTimeData(keyTimeID);
+        }
     }
 
 
@@ -197,6 +200,7 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
         if(activeOfflinePeriod === null && isDuringOfflinePeriod({timeID: readyTimeID, offlinePeriods, startedAt})){
             createActiveOfflinePeriod(readyTimeID);
         }
+
         advanceStockpilesToValidTimeID({ startTimeID: working.timeID, endTimeID: readyTimeID });
 
         return readyTimeID;
@@ -230,13 +234,13 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
 
         let timeNeeded = 0;
         for(let c = 0; c < costsData.length; c++){
-            const eggKey = costsData[c].egg;
-            const eggQty = parseInt(costsData[c].quantity);
-            const eggsInStockpile = stockpiles[eggKey as keyof typeof stockpiles];
+            const costEggKey = costsData[c].egg;
+            const eggsNeeded = parseInt(costsData[c].quantity);
+            const eggsInStockpile = stockpiles[costEggKey as keyof typeof stockpiles];
 
-            if(eggQty > eggsInStockpile){
-                const eggShortfall = eggQty - eggsInStockpile;
-                const timeToProduce = Math.ceil(eggShortfall / productionRates[eggKey as keyof typeof productionRates]);
+            if(eggsNeeded > eggsInStockpile){
+                const eggShortfall = eggsNeeded - eggsInStockpile;
+                const timeToProduce = Math.ceil(eggShortfall / productionRates[costEggKey as keyof typeof productionRates]);
                 timeNeeded = timeNeeded > timeToProduce ? timeNeeded : timeToProduce;
             }
         }
@@ -379,9 +383,10 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
             return timeID;
         }
 
-        // Update everything that's needed for the timeData for the offline period, then store timeData
         const endTimeID = activeOfflinePeriod.endTimeID;
         const validEndTimeID = endTimeID < OUT_OF_TIME ? endTimeID : OUT_OF_TIME;
+
+        // Update everything that's needed in the timeData for the offline period, then store timeData
         advanceStockpilesToValidTimeID({ startTimeID: prevTimeID, endTimeID: validEndTimeID });
         if(endTimeID < OUT_OF_TIME){
             Object.assign(levels, activeOfflinePeriod.levels);

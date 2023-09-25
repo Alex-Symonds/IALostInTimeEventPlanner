@@ -1,4 +1,4 @@
-import NoPlannerWrapper, { NoPlannerHeading } from "./noPlanner"
+import NoPlannerWrapper, { NoPlannerHeading } from "./subcomponents/noPlanner"
 
 export default function ErrorWithPlanner(){
     return  <NoPlannerWrapper mode={"error"}>
