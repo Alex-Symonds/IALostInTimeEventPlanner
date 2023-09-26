@@ -19,36 +19,34 @@ export default function TimeGroupMore({ data, remainingTimeGroups, gameState, bo
     : I_TimeGroupMore )
     : JSX.Element {
 
-    const moreData = calcTimeGroupMoreData(data, remainingTimeGroups);
+    const moreData = calcTimeGroupMoreData(data, remainingTimeGroups, gameState);
     const leftHeadingWidth = "w-20";
 
     const offlineModeCSS = isDuringOfflinePeriod ?
-                            "bg-greyBlue-700 text-white"
+                            "bg-greyBlue-100 text-black"
                             : "bg-white";
     const offlineModeHr = isDuringOfflinePeriod ?
                             ""
                             : "border-b border-gray-200 mt-2";
 
     return (
-        <section className={"flex flex-col gap-2 border-l border-r px-2 pb-4" + " " + borderColour + " " + offlineModeCSS}>
-            <div className={"mb-1" + " " + offlineModeHr}></div>
-            <DustStatsSection 
-                moreData={moreData} 
-                gameState={gameState} 
-                leftHeadingWidth={leftHeadingWidth} 
-                isDuringOfflinePeriod={isDuringOfflinePeriod} 
-            />
+        <section className={"flex flex-col gap-5 border-l border-r px-2 pb-4" + " " + borderColour + " " + offlineModeCSS}>
+            <div className={"-mb-2" + " " + offlineModeHr}></div>
             <ProductionSettingsSection 
                 productionSettings={ data.productionSettingsDuring } 
                 levels={ data.levelsAtEnd } 
                 leftHeadingWidth={leftHeadingWidth} 
                 isDuringOfflinePeriod={isDuringOfflinePeriod} 
             />
+            <DustStatsSection 
+                moreData={moreData} 
+                gameState={gameState} 
+                leftHeadingWidth={leftHeadingWidth} 
+            />
             <ProductionTableSection 
                 moreData={moreData} 
                 gameState={gameState} 
                 leftHeadingWidth={leftHeadingWidth} 
-                isDuringOfflinePeriod={isDuringOfflinePeriod}
             />
         </section>
     )

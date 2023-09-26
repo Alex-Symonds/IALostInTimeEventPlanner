@@ -1,3 +1,5 @@
+import { useRef, MutableRefObject } from 'react';
+
 import { convertTimeIDToDate } from '@/app/utils/dateAndTimeHelpers';
 import { resourceCSS, toThousands } from "@/app/utils/formatting";
 import { T_GameState } from "@/app/utils/types";
@@ -5,10 +7,17 @@ import { T_GameState } from "@/app/utils/types";
 import { I_MoreSections, T_MoreData, T_ResourceColours } from '../utils/types';
 import TimeGroupMoreSubheading from './subheading';
 
+import SideHeading from './sideTableHeading';
+import InfoButtonInHeader, { I_TooltipProps } from './infoButtonInTh';
+import { useAtEndInfoTooltip } from '../utils/useAtEndInfoTooltip';
 
-export default function ProductionTableSection({moreData, gameState, leftHeadingWidth, isDuringOfflinePeriod} 
-    : I_MoreSections)
+export default function ProductionTableSection({moreData, gameState, leftHeadingWidth} 
+    : Pick<I_MoreSections, "gameState" | "moreData" | "leftHeadingWidth">)
     : JSX.Element {
+
+    const adBoost : MutableRefObject<boolean | undefined> = useRef();
+    adBoost.current = gameState.premiumInfo.adBoost;
+    const atEndTooltipProps = useAtEndInfoTooltip(adBoost);
 
     function formatDoneAt(num : number, gameState : T_GameState){
         if(num === -1){
@@ -24,10 +33,6 @@ export default function ProductionTableSection({moreData, gameState, leftHeading
             ];
     }
 
-    const outerBorderColour = isDuringOfflinePeriod ?
-                                "border-greyBlue-500"
-                                : "border-neutral-200";
-
     return (
         <section>
             <TimeGroupMoreSubheading text={"Eggs"} />
@@ -38,38 +43,34 @@ export default function ProductionTableSection({moreData, gameState, leftHeading
                 <tbody className={""}>
                     <ProductionTableRow 
                         headingStr={"stockpile"} 
-                        data={moreData.stockpiles} 
+                        data={moreData.eggStockpiles} 
                         formatData={(num : number) => num > 10000 ? toThousands(num) : num.toLocaleString()}
                         leftHeadingWidth={leftHeadingWidth}
-                        outerBorderColour={outerBorderColour}
                     />
                     <ProductionTableRow 
                         headingStr={"rate p/m"} 
-                        data={moreData.rates} 
+                        data={moreData.eggRates} 
                         formatData={(num : number) => Math.round(num).toLocaleString()}
                         leftHeadingWidth={leftHeadingWidth}
-                        outerBorderColour={outerBorderColour}
                     />
                     <ProductionTableRow 
-                        headingStr={"by end"} 
-                        data={moreData.totalAtRates} 
+                        headingStr={"at end"} 
+                        data={moreData.eggsTotalAtEnd} 
                         formatData={toThousands}
                         leftHeadingWidth={leftHeadingWidth}
-                        outerBorderColour={outerBorderColour}
+                        tooltipProps={atEndTooltipProps}
                     />
                     <ProductionTableRow 
                         headingStr={"needed"} 
-                        data={moreData.spendRemaining} 
+                        data={moreData.eggsSpendRemaining} 
                         formatData={toThousands} 
                         leftHeadingWidth={leftHeadingWidth}
-                        outerBorderColour={outerBorderColour}
                     />
                     <ProductionTableRow 
                         headingStr={"finish @"} 
-                        data={moreData.doneAt}
+                        data={moreData.eggsDoneAt}
                         formatData={(num : number) => formatDoneAt(num, gameState)}
                         leftHeadingWidth={leftHeadingWidth} 
-                        outerBorderColour={outerBorderColour}
                     />
                 </tbody>
             </table>
@@ -88,9 +89,10 @@ function ProductionTableHead({moreData}
             <tr>
                 <th></th>
                 {
-                    Object.keys(moreData.stockpiles).map(keyName => {
+                    Object.keys(moreData.eggStockpiles).map(keyName => {
+                        const conditionalBold = keyName === 'yellow' ? "font-bold" : "font-medium";
                         return  <th key={keyName} 
-                                    className={"font-normal border w-12" + " " + resourceCSS[keyName as keyof typeof resourceCSS].badge}
+                                    className={"border w-12" + " " + resourceCSS[keyName as keyof typeof resourceCSS].badge + " " + conditionalBold}
                                     >
                                     { keyName.charAt(0) }
                                 </th>
@@ -107,9 +109,9 @@ interface I_ProductionTableRow extends
     headingStr : string, 
     data : T_ResourceColours, 
     formatData? : (num : number) => string | string[], 
-    outerBorderColour : string
+    tooltipProps? : I_TooltipProps
 }
-function ProductionTableRow({headingStr, data, formatData, leftHeadingWidth, outerBorderColour} 
+function ProductionTableRow({headingStr, data, formatData, leftHeadingWidth, tooltipProps} 
     : I_ProductionTableRow)
     : JSX.Element {
 
@@ -129,8 +131,8 @@ function ProductionTableRow({headingStr, data, formatData, leftHeadingWidth, out
 
     return  <ProductionTableRowWrapper 
                 headingStr={headingStr} 
-                leftHeadingWidth={leftHeadingWidth} 
-                outerBorderColour={outerBorderColour}
+                leftHeadingWidth={leftHeadingWidth}
+                tooltipProps={tooltipProps}
                 >
                 {
                     Object.keys(data).map(key => {
@@ -158,15 +160,21 @@ function ProductionTableRow({headingStr, data, formatData, leftHeadingWidth, out
 }
 
 
-function ProductionTableRowWrapper({headingStr, leftHeadingWidth, outerBorderColour, children} 
-    : Pick<I_ProductionTableRow, "headingStr" | "leftHeadingWidth" | "outerBorderColour"> & { children : React.ReactNode })
+function ProductionTableRowWrapper({headingStr, leftHeadingWidth, tooltipProps, children} 
+    : Pick<I_ProductionTableRow, "headingStr" | "leftHeadingWidth"> & { tooltipProps? : I_TooltipProps, children : React.ReactNode })
     : JSX.Element {
 
     return (
-        <tr className={""}>
-            <th className={"text-xs pr-1 font-normal text-right border" + " " + leftHeadingWidth + " " + outerBorderColour}>
-                {headingStr}
-            </th>
+        <tr className={"relative z-0"}>
+            <SideHeading extraCSS={"text-xs pr-1 text-right" + " " + leftHeadingWidth}>
+                <div className={"flex flex-row-reverse justify-between"}>
+                    {headingStr}
+                    { tooltipProps !== undefined ?
+                        <InfoButtonInHeader tooltipProps={tooltipProps} />
+                        : null
+                    }
+                </div>
+            </SideHeading>
             {children}
         </tr>
     )

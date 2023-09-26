@@ -22,7 +22,7 @@ export default function ProductionSettingsSection({productionSettings, levels, i
 
     return (
         <section className={"py-1 flex flex-col gap-1"}>
-            <TimeGroupMoreSubheading text={"Settings"} />
+            <TimeGroupMoreSubheading text={"Current Settings"} />
             <ProductionSettingsSummary 
                 productionSettings={productionSettings} 
                 levels={levels} 
