@@ -11,14 +11,15 @@ export interface I_MoreSections {
 
 
 export type T_MoreData = {
-    stockpiles : T_ResourceColours,
-    rates : T_ResourceColours,
-    spendRemaining : T_ResourceColours,
-    totalAtRates : T_ResourceColours,
-    doneAt : T_ResourceColours,
+    eggStockpiles : T_ResourceColours,
+    eggRates : T_ResourceColours,
+    eggsSpendRemaining : T_ResourceColours,
+    eggsTotalAtEnd : T_ResourceColours,
+    eggsDoneAt : T_ResourceColours,
     dustNow : number,
-    allToDust : T_AllToDustOutput,
-    finishAt : number,
+    dustRates: number[],
+    dustFinishTimes: number[],
+    dustTotals: number[],
 }
 
 

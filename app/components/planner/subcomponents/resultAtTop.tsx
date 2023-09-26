@@ -24,7 +24,7 @@ export default function ResultAtTop({gameState, actions, timeIDGroups}
             : "bg-red-700 text-white";
 
     return(
-        <div className={"sticky top-12 md:top-[7.5rem] shadow-md py-2 flex flex-col items-center w-full mb-4" + " " + conditionalCSS}>
+        <div className={"sticky z-10 top-12 md:top-[7.5rem] shadow-md py-2 flex flex-col items-center w-full mb-4" + " " + conditionalCSS}>
             <div className={"font-bold text-lg"}>
                 { resultOfPlan.hasWon ? "" : "NOT ENOUGH FOR " }1ST PRIZE
             </div>

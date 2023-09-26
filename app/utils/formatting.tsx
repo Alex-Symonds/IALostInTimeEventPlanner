@@ -4,27 +4,27 @@ export const resourceCSS = {
     blue: {
         badge: "bg-sky-700 text-white border-sky-800",
         hover: "hover:bg-sky-600 hover:opacity-100",
-        cell : "bg-sky-50 border-sky-200",
+        cell : "bg-sky-50 border-sky-300",
     },
     green: {
         badge: "bg-green-700 text-white border-green-800",
         hover: "hover:bg-green-600 hover:opacity-100",
-        cell : "bg-green-50 border-green-200",
+        cell : "bg-green-50 border-green-300",
     },
     red: {
         badge: "bg-red-700 text-white border-red-800",
         hover: "hover:bg-red-600 hover:opacity-100",
-        cell : "bg-red-50 border-red-200",
+        cell : "bg-red-50 border-red-300",
     },
     yellow: {
         badge: "bg-amber-400 text-black font-bold border-amber-500",
         hover: "hover:bg-amber-300 hover:opacity-100",
-        cell : "bg-amber-50 border-amber-200",
+        cell : "bg-amber-50 border-amber-300",
     },
     dust: {
         badge: "bg-lime-300 text-black font-bold border-lime-500",
         hover: "hover:bg-lime-200 text-black hover:opacity-100",
-        cell : "bg-lime-50 border-lime-200",
+        cell : "bg-lime-50 border-lime-400 text-black",
     },
 
 }

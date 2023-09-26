@@ -4,6 +4,7 @@ import { calcStockpilesAdvancedByTime } from './calcStockpilesAdvancedByTime';
 import { T_DATA_KEYS, getWorkerOutputsFromJSON } from "./getDataFromJSON";
 import { T_Levels, T_SuggestionData, T_ResultData, T_Action, T_PurchaseData, T_PremiumInfo, T_ProductionSettings, T_AllToDustOutput, T_GameState, T_TimeGroup, T_Stockpiles } from "./types";
 import { calcProductionSettings } from "./productionSettingsHelpers";
+import { defaultProductionSettings } from "./defaults";
 
 
 
@@ -22,12 +23,18 @@ export function calcDustAtEndWithMaxDustProduction({timeID, stockpiles, levels, 
     if(remainingTime < 0){
         return { value: 0, rate: 0 };
     }
-    const dustySettings : T_ProductionSettings = productionSettingsAllToDust(productionSettings);
-    const dustRate = calcProductionRate('dust', levels, premiumInfo, dustySettings);
+    
+    const dustRate = calcMaxDustRate(levels, premiumInfo, productionSettings);
     return {
         value: Math.round(remainingTime * dustRate + stockpiles.dust),
         rate: dustRate
     };
+}
+
+
+export function calcMaxDustRate(levels : T_Levels, premiumInfo : T_PremiumInfo, productionSettings : T_ProductionSettings = defaultProductionSettings){
+    const dustySettings : T_ProductionSettings = productionSettingsAllToDust(productionSettings);
+    return calcProductionRate('dust', levels, premiumInfo, dustySettings);
 }
 
 

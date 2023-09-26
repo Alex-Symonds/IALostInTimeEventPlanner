@@ -18,26 +18,17 @@ export default function ProductionSettingsSummary({productionSettings, levels, e
         <div className={"flex w-40" + " " + extraCSS}>
             {
                 Object.keys(productionSettings).map((myKey, idx) => {
-                    const notUnlocked = levels[myKey as keyof typeof levels] === 0;
 
+                    const notUnlocked = levels[myKey as keyof typeof levels] === 0;
                     let conditionalCSS = 
                         notUnlocked ?
                             isDuringOfflinePeriod ?
-                                "border-greyBlue-400 text-greyBlue-400"
+                                "border-greyBlue-300 text-greyBlue-400 bg-greyBlue-50"
                                 : "border-greyBlue-200 text-greyBlue-200"
                             :
                             resourceCSS[productionSettings[myKey as keyof typeof productionSettings] as keyof typeof resourceCSS].badge;
 
                     conditionalCSS = idx === 0 ? conditionalCSS + " " + "border-l" : conditionalCSS;
-
-                    let outerBorderConditionalCSS = 
-                        isDuringOfflinePeriod && idx === 0 ? 
-                            "border-t border-b border-l"
-                            : isDuringOfflinePeriod && idx === Object.keys(productionSettings).length - 1 ?
-                                "border-r border-t border-b"
-                                : isDuringOfflinePeriod ?
-                                    "border-t border-b"
-                                    : "";
 
                     return  <div key={idx} className={"w-5 flex flex-col justify-center text-xs" }>
                                 { wantHeadings ?
@@ -47,8 +38,8 @@ export default function ProductionSettingsSummary({productionSettings, levels, e
                                     : null
                                 }
 
-                                <div className={"border-greyBlue-500" + " " + outerBorderConditionalCSS}>
-                                    <div className={"flex items-center justify-center border-t border-b border-r" + " " + conditionalCSS}>
+                                <div>
+                                    <div className={"flex items-center justify-center border-r border-t border-b" + " " + conditionalCSS}>
                                         {notUnlocked ? "-" : productionSettings[myKey as keyof typeof productionSettings].charAt(0).toLowerCase()}
                                     </div>
                                 </div>

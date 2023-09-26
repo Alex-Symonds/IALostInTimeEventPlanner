@@ -1,32 +1,55 @@
-import { deepCopy, MAX_TIME, WIN_CONDITION } from "../../../../utils/consts";
+import { deepCopy, MAX_TIME, OUT_OF_TIME, WIN_CONDITION } from "../../../../utils/consts";
 import { T_DATA_KEYS, getUpgradeDataFromJSON } from '../../../../utils/getDataFromJSON';
-import { T_TimeGroup, T_Stockpiles, T_ProductionRates, } from "../../../../utils/types";
+import { T_TimeGroup, T_Stockpiles, T_ProductionRates, T_Levels, T_PremiumInfo, T_GameState, T_ProductionSettings, } from "../../../../utils/types";
 
 import { T_MoreData, T_ResourceColours } from "./types";
 
+import { calcMaxDustRate } from "@/app/utils/calcResults";
+import { calcProductionRates } from "@/app/utils/calcProductionRates";
 
-export function calcTimeGroupMoreData(data : T_TimeGroup, remainingTimeGroups : T_TimeGroup[])
+export function calcTimeGroupMoreData(data : T_TimeGroup, remainingTimeGroups : T_TimeGroup[], gameState : T_GameState)
     : T_MoreData {
 
-    const rates = deepCopy(data.ratesDuring);
+    const newRates = calcProductionRates(data.levelsAtEnd, gameState.premiumInfo, data.productionSettingsDuring);
     const spendRemaining = calcSpendRemaining(remainingTimeGroups);
     const eggStockpiles = deepCopy(data.stockpilesAtEnd);
     delete eggStockpiles.dust;
-    const totalAtRates = calcTotalAtRates(rates, data.stockpilesAtEnd, data.timeID);
-    const doneAt = calcTimeIDProductionIsDone(spendRemaining, rates, data.stockpilesAtEnd, totalAtRates, data.timeID);
-    const finishAt = calcTimeDustDone(data, data.timeID);
+    const eggsTotalAtEnd = calcTotalAtRates(newRates, data.stockpilesAtEnd, data.timeID);
+    const eggsDoneAt = calcTimeIDProductionIsDone(spendRemaining, newRates, data.stockpilesAtEnd, eggsTotalAtEnd, data.timeID);
+
+    const dustInfo = calcDustTableInfo(newRates.dust, deepCopy(data.levelsAtEnd), gameState.premiumInfo, data.stockpilesAtEnd.dust, data.timeID);
+    const {dust: _, ...eggRates} = newRates;
 
     return {
-        stockpiles: eggStockpiles,
-        rates: data.ratesDuring,
-        spendRemaining: spendRemaining,
-        totalAtRates,
-        doneAt,
+        eggStockpiles: eggStockpiles,
+        eggRates: eggRates,
+        eggsTotalAtEnd,
+        eggsDoneAt,
+        eggsSpendRemaining: spendRemaining,
         dustNow: data.stockpilesAtEnd.dust,
-        allToDust: data.allToDustAfter,
-        finishAt
+        ...dustInfo
     }
 }
+
+
+function calcDustTableInfo(rateNow : number, levels : T_Levels, premiumInfo : T_PremiumInfo, dustNow : number, timeID : number){
+    const rateMax = calcMaxDustRate(levels, premiumInfo);
+
+    const finishTimeCurrent = calcTimeDustDone(rateNow, dustNow, timeID);
+    const finishTimeMax = calcTimeDustDone(rateMax, dustNow, timeID);
+
+    const minsRemaining = MAX_TIME - timeID;
+    const endTotalCurrent = Math.round(minsRemaining * rateNow) + dustNow;
+    const endTotalMax = Math.round(minsRemaining * rateMax) + dustNow;
+
+    return {
+        dustRates: [Math.round(rateNow), Math.round(rateMax)],
+        dustFinishTimes: [finishTimeCurrent, finishTimeMax],
+        dustTotals: [endTotalCurrent, endTotalMax],
+    }
+}
+
+
 
 function calcSpendRemaining(timeGroups : T_TimeGroup[])
     : T_ResourceColours {
@@ -87,17 +110,11 @@ function calcTimeIDProductionIsDone(spendRemaining : T_ResourceColours, rates : 
 }
 
 
-function calcTimeDustDone(data : T_TimeGroup, timeID : number)
+function calcTimeDustDone(rate : number, dustNow : number, timeID : number)
     : number {
 
-    const finishTime : number = -1;
-    if(data.allToDustAfter !== null){
-        if(data.allToDustAfter.value > WIN_CONDITION){
-            const rate = data.allToDustAfter.rate;
-            const difference = WIN_CONDITION - data.stockpilesAtEnd.dust;
-            const timeIDAtFinish = Math.round(difference / rate) + timeID;
-            return timeIDAtFinish;
-        }
-    }
-    return finishTime;
+    const difference = WIN_CONDITION - dustNow;
+    const timeNeeded = Math.round(difference / rate);
+    const timeIDAtFinish = timeID + timeNeeded;
+    return timeIDAtFinish < OUT_OF_TIME ? timeIDAtFinish : -1;
 }

@@ -86,7 +86,7 @@ export default function Home() {
 
 
 function MainPageHeading(){
-  return  <h1 className={"[height:4.5rem] flex flex-col px-3 pt-1 pb-3 block bg-white md:sticky md:top-0 md:relative md:[grid-area:heading]"}>
+  return  <h1 className={"[height:4.5rem] relative z-10 flex flex-col px-3 pt-1 pb-3 block bg-white md:sticky md:top-0 md:relative md:[grid-area:heading]"}>
             <span className={"text-3xl font-extrabold block leading-snug text-violet-700"}>Event&nbsp;Planner</span>
             <span className={"text-sm block leading-none"}>Idle&nbsp;Apocalypse: Lost&nbsp;in&nbsp;Time&nbsp;</span>
           </h1>
