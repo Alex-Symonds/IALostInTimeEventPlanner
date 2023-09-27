@@ -9,6 +9,7 @@ import Select from '../../subcomponents/select';
 import { Button } from '../../subcomponents/buttons';
 import { formatValueStr, getUpgradeOptions, InputNumberAsText, Label } from "../gameState"
 import FieldsetWrapper from "../../subcomponents/fieldsetWrapper";
+import Checkbox from "../../subcomponents/checkbox";
 
 
 export interface I_InputGeneral extends I_TimeRemainingFieldset, I_Entered, I_AllEggs, I_AdBoost {}
@@ -55,8 +56,15 @@ function AdBoost({hasAdBoost, toggleAdBoost}
     : JSX.Element {
 
     return  <div className={"flex gap-2"}>
-                <Label htmlFor={"id_adBoost"}>Ad Boost</Label>
-                <input type="checkbox" id="id_adBoost" checked={hasAdBoost} onChange={ toggleAdBoost } />
+                <Checkbox 
+                    checked={hasAdBoost} 
+                    onChange={ toggleAdBoost } 
+                    disabled={false}
+                    idStr={"id_adBoost"}
+                    name={"adBoost"}
+                    displayText={"Ad Boost"}
+                    value={"adBoost"}
+                />
             </div>
 }
 
