@@ -23,7 +23,7 @@ export default function DisplayUserInput({gameState, openGameStateModal, offline
     const offlinePeriodCSS = calcVisibilityCSS(showOfflinePeriods);
     const containerVisibilityCSS = showGameState || showOfflinePeriods ? "py-3 gap-2 border-b border-neutral-300 shadow-md " : "";
 
-    return  <div className={"sticky h-0 top-12 relative z-10 md:sticky md:[grid-area:status] md:top-[7.5rem]"}>
+    return  <div className={"sticky h-0 top-12 relative z-20 md:sticky md:[grid-area:status] md:top-[7.5rem]"}>
                 <section className={"w-full bg-neutral-100 flex flex-col items-center  md:border-none md:shadow-none md:min-w-[20rem] md:[height:calc(100vh-10rem)] md:gap-3 md:px-3 md:py-1.5" + " " + containerVisibilityCSS}>
 
                     <StickyBarSection extraCSS={"mt-1 mb-1 shadow-xl" + gameStateVisibilityCSS }>
