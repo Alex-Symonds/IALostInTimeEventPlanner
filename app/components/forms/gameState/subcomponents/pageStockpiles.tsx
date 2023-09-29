@@ -8,11 +8,30 @@ export default function InputStockpiles({ controlledStockpileValue, updateStockp
     : JSX.Element {
 
     return  <div className={"flex flex-col gap-3"}>
-                <DustInput controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-                <StockpileInput keyId={'blue'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-                <StockpileInput keyId={'green'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-                <StockpileInput keyId={'red'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
-                <StockpileInput keyId={'yellow'} controlledStockpileValue={controlledStockpileValue} updateStockpiles={updateStockpiles} />
+                <DustInput 
+                    controlledStockpileValue={controlledStockpileValue} 
+                    updateStockpiles={updateStockpiles} 
+                />
+                <StockpileInput 
+                    keyId={'blue'} 
+                    controlledStockpileValue={controlledStockpileValue} 
+                    updateStockpiles={updateStockpiles} 
+                />
+                <StockpileInput 
+                    keyId={'green'} 
+                    controlledStockpileValue={controlledStockpileValue} 
+                    updateStockpiles={updateStockpiles} 
+                />
+                <StockpileInput 
+                    keyId={'red'} 
+                    controlledStockpileValue={controlledStockpileValue} 
+                    updateStockpiles={updateStockpiles} 
+                />
+                <StockpileInput 
+                    keyId={'yellow'} 
+                    controlledStockpileValue={controlledStockpileValue} 
+                    updateStockpiles={updateStockpiles} 
+                />
             </div>
 
 }
@@ -27,20 +46,12 @@ function StockpileWrapper({coloursCSS, idStr, label, children}
     : I_PropsStockpileWrapper)
     : JSX.Element {
 
-    return  <div className={"rounded ml-2 flex py-1 px-2 items-center border" + " " + coloursCSS}>
-                <label className={"block w-20"} htmlFor={idStr}>{label}</label>
+    return  <div className={`rounded ml-2 flex py-1 px-2 items-center border ${coloursCSS}`}>
+                <label className={"block w-20"} htmlFor={idStr}>
+                    {label}
+                </label>
                 {children}
             </div>
-}
-
-
-function extractBorderColourCSS(cssStr : string){
-    const regEx = /border-\w*-\d{2,3}/g;
-    const matchArr = cssStr.match(regEx);
-    if(matchArr === null){
-        return '';
-    }
-    return matchArr[0];
 }
 
 
@@ -56,9 +67,19 @@ function StockpileInput({keyId, controlledStockpileValue, updateStockpiles}
     const idStr = `id_${keyId}Stock`;
     const label = `${keyId.charAt(0).toUpperCase()}${keyId.slice(1)}`;
     const borderCSS = extractBorderColourCSS(resourceCSS[keyId as keyof typeof resourceCSS].badge);
+   
     return (
-        <StockpileWrapper coloursCSS={resourceCSS[keyId as keyof typeof resourceCSS].badge} label={label} idStr={idStr}>
-            <InputNumberAsText cssStr={"w-36 text-black py-1 px-2 font-normal" + " " + borderCSS} idStr={idStr} value={controlledStockpileValue(keyId)} handleChange={(e: React.ChangeEvent<HTMLInputElement> ) => updateStockpiles(e, keyId)} />
+        <StockpileWrapper 
+            coloursCSS={resourceCSS[keyId as keyof typeof resourceCSS].badge} 
+            label={label} 
+            idStr={idStr}
+            >
+            <InputNumberAsText 
+                cssStr={`w-36 text-black py-1 px-2 font-normal ${borderCSS}`} 
+                idStr={idStr} 
+                value={controlledStockpileValue(keyId)} 
+                handleChange={(e: React.ChangeEvent<HTMLInputElement> ) => updateStockpiles(e, keyId)} 
+            />
         </StockpileWrapper>
     )
 }
@@ -70,13 +91,28 @@ function DustInput({controlledStockpileValue, updateStockpiles}
 
     const borderCSS = extractBorderColourCSS(resourceCSS.dust.badge);
     return(
-        <StockpileWrapper coloursCSS={resourceCSS.dust.badge} label={"Dust"} idStr={"id_dust"}>
+        <StockpileWrapper 
+            coloursCSS={resourceCSS.dust.badge} 
+            label={"Dust"} 
+            idStr={"id_dust"}
+            >
             <InputNumberAsText 
                 idStr={"id_dust"}
-                cssStr={"w-36 py-1 px-2 font-normal" + " " + borderCSS}
+                cssStr={`w-36 py-1 px-2 font-normal ${borderCSS}`}
                 value={ controlledStockpileValue('dust') }
                 handleChange={(e) => updateStockpiles(e, 'dust')}
             />
         </StockpileWrapper>
     )
+}
+
+
+// Finds a border colour Tailwind class
+function extractBorderColourCSS(cssStr : string){
+    const regEx = /border-\w*-\d{2,3}/g;
+    const matchArr = cssStr.match(regEx);
+    if(matchArr === null){
+        return '';
+    }
+    return matchArr[0];
 }

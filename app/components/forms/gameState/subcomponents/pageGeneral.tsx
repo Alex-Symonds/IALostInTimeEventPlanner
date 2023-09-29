@@ -1,12 +1,12 @@
-import { useState, Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 
-import { MAX_DAYS } from '../../../../utils/consts';
 import { calcDateDisplayStr } from '../../../../utils/dateAndTimeHelpers';
 import { capitalise } from '../../../../utils/formatting';
-import { T_TimeRemainingDHM } from "../../../../utils/types";
 
 import { Button } from '../../subcomponents/buttons';
 import FieldsetWrapper from "../../subcomponents/fieldsetWrapper";
+
+import { useTimeRemainingFieldset, I_TimeRemainingFieldset } from "../utils/useTimeRemainingFieldset";
 
 import { InputNumberAsText, Label } from "../gameState"
 
@@ -72,27 +72,45 @@ function Entered({timeEntered, setStateOnChange, setTimeEntered}
 }
 
 
-interface I_TimeRemainingFieldset {
-    timeRemaining: T_TimeRemainingDHM,
-    setTimeRemaining: React.Dispatch<React.SetStateAction<T_TimeRemainingDHM>>
-}
 function TimeRemainingFieldset({timeRemaining, setTimeRemaining} 
     : I_TimeRemainingFieldset)
     : JSX.Element {
 
-    const { isError, message, handleChangeDays, handleChangeHours, handleChangeMinutes } = useTimeRemainingFieldset({timeRemaining, setTimeRemaining});
+    const { 
+        isError, 
+        message, 
+        handleChangeDays, 
+        handleChangeHours, 
+        handleChangeMinutes 
+    } = useTimeRemainingFieldset({timeRemaining, setTimeRemaining});
 
     return (
         <FieldsetWrapper>
-            <Label extraCSS={"font-semibold w-min px-1"} htmlFor={''} tagName={'legend'}>Time&nbsp;Remaining</Label>
+            <Label extraCSS={"font-semibold w-min px-1"} htmlFor={''} tagName={'legend'}>
+                Time&nbsp;Remaining
+            </Label>
             <div className={'w-full relative flex flex-col items-center gap-1 px-3 ml-1'}>
                 <div className={'w-full flex gap-2 mt-1  py-1 px-2 rounded-md'}>
-                    <TimeRemainingUnit unitName={"days"} value={timeRemaining == null ? 0 : timeRemaining.days} handleChange={handleChangeDays} />
-                    <TimeRemainingUnit unitName={"hours"} value={timeRemaining == null ? 0 : timeRemaining.hours} handleChange={handleChangeHours} />
-                    <TimeRemainingUnit unitName={"minutes"} value={timeRemaining == null ? 0 : timeRemaining.minutes} handleChange={handleChangeMinutes} />
+                    <TimeRemainingUnit 
+                        unitName={"days"} 
+                        value={timeRemaining == null ? 0 : timeRemaining.days} 
+                        handleChange={handleChangeDays} 
+                    />
+                    <TimeRemainingUnit 
+                        unitName={"hours"} 
+                        value={timeRemaining == null ? 0 : timeRemaining.hours} 
+                        handleChange={handleChangeHours} 
+                    />
+                    <TimeRemainingUnit 
+                        unitName={"minutes"} 
+                        value={timeRemaining == null ? 0 : timeRemaining.minutes} 
+                        handleChange={handleChangeMinutes} 
+                    />
                 </div>
                 { isError ?
-                    <div className={"text-xs border-1 text-neutral-700 px-1 py-1 w-56"}>{capitalise(message)}</div>
+                    <div className={"text-xs border-1 text-neutral-700 px-1 py-1 w-56"}>
+                        {capitalise(message)}
+                    </div>
                     : null
                 }
             </div>
@@ -124,148 +142,3 @@ function TimeRemainingUnit({unitName, value, handleChange}
 }
 
 
-type T_OutputUseTimeRemainingFieldset = {
-    isError : boolean, 
-    message : string, 
-    handleChangeDays : (e : React.ChangeEvent<HTMLInputElement>) => void, 
-    handleChangeHours : (e : React.ChangeEvent<HTMLInputElement>) => void, 
-    handleChangeMinutes : (e : React.ChangeEvent<HTMLInputElement>) => void, 
-}
-function useTimeRemainingFieldset({timeRemaining, setTimeRemaining}
-    : I_TimeRemainingFieldset)
-    : T_OutputUseTimeRemainingFieldset {
-
-    const [isError, setIsError] = useState(false);
-    const [message, setMessage] = useState("");
-
-    const MAX_HOURS = 23;
-    const MAX_MINUTES = 59;
-
-    function handleChangeDays(e : React.ChangeEvent<HTMLInputElement>){
-        let newDaysStr = e.target.value;
-        let newDays = parseInt(newDaysStr);
-
-        newDays = validateDays(newDays);
-
-        if(newDays === MAX_DAYS){
-            setTimeRemaining({
-                days: MAX_DAYS,
-                hours: 0,
-                minutes: 0
-            });
-            return;
-        }
-
-        setTimeRemaining(prev => {
-            return {
-                ...prev,
-                days: newDays
-            }
-        });
-    }
-
-    function validateDays(newDays : number){
-        const rangeStr = `days can be 0 - ${MAX_DAYS}`;
-
-        if(newDays > MAX_DAYS){
-            setMessage(rangeStr);
-            setIsError(true);
-            newDays = MAX_DAYS;
-        }
-        else if(newDays === MAX_DAYS 
-                && ( timeRemaining.hours > 0 || timeRemaining.minutes > 0)
-            ){
-            setIsError(true);
-            setMessage(`${MAX_DAYS} days is the maximum: hours and minutes set to 0`);
-        }
-        else if(newDays < 0){
-            setIsError(true);
-            setMessage(rangeStr);
-            newDays = 0;
-        }
-        else if(isError){
-            setIsError(false);
-        }
-
-        return newDays;
-    }
-
-
-    function handleChangeHours(e: React.ChangeEvent<HTMLInputElement>){
-        let newHoursStr = e.target.value;
-        let newHours = parseInt(newHoursStr);
-        newHours = validateHours(newHours);
-
-        setTimeRemaining((prev) => {
-            return {
-                ...prev,
-                hours: newHours
-            }
-        });
-    }
-
-    function validateHours(newHours : number){
-        const rangeStr = `hours can be 0 - ${MAX_HOURS} (inclusive)`;
-
-        if(timeRemaining.days === MAX_DAYS && newHours !== 0){
-            setIsError(true);
-            setMessage(`can't go above ${MAX_DAYS} days`);
-            newHours = 0;
-        }
-        else if(newHours > MAX_HOURS){
-            setIsError(true);
-            setMessage(rangeStr);
-            newHours = MAX_HOURS;
-        }
-        else if(newHours < 0){
-            setIsError(true);
-            setMessage(rangeStr);
-            newHours = 0;
-        }
-        else{
-            setIsError(false);
-        }
-
-        return newHours;
-    }
-
-
-    function handleChangeMinutes(e: React.ChangeEvent<HTMLInputElement>){
-        let newMinutesStr = e.target.value;
-        let newMinutes = parseInt(newMinutesStr);
-        newMinutes = validateMinutes(newMinutes);
-
-        setTimeRemaining((prev) => {
-            return {
-                ...prev,
-                minutes: newMinutes
-            }
-        });
-    }
-
-
-    function validateMinutes(newMinutes : number){
-        const rangeStr = `minutes can be 0 - ${MAX_MINUTES}`;
-        if(timeRemaining.days === MAX_DAYS && newMinutes !== 0){
-            setIsError(true);
-            setMessage(`can't go above ${MAX_DAYS} days`);
-            newMinutes = 0;
-        }
-        else if(newMinutes > MAX_MINUTES){
-            setIsError(true);
-            setMessage(rangeStr);
-            newMinutes = MAX_MINUTES;
-        }
-        else if(newMinutes < 0){
-            setIsError(true);
-            setMessage(rangeStr);
-            newMinutes = 0;
-        }
-        else{
-            setIsError(false);
-        }
-        return newMinutes;
-    }
-
-    return { isError, message, handleChangeDays, handleChangeHours, handleChangeMinutes }
-}

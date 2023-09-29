@@ -8,11 +8,11 @@ import { T_GameState } from "@/app/utils/types";
 import { I_StatusFormSharedProps } from "../gameState";
 
 import { calcLevelKeyValue } from "./calcLevelKeyValue";
-import { useAdBoost, T_OutputUseAdBoost } from "./useAdBoost";
-
+import { useAdBoost } from "./useAdBoost";
+import { I_AdBoostInputEle } from "../subcomponents/fieldAdBoost";
 
 type T_OutputUsePlanGameStatusForm = 
-    T_OutputUseAdBoost & {
+    I_AdBoostInputEle & {
     onSubmit : (e : React.SyntheticEvent) => void,
     setAllEggs : (e : React.ChangeEvent<HTMLSelectElement>) => void,
     startTime : Date,

@@ -5,7 +5,7 @@ import { calcMonthName } from "@/app/utils/dateAndTimeHelpers";
 
 import { T_OptionData } from "../subcomponents/select";
 
-//calcOptionsForNumberRange : (firstNum : number, lastNum : number) => T_OptionData[]
+
 export function calcOptionsForNumberRange(firstNum : number, lastNum : number){
     let options : T_OptionData[] = [];
     for(let i = firstNum; i <= lastNum; i++){

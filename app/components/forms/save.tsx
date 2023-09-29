@@ -1,48 +1,24 @@
-import { useId, useState } from 'react';
+import { useId } from 'react';
 
 import Modal, { ModalHeading, ModalSubmitButton, ModalFieldsWrapper, I_Modal } from '../subcomponents/modal';
 import { Button } from './subcomponents/buttons';
+import { I_UseSave, useSave } from './utils/useSave';
 
 
-interface I_ModalSave extends Pick<I_Modal, "closeModal"> {
-    saveInputs : (keyName : string) => void,
-    convertToKeyName : (keyName : string) => string,
-}
+interface I_ModalSave extends Pick<I_Modal, "closeModal">, Pick<I_UseSave, "convertToKeyName" | "saveInputs"> {}
 export default function ModalSave({closeModal, saveInputs, convertToKeyName} 
     : I_ModalSave)
     : JSX.Element {
 
-    const [name, setName] = useState("");
-    const [showWarning, setShowWarning] = useState(false);
-    const [showOverwrite, setShowOverwrite] = useState(false);
-    
-    function handleChange(e : React.ChangeEvent<HTMLInputElement>){
-        let proposedKey = convertToValidKey(e.target.value);
-        let nameExists = convertToKeyName(proposedKey) in Object.keys(localStorage);
-
-        if(nameExists){
-            setShowWarning(true);
-        }
-        else {
-            setShowWarning(false);
-        }
-        setName(proposedKey);
-    }
-
-    function handleSubmit(){
-        let nameExists = Object.keys(localStorage).includes(convertToKeyName(name));
-        if(nameExists){
-            setShowOverwrite(true)
-        }
-        else{
-            saveAndClose();
-        }
-    }
-
-    function saveAndClose(){
-        saveInputs(name);
-        closeModal();
-    }
+    const {
+        showOverwrite, 
+        setShowOverwrite, 
+        name, 
+        handleChange,
+        saveAndClose,
+        handleSubmit,
+        showWarning
+    } = useSave({closeModal, saveInputs, convertToKeyName});
 
     return(
         <Modal closeModal={closeModal}>
@@ -133,9 +109,7 @@ function OverwriteQuestion({name, goBack, acceptOverwrite}
 }
 
 
-function convertToValidKey(str : string) : string {
-    return str.replace(/[^a-zA-Z0-9_]/g, '');
-}
+
 
 
 

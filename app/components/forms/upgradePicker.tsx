@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import { deepCopy } from "../../utils/consts";
-import { T_DATA_KEYS, getEntriesFromJSON, getProductionCostsFromJSON } from "../../utils/getDataFromJSON";
 import { T_GameState, T_PurchaseData, T_Stockpiles, T_CostData, } from "../../utils/types";
+
+import { moveIsValid } from '../planner/utils/moveIsValid';
 
 import { BadgeCost, BadgeMaxed } from "../subcomponents/badges";
 import Modal, { ModalHeading, ModalLegend, ModalSubmitButton, I_Modal, ModalFieldsWrapper } from '../subcomponents/modal';
@@ -11,8 +11,8 @@ import Tooltip from '../subcomponents/tooltip';
 
 import { InfoButton } from "./subcomponents/buttons";
 import Radio from './subcomponents/radio';
-import { moveIsValid } from '../planner/utils/moveIsValid';
 
+import { calcUpgradePickerRadioData, calcStockpilesIncludingCurrentPurchase } from "./utils/upgradePickerHelpers";
 
 
 export interface I_UpgradePickerModal extends Pick<I_Modal, "closeModal"> {
@@ -25,7 +25,7 @@ export default function UpgradePickerModal({closeModal, movePlanElement, pickerT
     : I_UpgradePickerModal)
     {
     const [fromIdx, setFromIdx] = useState<number>(pickerTargetIdx ?? -1);
-    const radioData = getUpgradeRadioData({ targetIdx: pickerTargetIdx ?? -1, purchaseData, gameState });
+    const radioData = calcUpgradePickerRadioData({ targetIdx: pickerTargetIdx ?? -1, purchaseData, gameState });
 
     if(pickerTargetIdx === null){
         return;
@@ -139,7 +139,7 @@ function UpgradeRadio({checked, myKey, data, handleSelection, disabled}
 interface I_UnitPickerCard extends Pick<I_UpgradeRadio, "checked" | "disabled">{
     data : T_UnitPickerData
 }
-type T_UnitPickerData = {
+export type T_UnitPickerData = {
     name : string,
     level : number,
     isMaxLevel: boolean,
@@ -193,59 +193,3 @@ function UnitPickerCard({checked, disabled, data}
 }
 
 
-
-interface I_GetUpgradeRadioData extends Pick<I_UpgradePickerModal, "purchaseData" | "gameState">{
-    targetIdx : number
-}
-type T_UpgradeRadioData = 
-    T_UnitPickerData & {
-    key : string,
-    fromIdx : number,
-}
-function getUpgradeRadioData({ targetIdx, purchaseData, gameState } 
-    : I_GetUpgradeRadioData)
-    : T_UpgradeRadioData[] {
-
-    let result : T_UpgradeRadioData[] = [];
-    let levelsAtStart = targetIdx === 0 ? 
-                        gameState.levels
-                        : purchaseData[targetIdx].levelsAbove;
-
-    for(const [k, v] of getEntriesFromJSON()){
-        let levelAtStart = levelsAtStart[k as keyof typeof levelsAtStart];
-        let maxLevel = v.upgrades.length;
-        let newLevel = levelAtStart + 1;
-
-        let purchaseDataIdx = newLevel > maxLevel ?
-                            -1
-                            : purchaseData.findIndex((ele : any) => {
-                                return ele.key === k && ele.level === newLevel
-                            });
-
-        result.push({
-            key: k,
-            fromIdx: purchaseDataIdx,
-            name: v.name,
-            level: newLevel,
-            isMaxLevel: maxLevel < newLevel,
-            costs: maxLevel < newLevel ? [] : v.upgrades[newLevel - 1].costs
-        });
-    }
-
-    return result;
-}
-
-function calcStockpilesIncludingCurrentPurchase(purchaseData 
-    : T_PurchaseData) 
-    : T_Stockpiles {
-
-    let stockpiles = deepCopy(purchaseData.stockpiles);
-    const costs = getProductionCostsFromJSON(purchaseData.key as T_DATA_KEYS, purchaseData.level);
-
-    for(let i = 0; i < costs.length; i++){
-        let loopKey = costs[i].egg;
-        stockpiles[loopKey as keyof typeof stockpiles] = stockpiles[loopKey as keyof typeof stockpiles] + parseInt(costs[i].quantity);
-    }
-
-    return stockpiles;
-}
