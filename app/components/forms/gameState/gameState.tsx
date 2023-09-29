@@ -1,138 +1,109 @@
 import { Dispatch, SetStateAction, useState, ChangeEvent } from 'react';
 
-import { deepCopy } from '../../../utils/consts';
-import { convertTimeRemainingToMinutes, convertTimeIDToDHM } from '../../../utils/dateAndTimeHelpers';
-import { defaultLevels, defaultStockpiles, defaultTimeRemaining, lateGameSettings, maxLevels } from '../../../utils/defaults';
-import { T_Stockpiles, T_Levels, T_TimeRemainingDHM, T_GameState } from '../../../utils/types';
+import { T_GameState } from '../../../utils/types';
 
 import { SelectWithLabel, T_OptionData } from '../subcomponents/select';
-import Modal, { ModalMultiPageNav, ModalFieldsWrapper, ModalSubmitButton, ModalHeading, ModalSubHeading } from '../../subcomponents/modal';
+import Modal, { ModalFieldsWrapper, ModalHeading, ModalSubHeading } from '../../subcomponents/modal';
 import { BadgeCost, BadgeMaxed } from '../../subcomponents/badges';
 
-import InputGeneral, { I_InputGeneral } from './subcomponents/pageGeneral';
-import InputStockpiles, { I_InputStockpiles } from './subcomponents/pageStockpiles';
-import InputLevelsWorkers from './subcomponents/pageLevelsWorkers';
-import InputLevelsOther, { I_InputLevelsOther } from './subcomponents/pageLevelsOther';
 import { T_DATA_KEYS, getUnitDataFromJSON } from '../../../utils/getDataFromJSON';
+import { T_PlanModeKit } from '@/app/utils/usePlanMode';
+import FormActiveMode from './subcomponents/formActiveMode';
+import FormSetMode from './subcomponents/formSetMode';
+import FormPlanMode from './subcomponents/formPlanMode';
+
+import ChangeModeButton from './subcomponents/changeModeButton';
 
 
-
-interface I_StatusFormProps {
+export interface I_StatusFormSharedProps {
     setGameState : Dispatch<SetStateAction<T_GameState>>,
     gameState : T_GameState,
-    closeModal : () => void,
+    closeModal : () => void
 }
-export default function StatusForm({setGameState, gameState, closeModal}
-    : I_StatusFormProps)
+export default function StatusForm({setGameState, gameState, mode, closeModal}
+    : I_StatusFormSharedProps & { mode : T_PlanModeKit })
     : JSX.Element {
 
-    const [activePage, setActivePage] = useState<number>(1);
-    const MAX_PAGE_NUM = 4;
-
-    const { onSubmit,
-            levels,
-            handleLevelChange,
-            hasAdBoost,
-            toggleAdBoost,
-            timeEntered,
-            setTimeEntered,
-            timeRemaining,
-            setTimeRemaining,
-            controlledStockpileValue,
-            updateStockpiles,
-            setStateOnChange,
-        } = useGameStatusForm({setGameState, gameState, closeModal});
-
+    const [userWantsToChangeMode, setUserWantsToChangeMode] = useState(false);
+    const [isInitialisingMode, _] = useState<boolean>(!mode.isActive && !mode.isPlan);
 
     return (
         <Modal closeModal={closeModal}>
-            <ModalHeading>Game Status</ModalHeading>
-            <form onSubmit={(e) => onSubmit(e)}>
-                <InputPageWrapper 
-                    isVisible={ activePage === 1 } 
-                    heading={`1/${MAX_PAGE_NUM}: Times and Premium`} 
-                    >
-
-                    <InputGeneral
-                        timeEntered={timeEntered}
-                        setStateOnChange={setStateOnChange}
-                        setTimeEntered={setTimeEntered}
-                        timeRemaining={timeRemaining}
-                        setTimeRemaining={setTimeRemaining}
-                        gameState={gameState}
-                        handleLevelChange={handleLevelChange}
-                        hasAdBoost={hasAdBoost}
-                        toggleAdBoost={toggleAdBoost}
-                    />
-                </InputPageWrapper>
-
-                <InputPageWrapper 
-                    isVisible={ activePage === 2 } 
-                    heading={`2/${MAX_PAGE_NUM}: Current Stockpiles`}  
-                    >
-                    <InputStockpiles
-                        controlledStockpileValue={controlledStockpileValue}
-                        updateStockpiles={updateStockpiles}
-                    />
-                </InputPageWrapper>
-
-                <InputPageWrapper 
-                    isVisible={ activePage === 3 } 
-                    heading={`3/${MAX_PAGE_NUM}: Worker Levels`}  
-                    >
-                    <InputLevelsWorkers
-                        handleLevelChange={handleLevelChange} 
-                        gameState={gameState} 
-                        levels={levels}
-                    />
-                </InputPageWrapper>
-
-                <InputPageWrapper 
-                    isVisible={ activePage === MAX_PAGE_NUM } 
-                    heading={`4/${MAX_PAGE_NUM}: Other Levels`}  
-                    >
-                    <InputLevelsOther
-                        handleLevelChange={handleLevelChange} 
-                        gameState={gameState} 
-                        levels={levels}
-                    />
-                </InputPageWrapper>
-
-                <ModalMultiPageNav 
-                    activePage={activePage} 
-                    changePage={setActivePage} 
-                    numPages={MAX_PAGE_NUM} 
-                    submitLabel={"enter"}
+            <ModalHeading>{mode.isActive ? "Active" : "Plan"} Game Status</ModalHeading>
+            { !isInitialisingMode && !userWantsToChangeMode ?
+                <ChangeModeButton changeMode={() => setUserWantsToChangeMode(true)} />
+                : null
+            }
+            { mode.isActive && !userWantsToChangeMode ?
+                <FormActiveMode 
+                    gameState={gameState}
+                    setGameState={setGameState}   
+                    closeModal={closeModal}     
+                    changeMode={() => setUserWantsToChangeMode(true)}
+                    wantBackToMode={isInitialisingMode}
                 />
-                <ModalSubmitButton 
-                    label={"submit"} 
-                    extraCSS={'sr-only [padding:0] [height:0]'} 
-                    disabled={false}
-                />
-            </form>
+                : mode.isPlan && !userWantsToChangeMode ?
+                    <FormPlanMode 
+                        gameState={gameState}          
+                        setGameState={setGameState}        
+                        closeModal={closeModal}
+                        isInitialisingMode={isInitialisingMode}
+                    />
+                    : 
+                    <FormSetMode 
+                        isActive={ mode.isActive }
+                        isPlan={ mode.isPlan }
+                        setMode={ mode.setMode }
+                        close={() => setUserWantsToChangeMode(false)}
+                    />
+            }
+
         </Modal>
     )
 
 }
 
 
-function InputPageWrapper({ isVisible, heading, children }
+export function InputPageWrapper({ isVisible, heading, children }
     : { isVisible : boolean, heading? : string, children : React.ReactNode })
     : JSX.Element {
 
     const visibilityCSS = isVisible ? "" : "sr-only";
-    return  <section className={"flex flex-col" + " " + visibilityCSS}>
+    return  <section className={"" + " " + visibilityCSS}>
+                <ModalFieldsWrapper>
                 {
                     heading === undefined ?
                     null
                     :
-                    <ModalSubHeading>{heading}</ModalSubHeading>
+                    <h3 className={`pl-0.5 font-semibold text-black mb-3`}>
+                        {heading}
+                    </h3>
                 }
-                <ModalFieldsWrapper>
                     { children }
                 </ModalFieldsWrapper>
             </section>
 }
+
+
+
+// export function OLDInputPageWrapper({ isVisible, heading, children }
+//     : { isVisible : boolean, heading? : string, children : React.ReactNode })
+//     : JSX.Element {
+
+//     const visibilityCSS = isVisible ? "" : "sr-only";
+//     return  <section className={"flex flex-col" + " " + visibilityCSS}>
+//                 {
+//                     heading === undefined ?
+//                     null
+//                     :
+//                     <ModalSubHeading>{heading}</ModalSubHeading>
+//                 }
+
+//                 <ModalFieldsWrapper>
+//                     { children }
+//                 </ModalFieldsWrapper>
+//             </section>
+// }
 
 
 export function LevelsWrapper({children} 
@@ -260,142 +231,5 @@ export function getUpgradeOptions({name, max}
 }
 
 
-interface I_PropsConvertFormInputsToGameState {
-    timeEntered : Date,
-    timeRemaining : T_TimeRemainingDHM, 
-    hasAdBoost : boolean, 
-    allEggsLevel : number, 
-    stockpiles : T_Stockpiles, 
-    levels : T_Levels
-};
-function convertFormInputsToGameState({timeEntered, timeRemaining, hasAdBoost, allEggsLevel, stockpiles, levels} 
-    : I_PropsConvertFormInputsToGameState)
-    : T_GameState {
 
-    return {
-        timeEntered,
-        timeRemaining: convertTimeRemainingToMinutes(timeRemaining),
-        premiumInfo: {
-            adBoost: hasAdBoost,
-            allEggs: allEggsLevel,
-        },
-        stockpiles,
-        levels,
-    }
-}
-
-
-type T_OutputUseGameStatusForm = 
-    Pick<I_InputGeneral, 
-        "handleLevelChange" | 
-        "hasAdBoost" | 
-        "setStateOnChange" | 
-        "setTimeEntered" | 
-        "setTimeRemaining" | 
-        "timeEntered" | 
-        "timeRemaining" | 
-        "toggleAdBoost"> &
-    Pick<I_InputLevelsOther, 
-        "levels" | 
-        "handleLevelChange"> &
-    I_InputStockpiles & {
-    onSubmit : (e : React.SyntheticEvent) => void,
-}
-
-function useGameStatusForm({gameState, setGameState, closeModal}
-    : I_StatusFormProps)
-    : T_OutputUseGameStatusForm {
-
-    const [timeEntered, setTimeEntered] = useState<Date>(new Date())
-    const [timeRemaining, setTimeRemaining] = useState<T_TimeRemainingDHM>(gameState === null ? defaultTimeRemaining : convertTimeIDToDHM(gameState.timeRemaining))
-    const [hasAdBoost, setHasAdBoost] = useState<boolean>(gameState === null ? false : gameState.premiumInfo.adBoost)
-    const [allEggsLevel, setAllEggsLevel] = useState<number>(gameState === null ? 0 : gameState.premiumInfo.allEggs)
-    const [stockpiles, setStockpiles] = useState<T_Stockpiles>(gameState === null ? deepCopy(defaultStockpiles) : gameState.stockpiles)
-    const [levels, setLevels] = useState<T_Levels>(gameState === null ? deepCopy(defaultLevels) : gameState.levels)
-
-    function setStateOnChange(e : React.ChangeEvent<any>, setFunction : React.Dispatch<SetStateAction<any>>){
-        setFunction(e.target.value);
-    }
-
-    function toggleAdBoost(){
-        setHasAdBoost(prevState => !prevState);
-    }
-
-    // function setToLateGame(){
-    //     setTimeEntered(new Date(new Date().getTime() - 5 * 60 * 1000));
-    //     setTimeRemaining(lateGameSettings.timeRemainingDHM);
-    //     setHasAdBoost(lateGameSettings.hasAdBoost);
-    //     setAllEggsLevel(lateGameSettings.allEggs);
-    //     setStockpiles(lateGameSettings.stockpiles);
-    //     setLevels(lateGameSettings.levels);
-    // }
-
-    // function testLevelsDone(){
-    //     setTimeEntered(new Date(new Date().getTime() - 5 * 60 * 1000));
-    //     setTimeRemaining(lateGameSettings.timeRemainingDHM);
-    //     setHasAdBoost(lateGameSettings.hasAdBoost);
-    //     setAllEggsLevel(lateGameSettings.allEggs);
-    //     setStockpiles(lateGameSettings.stockpiles);
-    //     setLevels(maxLevels);
-    // }
-
-    function updateStockpiles(e : React.ChangeEvent<HTMLInputElement>, key : string){
-        let newStockpiles : T_Stockpiles = deepCopy(stockpiles);
-        newStockpiles[key as keyof T_Stockpiles] = parseInt(e.target.value);
-        setStockpiles(newStockpiles);
-    }
-
-    function handleLevelChange(e : React.ChangeEvent<HTMLSelectElement>){
-        let valueStr = e.target.value;
-        let splitStr = valueStr.split("_");
-        let key = splitStr[0];
-        let prodStr = splitStr[1];
-
-        let prodInt = parseInt(prodStr);
-
-        if(key === "all"){
-            setAllEggsLevel(prodInt);
-            return;
-        }
-
-        key = key.toLowerCase();
-        let newLevels : T_Levels = deepCopy(levels);
-        if(key in newLevels){
-            newLevels[key as keyof typeof newLevels] = prodInt;
-        }
-
-        setLevels(newLevels);
-    }
-    
-
-    function controlledStockpileValue(key : string){
-        if(!(key in stockpiles)){
-            return '';
-        }
-        let thisValue = stockpiles[key as keyof typeof stockpiles];
-        return thisValue === null ? '' : thisValue;
-    }
-
-    function onSubmit(e : React.SyntheticEvent){
-        e.preventDefault();
-        let newGameState = convertFormInputsToGameState({timeEntered, timeRemaining, hasAdBoost, allEggsLevel, stockpiles, levels});
-        setGameState(newGameState);
-        closeModal();
-    }
-
-    return {
-        onSubmit,
-        handleLevelChange,
-        hasAdBoost,
-        toggleAdBoost,
-        timeEntered,
-        setStateOnChange,
-        setTimeEntered,
-        timeRemaining,
-        setTimeRemaining,
-        levels,
-        controlledStockpileValue,
-        updateStockpiles,
-    }
-}
 

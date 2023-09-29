@@ -1,5 +1,5 @@
 import { deepCopy } from './consts';
-import { defaultProductionSettings } from './defaults';
+import { startingProductionSettings } from './defaults';
 import { T_Action, T_DisplaySwitch as T_SwitchDisplay, T_ProductionSettings, T_TimeGroup } from './types';
 
 
@@ -7,7 +7,7 @@ export function calcProductionSettings({actions, index}
     : {actions : T_Action[], index : number})
     : T_ProductionSettings {
 
-    let result = deepCopy(defaultProductionSettings);
+    let result = deepCopy(startingProductionSettings);
 
     let prodSwitchesOnly = actions.slice(0, index).filter((ele) => ele.type === 'switch');
     for(let i = 0; i < prodSwitchesOnly.length; i++){

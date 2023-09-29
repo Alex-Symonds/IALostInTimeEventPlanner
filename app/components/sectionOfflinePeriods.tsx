@@ -1,4 +1,4 @@
-import { getDateDisplayStr, calcStartTime, printOfflineTime } from "../utils/dateAndTimeHelpers";
+import { calcDateDisplayStr, printOfflineTime } from "../utils/dateAndTimeHelpers";
 import { convertOfflineTimeToDate } from "../utils/offlinePeriodHelpers";
 import { T_GameState, T_OfflinePeriod } from "../utils/types";
 
@@ -40,8 +40,6 @@ function OfflineDisplay({offlinePeriods, gameState, openForm, idxEdit}
     : I_OfflineDisplay)
     : JSX.Element {
 
-    let startedAt = calcStartTime(gameState);
-
     return <div>
             { (offlinePeriods === undefined || offlinePeriods.length === 0) ?
                 <p>None entered</p>
@@ -52,15 +50,15 @@ function OfflineDisplay({offlinePeriods, gameState, openForm, idxEdit}
                         conditionalWrapperCSS = "text-gray-300";
                     }
 
-                    let startDate : Date = convertOfflineTimeToDate(ele.start, startedAt);
-                    let endDate : Date = convertOfflineTimeToDate(ele.end, startedAt);
+                    let startDate : Date = convertOfflineTimeToDate(ele.start, gameState.startTime);
+                    let endDate : Date = convertOfflineTimeToDate(ele.end, gameState.startTime);
 
                     return  <div key={`${printOfflineTime(ele.start)}_${printOfflineTime(ele.end)}`} className={"flex justify-between items-center mb-2" + " " + conditionalWrapperCSS}>
                                 <div className={"text-violet-800 font-bold"}>
                                     {idx + 1}
                                 </div>
                                 <div>
-                                    {getDateDisplayStr(startDate)} - {getDateDisplayStr(endDate)}
+                                    {calcDateDisplayStr(startDate)} - {calcDateDisplayStr(endDate)}
                                 </div>
 
                                 <Button

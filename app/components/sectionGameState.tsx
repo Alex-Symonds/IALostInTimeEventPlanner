@@ -1,4 +1,4 @@
-import { getDateDisplayStr, convertTimeIDToTimeRemaining } from '../utils/dateAndTimeHelpers';
+import { calcDateDisplayStr, convertTimeIDToTimeRemaining } from '../utils/dateAndTimeHelpers';
 import { maxedLevelCSS, capitalise, resourceCSS, toBillions, nbsp } from '../utils/formatting';
 import { T_GameState, T_Levels, T_Stockpiles } from '../utils/types';
 
@@ -44,8 +44,12 @@ function TimeAndPremiumStatus({gameState}
                     <div>{remTimeObj === null ? "" : `${remTimeObj.days}d ${remTimeObj.hours}h ${remTimeObj.minutes}m`}</div>
                 </GridRowWrapper>
 
+                <GridRowWrapper title={"Started"}>
+                    <div>{calcDateDisplayStr(gameState.startTime)}</div>
+                </GridRowWrapper>
+
                 <GridRowWrapper title={"Entered"}>
-                    <div suppressHydrationWarning={true}>{getDateDisplayStr(gameState.timeEntered)}</div>
+                    <div suppressHydrationWarning={true}>{calcDateDisplayStr(gameState.timeEntered)}</div>
                 </GridRowWrapper>
 
                 <GridRowWrapper title={`All${nbsp()}Eggs`}>
@@ -68,7 +72,7 @@ function TimeAndPremiumStatus({gameState}
 
 function GridRowWrapper({title, children} : { title : string, children : React.ReactNode }){
     return  <>
-                <div className={"col-start-1"}>{title}</div>
+                <div className={"col-start-1 font-medium"}>{title}</div>
                 {children}
             </>
 }

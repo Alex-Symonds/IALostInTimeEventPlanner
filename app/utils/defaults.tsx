@@ -2,13 +2,13 @@ import { deepCopy, MAX_TIME } from './consts';
 import { T_DATA_KEYS, getMainKeysFromJSON, getMaxLevelFromJSON, getUpgradesDataFromJSON } from './getDataFromJSON';
 import { T_GameState, T_Action, T_TimeRemainingDHM, T_Levels, T_Stockpiles, T_ProductionSettings, T_TimeOfflinePeriod } from './types';
 
-export const defaultTimeRemaining : T_TimeRemainingDHM = {
+export const startingTimeRemaining : T_TimeRemainingDHM = {
     days: 3,
     hours: 0,
     minutes: 0
 }
 
-export const defaultStockpiles : T_Stockpiles = {
+export const startingStockpiles : T_Stockpiles = {
     dust: 0,
     blue: 0,
     green: 0,
@@ -16,7 +16,7 @@ export const defaultStockpiles : T_Stockpiles = {
     yellow: 0,
 }
 
-export const defaultProductionSettings : T_ProductionSettings = {
+export const startingProductionSettings : T_ProductionSettings = {
     trinity: "blue",
     bronte: "green",
     anne: "blue",
@@ -27,7 +27,7 @@ export const defaultProductionSettings : T_ProductionSettings = {
     rex: "dust",
 }
 
-export const defaultLevels : T_Levels = {
+export const startingLevels : T_Levels = {
     trinity : 0,
     bronte : 0,
     anne : 0,
@@ -46,17 +46,18 @@ export const defaultLevels : T_Levels = {
 
 export const defaultGameState : T_GameState = {
     timeEntered : new Date(),
+    startTime : new Date(),
     timeRemaining : MAX_TIME,
     premiumInfo :  {
     adBoost : false,
     allEggs : 0,
     },
-    stockpiles : deepCopy(defaultStockpiles),
-    levels : deepCopy(defaultLevels),
+    stockpiles : deepCopy(startingStockpiles),
+    levels : deepCopy(startingLevels),
 }
 
 export const maxLevels = () => {
-    let maxLevels = deepCopy(defaultLevels);
+    let maxLevels = deepCopy(startingLevels);
     Object.keys(maxLevels).forEach(key => {
         maxLevels[key] = getMaxLevelFromJSON(key as T_DATA_KEYS);
     });
@@ -66,7 +67,7 @@ export const maxLevels = () => {
 export const defaultOfflinePeriodStart : T_TimeOfflinePeriod = {
     dateOffset: 0,
     hours: 0,
-     minutes: 0
+    minutes: 0
 }
 
 export const defaultOfflinePeriodEnd : T_TimeOfflinePeriod = {

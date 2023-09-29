@@ -4,7 +4,6 @@
 import { useState, useEffect } from "react";
 
 import { defaultActionsList, defaultGameState } from './defaults';
-import { calcStartTime } from "./dateAndTimeHelpers";
 import calcPlanData from './calcPlanData';
 import { calcTimeGroups } from './calcTimeGroups';
 import { T_TimeGroup, T_OfflinePeriod, T_GameState, T_Action, T_ProductionSettingsNow } from './types';

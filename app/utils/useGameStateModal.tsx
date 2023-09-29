@@ -4,6 +4,8 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { T_GameState, T_ModalData } from "./types";
 
+import { usePlanMode } from "./usePlanMode";
+
 
 interface I_UseGameStateModal {
     gameState : T_GameState,
@@ -27,7 +29,8 @@ export default function useGameStateModal({gameState, setGameState}
         closeModal: () => setShowGameStateModal(false),
         action: setGameState,
         data: {
-          gameState
+          gameState,
+          mode: usePlanMode()
         }
     }
 }

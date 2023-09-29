@@ -1,23 +1,25 @@
 import { useState, Dispatch, SetStateAction } from "react";
 
 import { MAX_DAYS } from '../../../../utils/consts';
-import { getDateDisplayStr } from '../../../../utils/dateAndTimeHelpers';
+import { calcDateDisplayStr } from '../../../../utils/dateAndTimeHelpers';
 import { capitalise } from '../../../../utils/formatting';
-import { T_GameState, T_TimeRemainingDHM } from "../../../../utils/types";
+import { T_TimeRemainingDHM } from "../../../../utils/types";
 
-import Select from '../../subcomponents/select';
 import { Button } from '../../subcomponents/buttons';
-import { formatValueStr, getUpgradeOptions, InputNumberAsText, Label } from "../gameState"
 import FieldsetWrapper from "../../subcomponents/fieldsetWrapper";
-import Checkbox from "../../subcomponents/checkbox";
+
+import { InputNumberAsText, Label } from "../gameState"
+
+import AllEggs, { I_AllEggs } from "./fieldAllEggs";
+import AdBoost, { I_AdBoostInputEle } from "./fieldAdBoost";
 
 
-export interface I_InputGeneral extends I_TimeRemainingFieldset, I_Entered, I_AllEggs, I_AdBoost {}
+export interface I_InputGeneral extends I_TimeRemainingFieldset, I_Entered, I_AllEggs, I_AdBoostInputEle {}
 export default function InputGeneral({timeRemaining, setTimeRemaining, timeEntered, setStateOnChange, setTimeEntered, gameState, handleLevelChange, hasAdBoost, toggleAdBoost } 
     : I_InputGeneral)
     : JSX.Element {
 
-    return  <div className={"flex flex-col gap-6 mt-1"}>
+    return  <div className={"flex flex-col gap-6 mt-2"}>
                 <TimeRemainingFieldset timeRemaining={timeRemaining} setTimeRemaining={setTimeRemaining} />
                 <Entered timeEntered={timeEntered} setStateOnChange={setStateOnChange} setTimeEntered={setTimeEntered} />
                 <AllEggs gameState={gameState} handleLevelChange={handleLevelChange} />
@@ -27,50 +29,8 @@ export default function InputGeneral({timeRemaining, setTimeRemaining, timeEnter
 }
 
 
-interface I_AllEggs {
-    gameState : T_GameState, 
-    handleLevelChange : (e : React.ChangeEvent<HTMLSelectElement>) => void,
-}
-function AllEggs({gameState, handleLevelChange} 
-    : I_AllEggs) 
-    : JSX.Element {
-
-    return  <div className={"flex gap-2"}>
-                <Label htmlFor={"id_AllEggs"}>All Eggs</Label>
-                <Select 
-                    selectExtraCSS={undefined} 
-                    id={"id_AllEggs"} 
-                    initValue={gameState === null ? undefined : formatValueStr("All", gameState.premiumInfo.allEggs)} 
-                    options={getUpgradeOptions({ name: "All", max: 5 })} handleChange={handleLevelChange} 
-                    />
-            </div>
-}
-
-
-interface I_AdBoost {
-    hasAdBoost : boolean, 
-    toggleAdBoost : () => void,
-}
-function AdBoost({hasAdBoost, toggleAdBoost}
-    : I_AdBoost)
-    : JSX.Element {
-
-    return  <div className={"flex gap-2"}>
-                <Checkbox 
-                    checked={hasAdBoost} 
-                    onChange={ toggleAdBoost } 
-                    disabled={false}
-                    idStr={"id_adBoost"}
-                    name={"adBoost"}
-                    displayText={"Ad Boost"}
-                    value={"adBoost"}
-                />
-            </div>
-}
-
-
 interface I_Entered {
-    timeEntered : Date | null, 
+    timeEntered : Date, 
     setStateOnChange : (e : React.ChangeEvent<any>, setFunction : Dispatch<SetStateAction<any>>) => void, 
     setTimeEntered : Dispatch<SetStateAction<Date>>
 }
@@ -98,13 +58,13 @@ function Entered({timeEntered, setStateOnChange, setTimeEntered}
                 suppressHydrationWarning={true} 
                 className={"ml-2"}
                 >
-                { getDateDisplayStr(timeEntered) }
+                { calcDateDisplayStr(timeEntered) }
             </p>
             <input 
                 hidden 
                 type="datetime-local" 
                 id={"id_timeEntered"} 
-                value={timeEntered == null ? "" : `${timeEntered}`} 
+                value={`${timeEntered}`} 
                 onChange={(e) => setStateOnChange(e, setTimeEntered)}
             />
         </div>

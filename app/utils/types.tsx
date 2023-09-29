@@ -2,6 +2,7 @@ import { SetStateAction, Dispatch } from "react";
 
 export type T_GameState = {
     timeEntered : Date,
+    startTime : Date,
     timeRemaining : number,
     premiumInfo : T_PremiumInfo,
     stockpiles : T_Stockpiles,
