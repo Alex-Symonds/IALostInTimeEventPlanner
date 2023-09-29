@@ -12,14 +12,14 @@ export default function InputLevelsWorkers({gameState, levels, handleLevelChange
     : JSX.Element {
 
     const workerUpgrades = [
-        { id: "id_Trinity", labelDisplay: "Trinity", optionsProps: { name: "Trinity", max: 10 }},
-        { id: "id_Bronte", labelDisplay: "Bronte", optionsProps: { name: "Bronte", max: 10 }},
-        { id: "id_Anne", labelDisplay: "Anne", optionsProps: { name: "Anne", max: 8 }},
-        { id: "id_Petra", labelDisplay: "Petra", optionsProps: { name: "Petra", max: 10 }},
-        { id: "id_Manny", labelDisplay: "Manny", optionsProps: { name: "Manny", max: 10 }},
-        { id: "id_Tony", labelDisplay: "Tony", optionsProps: { name: "Tony", max: 10 }},
-        { id: "id_Ruth", labelDisplay: "Ruth", optionsProps: { name: "Ruth", max: 8 }},
-        { id: "id_Rex", labelDisplay: "Rex", optionsProps: { name: "Rex", max: 10 }},
+        { id: "id_Trinity", labelDisplay: "Trinity",    optionsProps: { name: "Trinity",    max: 10 }},
+        { id: "id_Bronte",  labelDisplay: "Bronte",     optionsProps: { name: "Bronte",     max: 10 }},
+        { id: "id_Anne",    labelDisplay: "Anne",       optionsProps: { name: "Anne",       max: 8 }},
+        { id: "id_Petra",   labelDisplay: "Petra",      optionsProps: { name: "Petra",      max: 10 }},
+        { id: "id_Manny",   labelDisplay: "Manny",      optionsProps: { name: "Manny",      max: 10 }},
+        { id: "id_Tony",    labelDisplay: "Tony",       optionsProps: { name: "Tony",       max: 10 }},
+        { id: "id_Ruth",    labelDisplay: "Ruth",       optionsProps: { name: "Ruth",       max: 8 }},
+        { id: "id_Rex",     labelDisplay: "Rex",        optionsProps: { name: "Rex",        max: 10 }},
     ]
     
     return <LevelsWrapper>

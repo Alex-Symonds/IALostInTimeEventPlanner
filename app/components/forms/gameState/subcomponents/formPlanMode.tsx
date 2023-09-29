@@ -4,16 +4,18 @@
     Add ability to try different start times
 
 */
+import { ModalSubmitButton } from "@/app/components/subcomponents/modal";
+
+import { SelectHours, SelectMinutes } from '../../subcomponents/select';
+
+import { I_StartTimeKit, startTimeKit } from "../utils/startTimeHelpers";
+import { usePlanGameStatusForm } from "../utils/usePlanGameStatusForm";
+
+import { InputPageWrapper, Label, I_StatusFormSharedProps } from "../gameState"
 
 import AllEggs from "./fieldAllEggs";
 import AdBoost from "./fieldAdBoost";
 
-import { InputPageWrapper } from "../gameState"
-import { SelectHours, SelectMinutes } from '../../subcomponents/select';
-import { ModalSubmitButton } from "@/app/components/subcomponents/modal";
-import { usePlanGameStatusForm } from "../utils/usePlanGameStatusForm";
-import { deepCopy } from "@/app/utils/consts";
-import { Label, I_StatusFormSharedProps } from "../gameState";
 
 export default function FormPlanMode({gameState, setGameState, closeModal, isInitialisingMode } 
     : I_StatusFormSharedProps & { isInitialisingMode : boolean })
@@ -48,19 +50,11 @@ export default function FormPlanMode({gameState, setGameState, closeModal, isIni
 }
 
 
-function StartTime({ startTime, setStartTime } : any) : JSX.Element {
+function StartTime({ startTime, setStartTime } 
+    : I_StartTimeKit) 
+    : JSX.Element {
 
-    function handleHourChange(e : React.ChangeEvent<HTMLSelectElement>){
-        let newTime = deepCopy(startTime);
-        newTime.setHours(parseInt(e.target.value));
-        setStartTime(newTime);
-    }
-
-    function handleMinuteChange(e : React.ChangeEvent<HTMLSelectElement>){
-        let newTime = structuredClone(startTime);
-        newTime.setMinutes(parseInt(e.target.value));
-        setStartTime(newTime);
-    }
+    const { handleHourChange, handleMinuteChange } = startTimeKit({ startTime, setStartTime });
 
     return  <fieldset className={"flex items-center"}>
                 <span><Label htmlFor={""} tagName="legend">Starting At</Label></span>

@@ -4,7 +4,7 @@
     then see a projected outcome and, possibly, adjust their plan going forwards
 */
 
-import { useState } from "react";
+import { useRef } from "react";
 
 import { ModalMultiPageNav, ModalSubmitButton } from "../../../subcomponents/modal";
 
@@ -18,6 +18,7 @@ import InputLevelsWorkers from './pageLevelsWorkers';
 import InputLevelsOther from './pageLevelsOther';
 import { I_ChangeModeButton } from "./changeModeButton";
 
+import { useMultiPageGameStateForm } from "../utils/useMultiplePages";
 
 interface I_ActiveModeForm extends I_StatusFormSharedProps, I_ChangeModeButton {
     wantBackToMode : boolean, 
@@ -40,22 +41,9 @@ export default function FormActiveMode({gameState, setGameState, changeMode, wan
             setStateOnChange,
         } = useActiveGameStatusForm({setGameState, gameState, closeModal});
 
-
-    const [activePage, setActivePage] = useState<number>(1);
-    const MAX_PAGE_NUM = 4;
-
-    function changePage(targetPage : number){
-        if(targetPage === 0 && wantBackToMode){
-            changeMode();
-        }
-        else if(targetPage > 0 && targetPage <= MAX_PAGE_NUM){
-            setActivePage(targetPage);
-        }
-    }
-
-    function wantDisableBack(targetPage : number){
-        return targetPage === 0 && !wantBackToMode;
-    }
+    const wantBackToModeSetter = useRef<boolean | undefined>();
+    wantBackToModeSetter.current = wantBackToMode;
+    const {activePage, maxPage, changePage, wantDisableBack} = useMultiPageGameStateForm({wantBackToModeSetter, changeMode});
 
     return <form onSubmit={(e) => onSubmit(e)}>
                 <InputPageWrapper 
@@ -96,7 +84,7 @@ export default function FormActiveMode({gameState, setGameState, changeMode, wan
                 </InputPageWrapper>
 
                 <InputPageWrapper 
-                    isVisible={ activePage === MAX_PAGE_NUM }  
+                    isVisible={ activePage === maxPage }  
                     >
                     <InputLevelsOther
                         handleLevelChange={handleLevelChange} 
@@ -108,7 +96,7 @@ export default function FormActiveMode({gameState, setGameState, changeMode, wan
                 <ModalMultiPageNav 
                     activePage={activePage} 
                     changePage={changePage} 
-                    numPages={MAX_PAGE_NUM} 
+                    numPages={maxPage} 
                     submitLabel={"enter"}
                     wantDisableBack={wantDisableBack}
                 />

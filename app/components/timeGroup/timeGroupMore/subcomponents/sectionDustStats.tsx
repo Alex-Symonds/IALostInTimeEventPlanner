@@ -38,8 +38,6 @@ export default function DustStatsSection({moreData, gameState, leftHeadingWidth}
     const totalsAsStr = moreData.dustTotals.map(ele => ele.toLocaleString());
     const finishAsStr = moreData.dustFinishTimes.map(ele => finishTimeAsStr(ele));
 
-
-
     return(
         <section>
             <TimeGroupMoreSubheading text={"Dust"} />

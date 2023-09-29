@@ -1,16 +1,17 @@
-import {useState, useId, ChangeEvent, SyntheticEvent } from 'react';
+import { useId, ChangeEvent } from 'react';
 
-import { deepCopy } from '../../utils/consts';
-import { defaultOfflinePeriodStart, defaultOfflinePeriodEnd } from '../../utils/defaults';
-import { printOfflineTime } from '../../utils/dateAndTimeHelpers';
-import { convertOfflineTimeToTimeID } from '../../utils/offlinePeriodHelpers';
+
 import { T_OfflinePeriod, T_GameState, T_TimeOfflinePeriod } from '../../utils/types';
 
 import Modal, { ModalHeading, ModalLegend, ModalFieldsWrapper } from '../subcomponents/modal';
+
 import { SelectWithSRLabel, SelectHours, SelectMinutes } from './subcomponents/select';
 import { Button } from './subcomponents/buttons';
 import FieldsetWrapper from './subcomponents/fieldsetWrapper';
+
 import { validDatesKit } from './utils/timeOptions';
+import { useOfflineForm, I_UseOfflineForm } from './utils/useOfflineForm';
+
 /*
     Note: the dates on offline period times must be stored as an offset to the 
     startTime date.
@@ -21,15 +22,11 @@ import { validDatesKit } from './utils/timeOptions';
     should only need to adjust them if their schedule would alter.
 */
 
-interface I_OfflineForm {
+interface I_OfflineForm extends Pick<I_UseOfflineForm, "setOfflinePeriods" | "idxToEdit" | "offlinePeriods"> {
     closeForm : () => void,
     offlinePeriod: T_OfflinePeriod | null, 
     gameState : T_GameState,
     pos : number,
-
-    setOfflinePeriods : React.Dispatch<React.SetStateAction<T_OfflinePeriod[]>>,
-    idxToEdit : number | null,
-    offlinePeriods : T_OfflinePeriod[] | null
 }
 
 type T_AriaError = {
@@ -37,36 +34,26 @@ type T_AriaError = {
     errorMessageId : string,
 }
 
-type T_OfflinePeriodForm = 
-    T_OfflinePeriod & {
-        id: string,
-        isValid : boolean
-}
 export default function OfflineForm({closeForm, offlinePeriod, gameState, pos, setOfflinePeriods, idxToEdit, offlinePeriods} 
     : I_OfflineForm)
     : JSX.Element {
 
     let isNewOfflinePeriod = offlinePeriod === null;
-    let initValue = offlinePeriod === null ?
-                    defaultOfflinePeriodForm() 
-                    : {
-                        ...offlinePeriod, 
-                        isValid: true, 
-                        id: generateKey(`${printOfflineTime(offlinePeriod.start)}_${printOfflineTime(offlinePeriod.end)}`)
-                    };
+
     const {
             formOfflinePeriod,
             handleSubmit,
             handleSingleKeyChange,
             removeOfflinePeriod,
             showError,
-        } = useOfflineForm({initValue, idxToEdit, setOfflinePeriods, closeForm, offlinePeriods, gameState});
+        } = useOfflineForm({offlinePeriod, idxToEdit, setOfflinePeriods, closeForm, offlinePeriods, gameState});
     
     const id = useId();
     const ariaError : T_AriaError = {
         isInvalid: showError,
         errorMessageId: "offlinePeriodsError"
     }
+
     return  <Modal closeModal={closeForm}>
                 <ModalHeading>
                     { isNewOfflinePeriod ? `New Offline Period` : `Offline Period ${pos}` }
@@ -179,7 +166,6 @@ function OfflineTimeInput({ legend, idStr, roleKey, dhm, handleSingleKeyChange, 
         handleSingleKeyChange(roleKey, 'dateOffset', idx);
     }
 
-
     return (
         <FieldsetWrapper>
             <legend className={"font-semibold ml-2 mb-1 px-1"}>{legend}</legend>
@@ -214,104 +200,3 @@ function OfflineTimeInput({ legend, idStr, roleKey, dhm, handleSingleKeyChange, 
     )
 }
 
-
-type T_OutputUseOfflineForm = {
-    formOfflinePeriod : T_OfflinePeriodForm,
-    handleSubmit : (e : SyntheticEvent) => void,
-    removeOfflinePeriod : () => void,
-    showError : boolean,
-    handleSingleKeyChange : (roleKey : string, unitKey : string, newValue : number) => void,
-}
-
-function useOfflineForm({initValue, idxToEdit, setOfflinePeriods, closeForm, offlinePeriods, gameState}
-    : { initValue : T_OfflinePeriodForm } & Pick<I_OfflineForm, "closeForm" | "idxToEdit" | "setOfflinePeriods" | "offlinePeriods" | "gameState">)
-    : T_OutputUseOfflineForm {
-
-    const [formOfflinePeriod, setFormOfflinePeriod] = useState<T_OfflinePeriodForm>(initValue);
-    const [showError, setShowError] = useState(false);
-
-    function updateOfflinePeriod(newOfflinePeriod : T_OfflinePeriod) : void {
-        if(idxToEdit === null){
-            // add a new offline period at the end
-            setOfflinePeriods((prev : T_OfflinePeriod[]) => [
-                ...prev,
-                newOfflinePeriod
-            ]);
-            closeForm();
-        }
-        else{
-            // update existing offline period
-            let deepCopyData : T_OfflinePeriod[] = deepCopy(offlinePeriods);
-            deepCopyData[idxToEdit] = newOfflinePeriod;
-            setOfflinePeriods(deepCopyData);
-            closeForm();
-        }
-    }
-
-    function removeOfflinePeriod() : void {
-        if(idxToEdit === null){
-            closeForm();
-            return;
-        }
-        let deepCopyData : T_OfflinePeriod[] = deepCopy(offlinePeriods);
-        setOfflinePeriods(deepCopyData.slice(0, idxToEdit).concat(deepCopyData.slice(idxToEdit + 1)));
-        closeForm();
-    }
-
-    function handleSubmit(e : React.SyntheticEvent){
-        e.preventDefault();
-        if(formOfflinePeriod.isValid){
-            let newOfflinePeriod = deepCopy(formOfflinePeriod);
-            delete newOfflinePeriod['id'];
-            delete newOfflinePeriod['isValid'];
-            updateOfflinePeriod(newOfflinePeriod);
-            closeForm();
-        }
-        else{
-            setShowError(true);
-        }
-    }
-
-    function handleChange(newData : T_OfflinePeriodForm){
-        if(showError && newData.isValid){
-            setShowError(false);
-        }
-        setFormOfflinePeriod(newData);
-    }
-
-    function handleSingleKeyChange(roleKey : string, unitKey : string, newValue : number){
-        let newDataDeepCopy = deepCopy(formOfflinePeriod);
-        newDataDeepCopy[roleKey][unitKey] = newValue;
-
-        let startTimeID = convertOfflineTimeToTimeID(newDataDeepCopy.start, gameState.startTime);
-        let endTimeID = convertOfflineTimeToTimeID(newDataDeepCopy.end, gameState.startTime);
-
-        newDataDeepCopy.isValid = startTimeID < endTimeID;
-        handleChange(newDataDeepCopy);
-    }
-
-    return {
-        formOfflinePeriod,
-        handleSubmit,
-        removeOfflinePeriod,
-        showError,
-        handleSingleKeyChange
-    }
-}
-
-
-function defaultOfflinePeriodForm()
-    : T_OfflinePeriodForm {
-        
-    return {
-        id: generateKey(`${printOfflineTime(defaultOfflinePeriodStart)}_${printOfflineTime(defaultOfflinePeriodEnd)}`),
-        start: defaultOfflinePeriodStart,
-        end: defaultOfflinePeriodEnd,
-        isValid: true
-    }
-}
-
-
-function generateKey(pre : string | number){
-    return `${ pre }_${ new Date().getTime() }`;
-}

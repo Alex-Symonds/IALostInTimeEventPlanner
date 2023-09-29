@@ -1,13 +1,14 @@
 import { Dispatch, SetStateAction, useState, ChangeEvent } from 'react';
 
-import { T_GameState } from '../../../utils/types';
+import { T_DATA_KEYS, getUnitDataFromJSON } from '@/app/utils/getDataFromJSON';
+import { T_GameState } from '@/app/utils/types';
+import { T_PlanModeKit } from '@/app/utils/usePlanMode';
+
+import { BadgeCost, BadgeMaxed } from '../../subcomponents/badges';
+import Modal, { ModalFieldsWrapper, ModalHeading } from '../../subcomponents/modal';
 
 import { SelectWithLabel, T_OptionData } from '../subcomponents/select';
-import Modal, { ModalFieldsWrapper, ModalHeading, ModalSubHeading } from '../../subcomponents/modal';
-import { BadgeCost, BadgeMaxed } from '../../subcomponents/badges';
 
-import { T_DATA_KEYS, getUnitDataFromJSON } from '../../../utils/getDataFromJSON';
-import { T_PlanModeKit } from '@/app/utils/usePlanMode';
 import FormActiveMode from './subcomponents/formActiveMode';
 import FormSetMode from './subcomponents/formSetMode';
 import FormPlanMode from './subcomponents/formPlanMode';
@@ -57,7 +58,6 @@ export default function StatusForm({setGameState, gameState, mode, closeModal}
                         close={() => setUserWantsToChangeMode(false)}
                     />
             }
-
         </Modal>
     )
 
@@ -83,27 +83,6 @@ export function InputPageWrapper({ isVisible, heading, children }
                 </ModalFieldsWrapper>
             </section>
 }
-
-
-
-// export function OLDInputPageWrapper({ isVisible, heading, children }
-//     : { isVisible : boolean, heading? : string, children : React.ReactNode })
-//     : JSX.Element {
-
-//     const visibilityCSS = isVisible ? "" : "sr-only";
-//     return  <section className={"flex flex-col" + " " + visibilityCSS}>
-//                 {
-//                     heading === undefined ?
-//                     null
-//                     :
-//                     <ModalSubHeading>{heading}</ModalSubHeading>
-//                 }
-
-//                 <ModalFieldsWrapper>
-//                     { children }
-//                 </ModalFieldsWrapper>
-//             </section>
-// }
 
 
 export function LevelsWrapper({children} 

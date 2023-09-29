@@ -1,13 +1,14 @@
 import { useState } from "react";
 
-import { deepCopy } from "../../utils/consts";
-import { startingProductionSettings } from '../../utils/defaults';
-import { capitalise, resourceCSS } from '../../utils/formatting';
-import { T_DATA_KEYS, getWorkerOutputsFromJSON } from "../../utils/getDataFromJSON";
-import { T_Levels, T_ProductionSettings, T_SwitchAction } from '../../utils/types';
+import { capitalise, resourceCSS } from '@/app/utils/formatting';
+import { T_DATA_KEYS, getWorkerOutputsFromJSON } from "@/app/utils/getDataFromJSON";
+import { calcInitSettingsForModal } from "@/app/utils/productionSettingsHelpers";
+import { T_Levels, T_ProductionSettings, T_SwitchAction } from '@/app/utils/types';
 
 import Modal, { ModalHeading, ModalSubmitButton, ModalFieldsWrapper, I_Modal } from '../subcomponents/modal';
+
 import Radio from './subcomponents/radio';
+
 
 
 interface I_ModalProdSettings extends Pick<I_Modal, "closeModal"> {
@@ -20,7 +21,7 @@ export default function ModalProdSettings({closeModal, initialProdSettings, curr
     : I_ModalProdSettings)
     : JSX.Element {
 
-    const [toggles, setToggles] = useState<T_ProductionSettings>(getInitSettingsForModal(initialProdSettings, currentSwitches));
+    const [toggles, setToggles] = useState<T_ProductionSettings>(calcInitSettingsForModal(initialProdSettings, currentSwitches));
 
     function handleChange(key : string, changeTo : string){
         setToggles(prev => {
@@ -60,20 +61,6 @@ export default function ModalProdSettings({closeModal, initialProdSettings, curr
     )
 }
 
-function getInitSettingsForModal(currentProdSettings : T_ProductionSettings, currentSwitches : T_SwitchAction[])
-    : T_ProductionSettings {
-
-    let result : T_ProductionSettings = deepCopy(startingProductionSettings);
-    for(const [k, v] of Object.entries(currentProdSettings)){
-        let idx = currentSwitches.findIndex(ele => ele.key === k);
-        let newValue = v;
-        if(idx !== -1){
-            newValue = currentSwitches[idx].to
-        }
-        result[k as keyof T_ProductionSettings] = newValue;
-    }
-    return result;
-}
 
 interface I_ProductionToggle {
     myKey : string,
@@ -81,7 +68,7 @@ interface I_ProductionToggle {
     disabled : boolean,
     handleSelection : (myKey : string, changeTo : string) => void
 }
-function ProductionToggle({myKey, toggledTo, handleSelection, disabled}
+function ProductionToggle({ myKey, toggledTo, handleSelection, disabled }
     : I_ProductionToggle)
     : JSX.Element | null {
 

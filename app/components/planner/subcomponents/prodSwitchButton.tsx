@@ -42,8 +42,15 @@ function ResourceSwitchButton({setTo, nameKey, handleClick}
                 className={"flex plnMd:justify-between text-sm items-center px-2 py-0.5 rounded border-2 mb-1 " + " " + conditionalCSS}
                 onClick={handleClick}
                 >
-                <div className={"w-10 plnMd:w-16 plnMd:flex plnMd:justify-start"}>{nameKey !== null ? capitalise(nameKey) : "Worker"}</div>
-                <div className={"px-4"}>{IconPointingRight(svgFill)} <span className={"sr-only"}>to </span></div>
-                <div className={"plnMd:w-16 plnMd:flex plnMd:justify-end"}>{setTo}</div>
+                <div className={"w-10 plnMd:w-16 plnMd:flex plnMd:justify-start"}>
+                    {nameKey !== null ? capitalise(nameKey) : "Worker"}
+                </div>
+                <div className={"px-4"}>
+                    {IconPointingRight(svgFill)}
+                     <span className={"sr-only"}>to </span>
+                </div>
+                <div className={"plnMd:w-16 plnMd:flex plnMd:justify-end"}>
+                    {setTo}
+                </div>
             </button>
 }

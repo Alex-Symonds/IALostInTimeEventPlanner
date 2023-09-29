@@ -31,10 +31,10 @@ export default function InputLevelsOther({gameState, levels, handleLevelChange}
     ]
     
     const productionUpgrades = [
-        { id: "id_Blue", labelDisplay: "Blue", optionsProps: { name: "Blue", max: 4 }},
-        { id: "id_Green", labelDisplay: "Green", optionsProps: { name: "Green", max: 3 }},
-        { id: "id_Red", labelDisplay: "Red", optionsProps: { name: "Red", max: 2 }},
-        { id: "id_Yellow", labelDisplay: "Yellow", optionsProps: { name: "Yellow", max: 1 }},
+        { id: "id_Blue",    labelDisplay: "Blue",   optionsProps: { name: "Blue", max: 4 }},
+        { id: "id_Green",   labelDisplay: "Green",  optionsProps: { name: "Green", max: 3 }},
+        { id: "id_Red",     labelDisplay: "Red",    optionsProps: { name: "Red", max: 2 }},
+        { id: "id_Yellow",  labelDisplay: "Yellow", optionsProps: { name: "Yellow", max: 1 }},
     ]
 
 
@@ -86,7 +86,7 @@ function SubSection({ heading, extraCSS, children }
     : { heading : string, extraCSS? : string, children : React.ReactNode } )
     : JSX.Element {
 
-    return  <section className={extraCSS ?? "mt-7"}>
+    return  <section className={ extraCSS ?? "mt-7" }>
                 <h3 className={"font-semibold pb-3"}>{heading}</h3>
                 <LevelsWrapper>
                     { children }

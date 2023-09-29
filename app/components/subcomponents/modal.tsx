@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction } from 'react';
-
 import { IconClose } from "./icons";
 import { Button } from '../forms/subcomponents/buttons';
 
@@ -171,7 +169,7 @@ function NavButtonBox({activePage, numPages, changePage, submitLabel, wantDisabl
 
 
 function ProgressStatus({activePage, numPages, changePage}
-    : I_ModalMultiPageNav)
+    : Pick<I_ModalMultiPageNav, "activePage" | "numPages" | "changePage">)
     : JSX.Element {
 
     const range = (start : number, stop : number, step : number) =>

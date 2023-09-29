@@ -1,6 +1,6 @@
 import { deepCopy } from './consts';
 import { startingProductionSettings } from './defaults';
-import { T_Action, T_DisplaySwitch as T_SwitchDisplay, T_ProductionSettings, T_TimeGroup } from './types';
+import { T_Action, T_SwitchAction, T_DisplaySwitch as T_SwitchDisplay, T_ProductionSettings, T_TimeGroup } from './types';
 
 
 export function calcProductionSettings({actions, index} 
@@ -109,4 +109,22 @@ export function exactMatch(A : T_ProductionSettings, B : T_ProductionSettings){
         }
     }
     return true;
+}
+
+
+
+
+export function calcInitSettingsForModal(currentProdSettings : T_ProductionSettings, currentSwitches : T_SwitchAction[])
+    : T_ProductionSettings {
+
+    let result : T_ProductionSettings = deepCopy(startingProductionSettings);
+    for(const [k, v] of Object.entries(currentProdSettings)){
+        let idx = currentSwitches.findIndex(ele => ele.key === k);
+        let newValue = v;
+        if(idx !== -1){
+            newValue = currentSwitches[idx].to
+        }
+        result[k as keyof T_ProductionSettings] = newValue;
+    }
+    return result;
 }
