@@ -25,7 +25,7 @@ export default function Checkbox({checked, disabled, onChange, idStr, name, disp
                 <span className={"block w-20 ml-2 text-black font-semibold"}>
                     { displayText }
                 </span>
-                <span className={`rounded w-5 h-5 flex items-center justify-center border ${checkedClasses}`}>
+                <span className={`ease-in duration-100 rounded w-5 h-5 flex items-center justify-center border ${checkedClasses}`}>
                     { checked ?
                         <IconCheck size={"16"} colour={"white"}/>
                         : null

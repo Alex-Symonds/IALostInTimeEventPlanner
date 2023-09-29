@@ -15,6 +15,7 @@ import StickyBar from './components/stickyBar';
 import DisplayUserInput from './components/sectionDisplayUserInput';
 import ErrorWithPlanner from './components/errorWithPlanner';
 
+
 export default function Home() {
   
   const { gameState, setGameState, 
@@ -112,6 +113,7 @@ function Modals({modals} : { modals : { [key : string] :  T_ModalData} }){
                     closeModal={ modals.gameState.closeModal } 
                     setGameState={ modals.gameState.action } 
                     gameState={ modals.gameState.data.gameState } 
+                    mode={ modals.gameState.data.mode }
                   />
                   : modals.offlinePeriods.isVisible ?
                     <OfflineForm 

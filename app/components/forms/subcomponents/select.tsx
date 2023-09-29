@@ -1,3 +1,6 @@
+import { ChangeEvent } from "react";
+import { calcOptionsForNumberRange } from "../utils/timeOptions";
+
 export interface I_SelectProps {
     id : string,
     options : T_OptionData[],
@@ -40,6 +43,59 @@ export function SelectWithLabel({id, labelExtraCSS, selectExtraCSS, labelDisplay
     )
 
 }
+
+
+interface I_SelectWithSRLabel extends I_SelectProps {
+    visualLabel: string,
+    srLabel : string,
+    extraCSS? : string,
+}
+export function SelectWithSRLabel({id, selectExtraCSS, options, handleChange, initValue, visualLabel, srLabel, extraCSS}
+    : I_SelectWithSRLabel)
+    : JSX.Element {
+
+    return <div>
+                <label htmlFor={id} className={"text-sm" + " " + extraCSS}>
+                    <span className={"sr-only"}>{srLabel}</span>
+                    <span aria-hidden={true}>{visualLabel}</span>
+                </label>
+                <Select id={id} selectExtraCSS={selectExtraCSS} options={options} handleChange={handleChange} initValue={initValue} />
+            </div>
+}
+
+
+export function SelectHours({id, handleChange, initValue}
+    : Pick<I_SelectProps, "id" | "handleChange" | "initValue">)
+    : JSX.Element {
+    return  <SelectWithSRLabel
+                id={id}
+                selectExtraCSS={undefined}
+                handleChange={(e : ChangeEvent<HTMLSelectElement>) => handleChange(e)}
+                initValue={initValue}
+                options={calcOptionsForNumberRange(0, 23)} 
+                visualLabel={""}
+                srLabel={"time: hour"}
+                extraCSS={"px-1"}
+            />
+}
+
+
+export function SelectMinutes({id, handleChange, initValue}
+    : Pick<I_SelectProps, "id" | "handleChange" | "initValue">)
+    : JSX.Element {
+    return  <SelectWithSRLabel
+                id={id}
+                selectExtraCSS={undefined}
+                handleChange={(e : ChangeEvent<HTMLSelectElement>) => handleChange(e)}
+                initValue={initValue}
+                options={calcOptionsForNumberRange(0, 59)} 
+                visualLabel={":"}
+                srLabel={"time: minute"}
+                extraCSS={"px-1"}
+            />
+}
+
+
 
 
 export type T_OptionData = {

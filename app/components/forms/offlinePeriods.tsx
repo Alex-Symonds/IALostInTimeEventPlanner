@@ -2,15 +2,15 @@ import {useState, useId, ChangeEvent, SyntheticEvent } from 'react';
 
 import { deepCopy } from '../../utils/consts';
 import { defaultOfflinePeriodStart, defaultOfflinePeriodEnd } from '../../utils/defaults';
-import { printOfflineTime, calcStartTime, getMonthName } from '../../utils/dateAndTimeHelpers';
+import { printOfflineTime } from '../../utils/dateAndTimeHelpers';
 import { convertOfflineTimeToTimeID } from '../../utils/offlinePeriodHelpers';
 import { T_OfflinePeriod, T_GameState, T_TimeOfflinePeriod } from '../../utils/types';
 
 import Modal, { ModalHeading, ModalLegend, ModalFieldsWrapper } from '../subcomponents/modal';
-import Select, { I_SelectProps, T_OptionData } from './subcomponents/select';
+import { SelectWithSRLabel, SelectHours, SelectMinutes } from './subcomponents/select';
 import { Button } from './subcomponents/buttons';
 import FieldsetWrapper from './subcomponents/fieldsetWrapper';
-
+import { validDatesKit } from './utils/timeOptions';
 /*
     Note: the dates on offline period times must be stored as an offset to the 
     startTime date.
@@ -164,17 +164,27 @@ function OfflineTimeInput({ legend, idStr, roleKey, dhm, handleSingleKeyChange, 
     const ID_M = idStr + "-" + roleKey + "-m";
 
     const {
-        handleDateChange,
+        selectedDateAsIndex,
         validDates,
         convertValidDatesToOptions,
-        calcOptionsForNumberRange,
-    } = offlineTimesInputKit({ handleSingleKeyChange, roleKey, gameState });
+    } = validDatesKit({ gameState });
+
+
+    function handleDateChange(e : ChangeEvent<HTMLSelectElement>){
+        const idx = selectedDateAsIndex(e);
+        if(idx === -1){
+            // TODO: ERROR HANDLING
+            return;
+        }
+        handleSingleKeyChange(roleKey, 'dateOffset', idx);
+    }
+
 
     return (
         <FieldsetWrapper>
             <legend className={"font-semibold ml-2 mb-1 px-1"}>{legend}</legend>
             <div className={"flex flex-nowrap text-sm items-center"}>
-                <SelectOffline
+                <SelectWithSRLabel
                     id={ID_D}
                     selectExtraCSS={undefined}
                     handleChange={handleDateChange}
@@ -184,25 +194,15 @@ function OfflineTimeInput({ legend, idStr, roleKey, dhm, handleSingleKeyChange, 
                     srLabel={"date"}
                     extraCSS={"pl-2 pr-1"}
                 />
-                <SelectOffline
+                <SelectHours 
                     id={ID_H}
-                    selectExtraCSS={undefined}
                     handleChange={(e : ChangeEvent<HTMLSelectElement>) => handleSingleKeyChange(roleKey, 'hours', parseInt(e.target.value))}
                     initValue={dhm.hours.toString()}
-                    options={calcOptionsForNumberRange(0, 23)} 
-                    visualLabel={""}
-                    srLabel={"time: hour"}
-                    extraCSS={"px-2"}
                 />
-                <SelectOffline
+                <SelectMinutes
                     id={ID_M}
-                    selectExtraCSS={undefined}
                     handleChange={(e : ChangeEvent<HTMLSelectElement>) => handleSingleKeyChange(roleKey, 'minutes', parseInt(e.target.value))}
                     initValue={dhm.minutes.toString()}
-                    options={calcOptionsForNumberRange(0, 59)} 
-                    visualLabel={":"}
-                    srLabel={"time: minute"}
-                    extraCSS={"px-1"}
                 />
                 {
                     showError ?
@@ -212,25 +212,6 @@ function OfflineTimeInput({ legend, idStr, roleKey, dhm, handleSingleKeyChange, 
             </div>
         </FieldsetWrapper>
     )
-}
-
-
-interface I_SelectOffline extends I_SelectProps {
-    visualLabel: string,
-    srLabel : string,
-    extraCSS? : string,
-}
-function SelectOffline({id, selectExtraCSS, options, handleChange, initValue, visualLabel, srLabel, extraCSS}
-    : I_SelectOffline)
-    : JSX.Element {
-
-    return <div>
-                <label htmlFor={id} className={"text-sm" + " " + extraCSS}>
-                    <span className={"sr-only"}>{srLabel}</span>
-                    <span aria-hidden={true}>{visualLabel}</span>
-                </label>
-                <Select id={id} selectExtraCSS={selectExtraCSS} options={options} handleChange={handleChange} initValue={initValue} />
-            </div>
 }
 
 
@@ -302,9 +283,8 @@ function useOfflineForm({initValue, idxToEdit, setOfflinePeriods, closeForm, off
         let newDataDeepCopy = deepCopy(formOfflinePeriod);
         newDataDeepCopy[roleKey][unitKey] = newValue;
 
-        const startedAt = calcStartTime(gameState);
-        let startTimeID = convertOfflineTimeToTimeID(newDataDeepCopy.start, startedAt);
-        let endTimeID = convertOfflineTimeToTimeID(newDataDeepCopy.end, startedAt);
+        let startTimeID = convertOfflineTimeToTimeID(newDataDeepCopy.start, gameState.startTime);
+        let endTimeID = convertOfflineTimeToTimeID(newDataDeepCopy.end, gameState.startTime);
 
         newDataDeepCopy.isValid = startTimeID < endTimeID;
         handleChange(newDataDeepCopy);
@@ -328,78 +308,6 @@ function defaultOfflinePeriodForm()
         start: defaultOfflinePeriodStart,
         end: defaultOfflinePeriodEnd,
         isValid: true
-    }
-}
-
-
-type T_DateAndMonth = { date: number, month: number };
-type T_OutputOfflineTimesInputKit = {
-    handleDateChange : (e : ChangeEvent<HTMLSelectElement>) => void,
-    validDates : T_DateAndMonth[],
-    convertValidDatesToOptions : (dateObj : T_DateAndMonth[]) => T_OptionData[],
-    calcOptionsForNumberRange : (firstNum : number, lastNum : number) => T_OptionData[],
-}
-
-function offlineTimesInputKit({ handleSingleKeyChange, roleKey, gameState }
-    : Pick<I_OfflineFormProps, "handleSingleKeyChange" | "roleKey" | "gameState">)
-    : T_OutputOfflineTimesInputKit {
-    const validDates = calcValidDates();
-
-    function handleDateChange(e : ChangeEvent<HTMLSelectElement>){
-        let idx = validDates.findIndex(ele => ele.date === parseInt(e.target.value));
-        if(idx === -1){
-            // TODO: error handling for if the date isn't in the list of dates, somehow
-            return;
-        }
-        handleSingleKeyChange(roleKey, 'dateOffset', idx);
-    }
-
-    function calcValidDates(){
-        let startTime = calcStartTime(gameState);
-        let endTime = new Date(startTime.getTime() + 3 * 24 * 60 * 60 * 1000);
-
-        let validDates : { date: number, month: number }[] = [];
-        let loopTime = new Date(startTime.getTime());
-        while(loopTime.getTime() <= endTime.getTime()){
-            validDates.push({
-                date: loopTime.getDate(), 
-                month: loopTime.getMonth()
-            });
-            loopTime.setDate(loopTime.getDate() + 1);
-        }
-
-        return validDates;
-    }
-
-    function convertValidDatesToOptions(validDates 
-        : { date : number, month : number }[])
-        : T_OptionData[]{
-
-        return validDates.map(ele => {
-            return {
-                valueStr: ele.date.toString(),
-                displayStr: `${ele.date} ${getMonthName(ele.month)}`
-            }
-        });
-    }
-
-    function calcOptionsForNumberRange(firstNum : number, lastNum : number){
-        let options : T_OptionData[] = [];
-        for(let i = firstNum; i <= lastNum; i++){
-            let iStr = i.toString();
-            options.push({
-                valueStr: iStr,
-                displayStr: iStr.padStart(2, '0')
-            });
-        }
-        return options;
-    }
-
-    return {
-        handleDateChange,
-        validDates,
-        convertValidDatesToOptions,
-        calcOptionsForNumberRange,
     }
 }
 

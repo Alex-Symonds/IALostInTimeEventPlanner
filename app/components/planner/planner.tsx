@@ -1,7 +1,7 @@
 import { MutableRefObject, useRef } from 'react';
 
 import { MAX_TIME } from '../../utils/consts';
-import { defaultProductionSettings } from '../../utils/defaults';
+import { startingProductionSettings } from '../../utils/defaults';
 import { calcNewSwitchDisplay } from '../../utils/productionSettingsHelpers';
 import { T_ProductionSettings, T_PurchaseData, T_TimeGroup, T_Action, T_GameState, T_ProductionSettingsNow } from '../../utils/types';
 
@@ -40,7 +40,7 @@ export default function Planner({timeIDGroups, gameState, actions, setActions, p
                             prodSettingsNow !== null ?
                             prodSettingsNow.productionSettings
                                 : timeIDGroups.length === 0 ?
-                                    defaultProductionSettings
+                                    startingProductionSettings
                                     : timeIDGroups[0].productionSettingsDuring;
 
     const prodSettingsBeforeNowRef : MutableRefObject<T_ProductionSettings | undefined>  = useRef();

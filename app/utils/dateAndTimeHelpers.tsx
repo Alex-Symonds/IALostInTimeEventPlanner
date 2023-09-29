@@ -6,8 +6,7 @@ import { MS_PER_MINUTE } from './consts';
 export function convertDateToTimeID(targetTime : Date, gameState : T_GameState) 
     : number {
 
-    let startedAt : Date = calcStartTime(gameState);
-    let difference =  Math.abs(targetTime.getTime() - startedAt.getTime());
+    let difference =  Math.abs(targetTime.getTime() - gameState.startTime.getTime());
     return Math.round(difference / MS_PER_MINUTE);
 }
 
@@ -15,8 +14,7 @@ export function convertDateToTimeID(targetTime : Date, gameState : T_GameState)
 export function convertTimeIDToDate(targetTimeID : number, gameState : T_GameState) 
     : Date {
 
-    let startedAt : Date = calcStartTime(gameState);
-    return new Date(startedAt.getTime() + targetTimeID * MS_PER_MINUTE);
+    return new Date(gameState.startTime.getTime() + targetTimeID * MS_PER_MINUTE);
 }
 
 export function convertTimeIDToDHM(timeId: number)
@@ -72,7 +70,9 @@ export function calcDHMString(timeAsDHM : T_TimeRemainingDHM) : string {
 }
 
 
-export function calcStartTime(
+
+
+function OLDcalcStartTime(
     gameState : T_GameState) 
     : Date {
         
@@ -90,7 +90,7 @@ export function calcStartTime(
 }
 
 
-export function getMonthName(monthNumber : number) : string {
+export function calcMonthName(monthNumber : number) : string {
     const date = new Date();
     date.setMonth(monthNumber);
   
@@ -99,8 +99,8 @@ export function getMonthName(monthNumber : number) : string {
 }
 
 
-export function getDateDisplayStr(myDate : Date) : string {
-    return myDate.getDate().toString().padStart(2, '0') + nbsp() + getMonthName(myDate.getMonth()) + nbsp() + myDate.toLocaleTimeString([], {timeStyle: 'short', hourCycle: 'h23' });
+export function calcDateDisplayStr(myDate : Date) : string {
+    return myDate.getDate().toString().padStart(2, '0') + nbsp() + calcMonthName(myDate.getMonth()) + nbsp() + myDate.toLocaleTimeString([], {timeStyle: 'short', hourCycle: 'h23' });
 }
 
 export function printOfflineTime(dhm : T_TimeOfflinePeriod) : string{

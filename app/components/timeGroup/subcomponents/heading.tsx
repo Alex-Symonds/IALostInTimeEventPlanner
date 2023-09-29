@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { T_TimeGroup, T_GameState } from '../../../utils/types';
-import { calcDHMString, convertTimeIDToTimeRemaining, convertTimeIDToDate, getDateDisplayStr } from '../../../utils/dateAndTimeHelpers';
+import { calcDHMString, convertTimeIDToTimeRemaining, convertTimeIDToDate, calcDateDisplayStr } from '../../../utils/dateAndTimeHelpers';
 import { MAX_TIME } from '../../../utils/consts';
 
 import { IconMoon } from '../../subcomponents/icons';
@@ -30,9 +30,9 @@ export default function TimeGroupHeading({data, gameState} : I_TimeGroupHeading)
                         convertTimeIDToDate(data.startOfflinePeriodTimeID, gameState)
                         : null;
 
-    let shortDisplayStr = getDateDisplayStr(timeAsDate);
+    let shortDisplayStr = calcDateDisplayStr(timeAsDate);
     let fullDisplayStr = startAsDate !== null ? 
-                            getDateDisplayStr(startAsDate) + " - " + shortDisplayStr
+                            calcDateDisplayStr(startAsDate) + " - " + shortDisplayStr
                             : shortDisplayStr;
 
     return(

@@ -2,7 +2,7 @@ import { useRef, MutableRefObject } from "react";
 
 import { MAX_TIME } from "@/app/utils/consts";
 import { nbsp, toBillions, resourceCSS } from "@/app/utils/formatting";
-import { convertTimeIDToDate, convertTimeIDToTimeRemaining, calcDHMString, getMonthName } from "@/app/utils/dateAndTimeHelpers";
+import { convertTimeIDToDate, convertTimeIDToTimeRemaining, calcDHMString, calcMonthName } from "@/app/utils/dateAndTimeHelpers";
 
 import { I_MoreSections } from "../utils/types";
 import TimeGroupMoreSubheading from './subheading';
@@ -26,7 +26,7 @@ export default function DustStatsSection({moreData, gameState, leftHeadingWidth}
             let timeStr = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
            
             let DHM = convertTimeIDToTimeRemaining(MAX_TIME - timeID);
-            return `${calcDHMString(DHM)} ${dateStr}${nbsp()}${getMonthName(date.getMonth())}${nbsp()}${timeStr}`;
+            return `${calcDHMString(DHM)} ${dateStr}${nbsp()}${calcMonthName(date.getMonth())}${nbsp()}${timeStr}`;
         }
 
         return timeID === -1 ?

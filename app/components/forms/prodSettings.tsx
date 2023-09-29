@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { deepCopy } from "../../utils/consts";
-import { defaultProductionSettings } from '../../utils/defaults';
+import { startingProductionSettings } from '../../utils/defaults';
 import { capitalise, resourceCSS } from '../../utils/formatting';
 import { T_DATA_KEYS, getWorkerOutputsFromJSON } from "../../utils/getDataFromJSON";
 import { T_Levels, T_ProductionSettings, T_SwitchAction } from '../../utils/types';
@@ -63,7 +63,7 @@ export default function ModalProdSettings({closeModal, initialProdSettings, curr
 function getInitSettingsForModal(currentProdSettings : T_ProductionSettings, currentSwitches : T_SwitchAction[])
     : T_ProductionSettings {
 
-    let result : T_ProductionSettings = deepCopy(defaultProductionSettings);
+    let result : T_ProductionSettings = deepCopy(startingProductionSettings);
     for(const [k, v] of Object.entries(currentProdSettings)){
         let idx = currentSwitches.findIndex(ele => ele.key === k);
         let newValue = v;

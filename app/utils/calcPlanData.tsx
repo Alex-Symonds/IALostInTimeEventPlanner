@@ -2,7 +2,6 @@ import { calcProductionRates } from './calcProductionRates';
 import { calcStockpilesAdvancedByTime } from './calcStockpilesAdvancedByTime';
 import { calcDustAtEndWithMaxDustProduction } from './calcResults';
 import { MAX_TIME, OUT_OF_TIME, deepCopy } from './consts';
-import { calcStartTime as calcStartTime} from './dateAndTimeHelpers';
 import { T_DATA_COSTS, T_DATA_KEYS, getProductionCostsFromJSON } from './getDataFromJSON';
 import { isDuringOfflinePeriod, getOfflinePeriodAsTimeIDs } from './offlinePeriodHelpers';
 import { calcProductionSettings as calcProductionSettings } from './productionSettingsHelpers';
@@ -63,7 +62,7 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
     let productionSettingsBeforeNow : T_ProductionSettings = deepCopy(productionSettingsBeforeFirstAction);
     let flagFirstIsDone = false;
 
-    const startedAt : Date = calcStartTime(gameState);
+    const startedAt : Date = gameState.startTime;
     let stockpiles : T_Stockpiles = deepCopy(gameState.stockpiles);
     let levels : T_Levels = deepCopy(gameState.levels);
     let productionSettings : T_ProductionSettings = deepCopy(productionSettingsBeforeFirstAction);

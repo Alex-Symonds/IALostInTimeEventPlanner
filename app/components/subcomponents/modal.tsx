@@ -106,22 +106,23 @@ export function ModalSubmitButton({label, extraCSS, disabled}
 interface I_ModalMultiPageNav {
     activePage : number, 
     numPages : number, 
-    changePage : Dispatch<SetStateAction<number>>,
-    submitLabel? : string
+    changePage : (pageNum : number) => void,
+    submitLabel? : string,
+    wantDisableBack : (pageNum : number) => boolean
 }
-export function ModalMultiPageNav({activePage, numPages, changePage, submitLabel}
+export function ModalMultiPageNav({activePage, numPages, changePage, submitLabel, wantDisableBack}
     : I_ModalMultiPageNav)
     : JSX.Element {
 
     return  <div aria-hidden={true} className={"flex flex-col justify-center gap-5"}>
-                <NavButtonBox activePage={activePage} numPages={numPages} changePage={changePage} submitLabel={submitLabel} />
+                <NavButtonBox activePage={activePage} numPages={numPages} changePage={changePage} submitLabel={submitLabel} wantDisableBack={wantDisableBack}/>
                 <ProgressStatus activePage={activePage} numPages={numPages} changePage={changePage} />
             </div>
 
 }
 
 
-function NavButtonBox({activePage, numPages, changePage, submitLabel}
+function NavButtonBox({activePage, numPages, changePage, submitLabel, wantDisableBack}
     : I_ModalMultiPageNav)
     : JSX.Element {
 
@@ -129,6 +130,15 @@ function NavButtonBox({activePage, numPages, changePage, submitLabel}
 
     return  <div className={"flex justify-center"}>
                 <div className={"flex justify-between w-full"}>
+                    <Button
+                        colours={'secondary'}
+                        htmlType={'button'}
+                        size={'twin'}
+                        onClick={() => changePage(activePage - 1)}
+                        disabled={wantDisableBack(activePage - 1)}
+                        >
+                        &laquo;&nbsp;back
+                    </Button>
                     {
                         isLastPage ?
                             <Button
@@ -155,15 +165,6 @@ function NavButtonBox({activePage, numPages, changePage, submitLabel}
                                 next&nbsp;&raquo;
                             </Button>
                     }
-                    <Button
-                        colours={'secondary'}
-                        htmlType={'button'}
-                        size={'twin'}
-                        onClick={() => activePage === 1 ? undefined : changePage(activePage - 1)}
-                        disabled={activePage === 1}
-                        >
-                        &laquo;&nbsp;back
-                    </Button>
                 </div>
             </div>
 }
