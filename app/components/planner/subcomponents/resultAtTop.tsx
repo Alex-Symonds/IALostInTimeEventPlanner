@@ -25,7 +25,7 @@ export default function ResultAtTop({gameState, actions, timeIDGroups}
             : "bg-red-700";
 
     return(
-        <div className={`sticky z-10 top-12 md:top-[7.5rem] w-full mb-4 py-2 flex flex-col items-center shadow-md text-white ${bgColourCSS}`}>
+        <div className={`sticky z-10 top-12 md:[top:calc(7.5rem_+_1px)] w-full mb-4 py-2 flex flex-col items-center shadow-md text-white ${bgColourCSS}`}>
             <div className={"font-bold text-lg"}>
                 { resultOfPlan.hasWon ? "" : "NOT ENOUGH FOR " }1ST PRIZE
             </div>

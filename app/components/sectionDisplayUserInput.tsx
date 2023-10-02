@@ -21,16 +21,16 @@ export default function DisplayUserInput({gameState, openGameStateModal, offline
 
     const gameStateVisibilityCSS = calcVisibilityCSS(showGameState);
     const offlinePeriodCSS = calcVisibilityCSS(showOfflinePeriods);
-    const containerVisibilityCSS = showGameState || showOfflinePeriods ? "py-3 gap-2 border-b border-neutral-300 shadow-md " : "";
+    const containerVisibilityCSS = showGameState || showOfflinePeriods ? "py-3 gap-2 border-b border-violet-950 shadow-md " : "";
 
     function calcVisibilityCSS(isVisible : boolean){
         return isVisible ? "" : " sr-only";
     }
     
-    return  <div className={"sticky h-0 top-12 relative z-20 md:sticky md:[grid-area:status] md:top-[7.5rem]"}>
-                <section className={"w-full bg-neutral-100 flex flex-col items-center  md:border-none md:shadow-none md:min-w-[20rem] md:[height:calc(100vh-10rem)] md:gap-3 md:px-3 md:py-1.5" + " " + containerVisibilityCSS}>
+    return  <div className={"sticky h-0 top-12 relative z-20 md:sticky md:[grid-area:status] md:[top:calc(7.5rem_+_1px)]"}>
+                <section className={"w-full bg-violet-900 flex flex-col items-center md:bg-transparent md:border-none md:shadow-none md:min-w-[20rem] md:[height:calc(100vh-10rem)] md:gap-3 md:px-3 md:pt-0 md:pb-1.5" + " " + containerVisibilityCSS}>
 
-                    <StickyBarSection extraCSS={"mt-1 mb-1 shadow-xl" + gameStateVisibilityCSS }>
+                    <StickyBarSection extraCSS={"mt-1 md:mt-0 mb-1 shadow-xl" + gameStateVisibilityCSS }>
                         <SectionGameState   
                             gameState={gameState}
                             openEditForm={openGameStateModal}
@@ -58,7 +58,7 @@ function StickyBarSection({extraCSS, children}
     : JSX.Element {
 
     return(
-        <div className={"bg-white px-2 py-2 w-full max-w-xs md:rounded" + " " + extraCSS}>
+        <div className={"bg-white px-2 py-2 w-full max-w-xs rounded" + " " + extraCSS}>
             {children}
         </div>
     )
@@ -70,9 +70,9 @@ export function DisplayInputSection({title, children}
 
     return(
         <div className={"text-sm overflow-y-auto overflow-x-hidden max-h-[calc(100vh-5rem)] w-full pb-2"}>
-            <h2 className={"text-lg font-bold ml-1 mb-2"}>{title}</h2>
+            <h2 className={"text-lg font-bold ml-1 mb-3"}>{title}</h2>
             {children}
-      </div>
+        </div>
     )
 }
 

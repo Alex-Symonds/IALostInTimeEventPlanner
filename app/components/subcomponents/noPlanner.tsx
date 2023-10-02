@@ -2,14 +2,14 @@ import { ReactNode } from "react"
 
 
 export default function NoPlannerWrapper({mode, children} 
-    : {mode : "done" | "error", children : ReactNode}) 
+    : { mode : "done" | "error", children : ReactNode }) 
     : JSX.Element{
 
     const borderCSS = mode === "error" ?
                         "border-red-600"
                         : "border-white";
 
-    return  <div className={"py-4 px-3 w-full"}>
+    return  <div className={"py-4 px-3 w-full bg-white rounded-l"}>
               <div className={"border-l-4 pl-4 pr-8 pt-4 pb-10 " + " " + borderCSS}>
                 { children }
               </div>

@@ -61,7 +61,7 @@ export default function Planner({timeIDGroups, gameState, actions, setActions, p
     }
 
     return(
-        <div className={"flex flex-col items-center"}>
+        <div className={"flex flex-col items-center bg-white rounded-l"}>
             <ResultAtTop 
                 planData={purchaseData} 
                 gameState={gameState} 
@@ -96,12 +96,11 @@ export default function Planner({timeIDGroups, gameState, actions, setActions, p
                         purchasesPassTimeLimit={numValid < purchaseData.length}
                     />
                 </div>
+                { purchaseData !== null && purchaseData.length > 0 ?
+                    <PlannerFooter unboughtUpgrades={purchaseData.length - numValid} />
+                    : null
+                }
             </>
-            }
-
-            { purchaseData !== null && purchaseData.length > 0 ?
-                <PlannerFooter unboughtUpgrades={purchaseData.length - numValid} />
-                : null
             }
         </div>
     )

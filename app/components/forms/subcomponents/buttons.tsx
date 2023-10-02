@@ -15,9 +15,18 @@ export const COLOURS = {
         disabled: "text-gray-500 bg-gray-300",
         toggledOn: "text-white bg-violet-950 hover:bg-violet-800 border-violet-950"
     },
+    primaryOnDark: {
+        main: "text-violet-950 bg-violet-200 hover:bg-violet-300 border-violet-200",
+        disabled: "text-gray-500 bg-gray-300",
+        toggledOn: "text-violet-950 bg-violet-400 hover:bg-violet-300 hover:text-violet-950 border-violet-50"
+    },
     secondary: {
         main: "border-2 text-violet-600 bg-transparent border-violet-600 hover:bg-violet-50",
         disabled: "border-2 text-gray-500 border-gray-300"
+    },
+    secondaryOnDark: {
+        main: "border-2 text-violet-100 bg-transparent border-violet-100 hover:bg-violet-50 hover:bg-opacity-10",
+        disabled: "border-2 text-gray-500 border-gray-300 md:opacity-70"
     },
     warning: {
         main: "border-2 text-violet-600 bg-white bg-opacity-50 border-violet-600 hover:bg-red-700 hover:border-red-700 hover:text-white",
