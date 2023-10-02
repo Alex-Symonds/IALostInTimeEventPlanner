@@ -36,7 +36,7 @@ export default function Home() {
   const { save : saveModal, load: loadModal } = useSaveAndLoad({actions, setActions, offlinePeriods, setOfflinePeriods, gameState, setGameState});
 
   return (
-    <main className={"flex justify-center bg-neutral-50 min-h-screen"}>
+    <main className={"flex justify-center bg-violet-200 min-h-screen"}>
 
       <Modals modals={ {
                 save: saveModal,
@@ -46,7 +46,7 @@ export default function Home() {
               } } 
       />
 
-      <div className={'relative z-20 w-full max-w-5xl bg-neutral-100 shadow-xl md:grid md:[grid-template-rows:auto_auto_auto_auto] md:[grid-template-columns:auto_1fr] md:[grid-template-areas:"heading_heading""buttons_buttons""status_banner""status_."]'}>
+      <div className={'relative z-20 w-full max-w-5xl bg-violet-900 shadow-xl md:grid md:[grid-template-rows:auto_auto_auto_auto] md:[grid-template-columns:auto_1fr] md:[grid-template-areas:"heading_heading""buttons_buttons""status_banner""status_."]'}>
         <MainPageHeading />
         
         <StickyBar    
@@ -65,7 +65,7 @@ export default function Home() {
           offlinePeriodIdxEdit = { offlinePeriodsModal.data.idxToEdit }
         />
 
-        <div className={"bg-white [min-height:calc(100vh-4.5rem-1px-3rem)]"}>
+        <div className={"bg-violet-900 [min-height:calc(100vh-4.5rem-1px-3rem)]"}>
         { gameState === null || purchaseData === undefined || switchData === undefined || timeIDGroups === null || prodSettingsBeforeNow === undefined ?
           <ErrorWithPlanner />
           :
@@ -87,9 +87,9 @@ export default function Home() {
 
 
 function MainPageHeading(){
-  return  <h1 className={"[height:4.5rem] relative z-10 flex flex-col px-3 pt-1 pb-3 block bg-white md:sticky md:top-0 md:relative md:[grid-area:heading]"}>
-            <span className={"text-3xl font-extrabold block leading-snug text-violet-700"}>Event&nbsp;Planner</span>
-            <span className={"text-sm block leading-none"}>Idle&nbsp;Apocalypse: Lost&nbsp;in&nbsp;Time&nbsp;</span>
+  return  <h1 className={"[height:4.5rem] relative z-10 flex flex-col px-3 pt-1 pb-3 block bg-violet-900 md:sticky md:top-0 md:relative md:[grid-area:heading]"}>
+            <span className={"text-3xl font-extrabold block leading-snug text-white"}>Event&nbsp;Planner</span>
+            <span className={"text-sm block leading-none text-violet-50"}>Idle&nbsp;Apocalypse: Lost&nbsp;in&nbsp;Time&nbsp;</span>
           </h1>
 }
 

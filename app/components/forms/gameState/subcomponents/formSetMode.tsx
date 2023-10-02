@@ -31,8 +31,8 @@ export default function FormSetMode({ isActive, isPlan, setMode, close }
                 <InputPageWrapper isVisible={true}>
                     <fieldset className={"flex flex-col gap-6"}>
                         <legend className={"flex flex-col mb-5"}>
-                            <span className={"font-bold text-base"}>Select input mode</span>
-                            <span className={"font-medium text-sm text-neutral-600"}>(you can change this later)</span>
+                            <span className={"font-bold text-base ml-1"}>Select input mode</span>
+                            <span className={"font-medium text-sm text-neutral-600 ml-1"}>(you can change this later)</span>
                         </legend>
 
                         <Radio 

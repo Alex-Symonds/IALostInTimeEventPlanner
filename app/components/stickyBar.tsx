@@ -11,8 +11,8 @@ interface I_StickyBar {
 export default function StickyBar({saveLoadToggles, viewToggles} 
     : I_StickyBar)
     : JSX.Element {    
-   
-    return  <div className={'bg-white px-3 py-2 w-full flex flex-col border-b border-neutral-200 sticky top-0 relative z-40 md:[top:calc(4.5rem)] md:[grid-area:buttons]'}>
+
+    return  <div className={'bg-violet-900 px-3 py-2 w-full flex flex-col border-b border-violet-900 sticky top-0 relative z-40 md:[top:calc(4.5rem)] md:[grid-area:buttons]'}>
                 <HeaderButtonsContainer viewToggles={viewToggles} saveLoadToggles={saveLoadToggles} />
             </div>
 }
@@ -28,7 +28,7 @@ function HeaderButtonsContainer({viewToggles, saveLoadToggles} : I_HeaderButtons
                         viewToggles.map(ele => {
                             return <Button key={ele.displayStr}
                                         size={'stickyBar'}
-                                        colours={'primary'}
+                                        colours={'primaryOnDark'}
                                         onClick={ele.toggle}
                                         toggledOn={ele.value}
                                         extraCSS={"md:hidden"}
@@ -43,7 +43,7 @@ function HeaderButtonsContainer({viewToggles, saveLoadToggles} : I_HeaderButtons
                         saveLoadToggles.map(ele => {
                             return  <Button key={ele.data.displayStr}
                                         size={'stickyBar'}
-                                        colours={'secondary'}
+                                        colours={'secondaryOnDark'}
                                         onClick={ ele.toggle }
                                         >
                                         {ele.data.displayStr}
