@@ -173,7 +173,7 @@ function UnitPickerCard({checked, disabled, data}
         <div className={"ease-linear duration-75 flex border m-1 items-center rounded" + " " + wrapperColours} onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)}>
             <div className={"ease-linear duration-75 w-3 h-3 ml-2 border rounded-full" + " " + radioCircle}>
             </div>
-            <div className={"upgradePicker-card mr-5"}>
+            <div className={"grid grid-cols-[4.25rem_1.75rem_1fr] mr-5"}>
                 <span className={"block text-sm ml-2 px-1 flex items-center"}>{data.name}</span>
                 <span className={"block text-sm p-1 font-bold flex items-center"}>{data.isMaxLevel ? " " : data.level}</span>
                 <div className={"flex gap-1 py-1" + " " + fadeCostBadge}>

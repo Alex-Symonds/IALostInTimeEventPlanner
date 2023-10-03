@@ -46,7 +46,7 @@ export default function Home() {
               } } 
       />
 
-      <div className={'relative z-20 w-full max-w-5xl bg-violet-900 shadow-xl md:grid md:[grid-template-rows:auto_auto_auto_auto] md:[grid-template-columns:auto_1fr] md:[grid-template-areas:"heading_heading""buttons_buttons""status_banner""status_."]'}>
+      <div className={'relative z-20 w-full max-w-5xl bg-violet-900 shadow-xl md:grid md:grid-rows-[auto_auto_auto] md:grid-cols-[auto_1fr] md:[grid-template-areas:"heading_heading""buttons_buttons""status_."]'}>
         <MainPageHeading />
         
         <StickyBar    
