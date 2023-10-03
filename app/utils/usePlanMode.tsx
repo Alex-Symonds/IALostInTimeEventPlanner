@@ -6,8 +6,7 @@ export enum PlanMode {
 }
 
 export type T_PlanModeKit = {
-    isPlan: boolean,
-    isActive: boolean,
+    mode : PlanMode | null,
     setMode: Dispatch<SetStateAction<PlanMode | null>>,
 }
 
@@ -15,8 +14,7 @@ export function usePlanMode(){
     const [mode, setMode] = useState<PlanMode | null>(null);
 
     return {
-        isPlan: mode === PlanMode.plan,
-        isActive: mode === PlanMode.active,
+        mode,
         setMode : setMode
     }
 }

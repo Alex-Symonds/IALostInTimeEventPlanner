@@ -11,7 +11,7 @@ interface I_ModeSetter extends T_PlanModeKit{
     close : () => void,
 }
 
-export default function FormSetMode({ isActive, isPlan, setMode, close } 
+export default function FormSetMode({ mode, setMode, close } 
     : I_ModeSetter) 
     : JSX.Element {
 
@@ -25,8 +25,8 @@ export default function FormSetMode({ isActive, isPlan, setMode, close }
         close();
     }
 
-    const planIsSelected = controlled === null && isPlan || controlled === PlanMode.plan;
-    const activeIsSelected = controlled === null && isActive || controlled === PlanMode.active;
+    const planIsSelected = (controlled === null && mode === PlanMode.plan) || controlled === PlanMode.plan;
+    const activeIsSelected = (controlled === null && mode === PlanMode.active) || controlled === PlanMode.active;
     return  <form onSubmit={(e) => onSubmit(e)}>
                 <InputPageWrapper isVisible={true}>
                     <fieldset className={"flex flex-col gap-6"}>
@@ -75,7 +75,7 @@ export default function FormSetMode({ isActive, isPlan, setMode, close }
                     size={"default"}
                     colours={"primary"}
                     htmlType={"submit"}
-                    disabled={ !isActive && !isPlan && controlled === null }
+                    disabled={ mode !== PlanMode.active && mode !== PlanMode.plan && controlled === null }
                     >
                     next&nbsp;&raquo;
                 </Button>

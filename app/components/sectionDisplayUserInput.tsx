@@ -1,4 +1,5 @@
 import { T_GameState, T_OfflinePeriod } from '../utils/types';
+import { PlanMode } from '../utils/usePlanMode';
 
 import { Button } from './forms/subcomponents/buttons';
 import SectionGameState from './sectionGameState';
@@ -8,6 +9,7 @@ import SectionOfflinePeriods from './sectionOfflinePeriods';
 interface I_DisplayUserInput {
     gameState : T_GameState,
     openGameStateModal : () => void,
+    mode : PlanMode,
     offlinePeriods : T_OfflinePeriod[],
     openOfflinePeriodsModal : (idx : number | null) => void,
     offlinePeriodIdxEdit : number | null,
@@ -15,7 +17,7 @@ interface I_DisplayUserInput {
     showOfflinePeriods : boolean
 }
 
-export default function DisplayUserInput({gameState, openGameStateModal, offlinePeriods, openOfflinePeriodsModal, offlinePeriodIdxEdit, showGameState, showOfflinePeriods}
+export default function DisplayUserInput({gameState, openGameStateModal, mode, offlinePeriods, openOfflinePeriodsModal, offlinePeriodIdxEdit, showGameState, showOfflinePeriods}
     : I_DisplayUserInput)
     : JSX.Element {
 
@@ -34,6 +36,7 @@ export default function DisplayUserInput({gameState, openGameStateModal, offline
                         <SectionGameState   
                             gameState={gameState}
                             openEditForm={openGameStateModal}
+                            mode={mode}
                         />
                     </StickyBarSection>
 
@@ -49,8 +52,6 @@ export default function DisplayUserInput({gameState, openGameStateModal, offline
                 </section>
             </div>
 }
-
-
 
 
 function StickyBarSection({extraCSS, children} 

@@ -36,7 +36,7 @@ export default function Home() {
   const { save : saveModal, load: loadModal } = useSaveAndLoad({actions, setActions, offlinePeriods, setOfflinePeriods, gameState, setGameState});
 
   return (
-    <main className={"flex justify-center bg-violet-200 min-h-screen"}>
+    <main className={"flex justify-center bg-violet-50 min-h-screen"}>
 
       <Modals modals={ {
                 save: saveModal,
@@ -58,6 +58,7 @@ export default function Home() {
           showGameState={showGameState}
           gameState={gameState}
           openGameStateModal={ gameStateModal.openModal }
+          mode={ gameStateModal.data.mode.mode }
 
           showOfflinePeriods={showOfflinePeriods}
           offlinePeriods={offlinePeriods}
@@ -113,7 +114,7 @@ function Modals({modals} : { modals : { [key : string] :  T_ModalData} }){
                     closeModal={ modals.gameState.closeModal } 
                     setGameState={ modals.gameState.action } 
                     gameState={ modals.gameState.data.gameState } 
-                    mode={ modals.gameState.data.mode }
+                    modeKit={ modals.gameState.data.mode }
                   />
                   : modals.offlinePeriods.isVisible ?
                     <OfflineForm 

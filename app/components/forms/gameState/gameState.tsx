@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useState, ChangeEvent } from 'react';
 
 import { T_DATA_KEYS, getUnitDataFromJSON } from '@/app/utils/getDataFromJSON';
 import { T_GameState } from '@/app/utils/types';
-import { T_PlanModeKit } from '@/app/utils/usePlanMode';
+import { PlanMode, T_PlanModeKit } from '@/app/utils/usePlanMode';
 
 import { BadgeCost, BadgeMaxed } from '../../subcomponents/badges';
 import Modal, { ModalFieldsWrapper, ModalHeading } from '../../subcomponents/modal';
@@ -19,23 +19,23 @@ import ChangeModeButton from './subcomponents/changeModeButton';
 export interface I_StatusFormSharedProps {
     setGameState : Dispatch<SetStateAction<T_GameState>>,
     gameState : T_GameState,
-    closeModal : () => void
+    closeModal : () => void,
 }
-export default function StatusForm({setGameState, gameState, mode, closeModal}
-    : I_StatusFormSharedProps & { mode : T_PlanModeKit })
+export default function StatusForm({setGameState, gameState, modeKit, closeModal}
+    : I_StatusFormSharedProps & { modeKit : T_PlanModeKit })
     : JSX.Element {
 
     const [userWantsToChangeMode, setUserWantsToChangeMode] = useState(false);
-    const [isInitialisingMode, _] = useState<boolean>(!mode.isActive && !mode.isPlan);
+    const [isInitialisingMode, _] = useState<boolean>(modeKit.mode !== PlanMode.active && modeKit.mode !== PlanMode.plan);
 
     return (
         <Modal closeModal={closeModal}>
-            <ModalHeading>{mode.isActive ? "Active" : "Plan"} Game Status</ModalHeading>
+            <ModalHeading>{modeKit.mode !== PlanMode.active ? "Active" : "Plan"} Game Status</ModalHeading>
             { !isInitialisingMode && !userWantsToChangeMode ?
                 <ChangeModeButton changeMode={() => setUserWantsToChangeMode(true)} />
                 : null
             }
-            { mode.isActive && !userWantsToChangeMode ?
+            { modeKit.mode === PlanMode.active && !userWantsToChangeMode ?
                 <FormActiveMode 
                     gameState={gameState}
                     setGameState={setGameState}   
@@ -43,7 +43,7 @@ export default function StatusForm({setGameState, gameState, mode, closeModal}
                     changeMode={() => setUserWantsToChangeMode(true)}
                     wantBackToMode={isInitialisingMode}
                 />
-                : mode.isPlan && !userWantsToChangeMode ?
+                : modeKit.mode === PlanMode.plan && !userWantsToChangeMode ?
                     <FormPlanMode 
                         gameState={gameState}          
                         setGameState={setGameState}        
@@ -52,9 +52,8 @@ export default function StatusForm({setGameState, gameState, mode, closeModal}
                     />
                     : 
                     <FormSetMode 
-                        isActive={ mode.isActive }
-                        isPlan={ mode.isPlan }
-                        setMode={ mode.setMode }
+                        mode={ modeKit.mode }
+                        setMode={ modeKit.setMode }
                         close={() => setUserWantsToChangeMode(false)}
                     />
             }

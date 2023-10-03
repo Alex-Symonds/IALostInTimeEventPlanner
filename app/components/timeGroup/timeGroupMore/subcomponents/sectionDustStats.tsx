@@ -44,9 +44,9 @@ export default function DustStatsSection({moreData, gameState, leftHeadingWidth}
             <div className={"flex flex-col gap-2 mt-1"}>
                 <DustRowWrapper>
                     <DustSubheading leftHeadingWidth={leftHeadingWidth}>
-                        Stockpiled
+                        stockpile
                     </DustSubheading>
-                    <div className={"font-medium flex flex-col items-end justify-center w-48 px-1 py-0.5 border" + " " + resourceCSS.dust.cell}>
+                    <div className={`font-medium flex flex-col items-end justify-center w-48 px-1 py-0.5 border-l-4 ${resourceCSS.dust.field}`}>
                         {`${moreData.dustNow.toLocaleString()}`}&nbsp;{`(${toBillions(moreData.dustNow)})`}
                     </div>
                 </DustRowWrapper>
@@ -54,9 +54,9 @@ export default function DustStatsSection({moreData, gameState, leftHeadingWidth}
                     <table className={"w-full border-collapse"}>
                         <thead>
                             <tr>
-                                <th className={"" + " " + leftHeadingWidth}></th>
+                                <th className={leftHeadingWidth}></th>
                                 <th className={"w-24 text-center border bg-violet-300 border-violet-400 text-black"}>current</th>
-                                <th className={"w-24 text-center border" + " " + resourceCSS.dust.badge}>max&nbsp;dust</th>
+                                <th className={`w-24 text-center border ${resourceCSS.dust.badge}`}>max&nbsp;dust</th>
                             </tr>
                         </thead>
                         <tbody>

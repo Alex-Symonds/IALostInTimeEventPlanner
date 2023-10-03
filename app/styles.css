@@ -19,18 +19,6 @@
     grid-template-rows: auto auto;
 }
 
-.gameStateDisplayTimeAndPremium{
-    display: grid;
-    grid-template-columns: repeat(3, 33%);
-    max-width: 320px;
-}
-
-.gameStateDisplayDust{
-    display: grid;
-    grid-template-columns: 33% 1fr 4rem;
-    max-width: 320px;
-}
-
 .desktopBarsLayout{
     display: grid;
     grid-template-rows: auto auto auto;
