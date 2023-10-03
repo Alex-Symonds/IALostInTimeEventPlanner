@@ -44,7 +44,7 @@ function TimeAndPremiumStatus({gameState, mode}
     : JSX.Element {
 
     const remTimeObj = convertTimeIDToTimeRemaining(gameState.timeRemaining);
-    return  <div className={"grid [max-width:320px] [grid-template-columns:6.5rem_1fr_1fr] gap-1"}>
+    return  <div className={"grid [max-width:320px] grid-cols-[6.5rem_1fr_1fr] gap-1"}>
 
                 { mode === PlanMode.active ?
                 <>
@@ -97,7 +97,7 @@ function StockpilesStatus({stockpiles}
     : JSX.Element {
 
     return  <Subsection subheading={undefined}>
-                <div className={`grid [max-width:320px] [grid-template-columns:6rem_1fr_4rem] px-2 py-1 mb-1 border-l-4 font-bold ${resourceCSS.dust.field}`}>
+                <div className={`grid [max-width:320px] grid-cols-[6rem_1fr_4rem] px-2 py-1 mb-1 border-l-4 font-bold ${resourceCSS.dust.field}`}>
                     <div>Dust</div>
                     <div>{stockpiles.dust.toLocaleString()}</div>
                     <div className={"justify-self-end"}>({toBillions(stockpiles.dust)})</div>
@@ -117,7 +117,7 @@ function LevelsStatus({levels}
 
     return(
         <Subsection subheading={undefined}>
-        <div className={"grid max-w-xs w-full justify-between statusLevels"}>
+        <div className={"grid max-w-xs w-full justify-between grid-cols-[repeat(8,2rem)] grid-rows-[auto_auto]"}>
             {
                 workers.map(worker => {
                     return <LevelWithLabel key={worker.key} label={worker.displayStr} level={worker.level} max={worker.max} />
