@@ -12,7 +12,7 @@ export default function StockpilesDisplay({stockpiles, extraCSS}
     : JSX.Element {
 
     return (
-        <div className={"flex" + " " + extraCSS}>
+        <div className={`flex ${extraCSS}`}>
             <Stockpile myKey={'blue'} data={stockpiles} />
             <Stockpile myKey={'green'} data={stockpiles} />
             <Stockpile myKey={'red'} data={stockpiles} />
@@ -27,7 +27,7 @@ function Stockpile({myKey, data}
     : JSX.Element {
 
     return (
-        <div className={"flex justify-between text-sm w-1/4 px-1 gap-1 rounded" + " " + resourceCSS[myKey as keyof typeof resourceCSS].badge}>
+        <div className={`flex justify-between text-sm w-1/4 px-1 gap-1 rounded ${resourceCSS[myKey as keyof typeof resourceCSS].badge}`}>
             <div>{myKey.charAt(0).toLowerCase()}</div>
             <div>{toThousands(data[myKey as keyof typeof data])}</div>
         </div>
