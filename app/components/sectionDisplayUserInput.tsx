@@ -9,7 +9,7 @@ import SectionOfflinePeriods from './sectionOfflinePeriods';
 interface I_DisplayUserInput {
     gameState : T_GameState,
     openGameStateModal : () => void,
-    mode : PlanMode,
+    mode : PlanMode | null,
     offlinePeriods : T_OfflinePeriod[],
     openOfflinePeriodsModal : (idx : number | null) => void,
     offlinePeriodIdxEdit : number | null,
@@ -28,52 +28,40 @@ export default function DisplayUserInput({gameState, openGameStateModal, mode, o
     function calcVisibilityCSS(isVisible : boolean){
         return isVisible ? "" : " sr-only";
     }
-    
-    return  <div className={"sticky h-0 top-12 relative z-20 md:sticky md:[grid-area:status] md:[top:calc(7.5rem_+_1px)]"}>
-                <section className={`w-full bg-violet-900 flex flex-col items-center md:bg-transparent md:border-none md:shadow-none md:min-w-[20rem] md:[height:calc(100vh-10rem)] md:gap-3 md:px-3 md:pt-0 md:pb-1.5 ${containerVisibilityCSS}`}>
 
-                    <StickyBarSection extraCSS={"mt-1 md:mt-0 mb-1 shadow-xl" + gameStateVisibilityCSS }>
+    return  <div className={"sticky h-0 top-12 relative z-20 md:sticky md:[grid-area:status] md:[top:calc(7.5rem_+_1px)]"}>
+                <div className={`w-full bg-violet-900 flex flex-col items-center md:bg-transparent md:border-none md:shadow-none md:min-w-[20rem] md:[height:calc(100vh-10rem)] md:gap-3 md:px-3 md:pt-0 md:pb-1.5 ${containerVisibilityCSS}`}>
+                    
+                    <DisplayInputSection title={"Game Status"} extraCSS={`md:mt-0 ${gameStateVisibilityCSS}`}>
                         <SectionGameState   
                             gameState={gameState}
                             openEditForm={openGameStateModal}
                             mode={mode}
                         />
-                    </StickyBarSection>
+                    </DisplayInputSection>
 
-                    <StickyBarSection extraCSS={"mt-1 mb-1 shadow-xl" + offlinePeriodCSS}>
+                    <DisplayInputSection title={"Offline Periods"} extraCSS={offlinePeriodCSS}>
                         <SectionOfflinePeriods  
                             offlinePeriods={offlinePeriods}
                             gameState={gameState}
                             openModal={openOfflinePeriodsModal}
                             idxEdit={offlinePeriodIdxEdit}
                         />
-                    </StickyBarSection>
-
-                </section>
+                    </DisplayInputSection>
+                </div>
             </div>
 }
 
 
-function StickyBarSection({extraCSS, children} 
-    : { extraCSS? : string, children : React.ReactNode })
+function DisplayInputSection({title, extraCSS, children} 
+    : {title : string, extraCSS : string, children : React.ReactNode})
     : JSX.Element {
 
     return(
-        <div className={"bg-white px-2 py-2 w-full max-w-xs rounded" + " " + extraCSS}>
-            {children}
-        </div>
-    )
-}
-
-export function DisplayInputSection({title, children} 
-    : {title : string, children : React.ReactNode})
-    : JSX.Element {
-
-    return(
-        <div className={"text-sm overflow-y-auto overflow-x-hidden max-h-[calc(100vh-5rem)] w-full pb-2"}>
+        <section className={`mt-1 mb-1 shadow-xl bg-white px-2 py-2 w-full max-w-xs rounded text-sm overflow-y-auto overflow-x-hidden max-h-[calc(100vh-5rem)] w-full pb-2 ${extraCSS}`}>
             <h2 className={"text-lg font-bold ml-1 mb-3"}>{title}</h2>
             {children}
-        </div>
+        </section>
     )
 }
 

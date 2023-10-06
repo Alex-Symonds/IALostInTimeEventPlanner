@@ -1,4 +1,4 @@
-export interface I_Button{
+export interface I_Button {
     size : keyof typeof SIZES,
     colours : keyof typeof COLOURS,
     htmlType? : string,
@@ -8,6 +8,7 @@ export interface I_Button{
     toggledOn? : boolean,
     children: React.ReactNode,
 }
+
 
 export const COLOURS = {
     primary: {

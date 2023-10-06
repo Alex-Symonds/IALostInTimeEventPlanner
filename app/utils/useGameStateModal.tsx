@@ -1,7 +1,7 @@
 /*
     Hook to support the "use game state" modal
 */
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { T_GameState, T_ModalData } from "./types";
 
 import { usePlanMode } from "./usePlanMode";
@@ -9,7 +9,7 @@ import { usePlanMode } from "./usePlanMode";
 
 interface I_UseGameStateModal {
     gameState : T_GameState,
-    setGameState : Dispatch<SetStateAction<T_GameState>>,
+    setGameState : (data: T_GameState) => void,
 }
 
 type T_UseGameStateModalOutput = 

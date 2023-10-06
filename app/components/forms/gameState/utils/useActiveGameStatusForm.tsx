@@ -100,8 +100,6 @@ export function useActiveGameStatusForm({gameState, setGameState, closeModal}
     function onSubmit(e : React.SyntheticEvent){
         e.preventDefault();
         let newGameState = convertFormInputsToGameState();
-        
-        console.log("active hook new game state", newGameState);
         setGameState(newGameState);
         closeModal();
     }

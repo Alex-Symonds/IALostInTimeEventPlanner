@@ -27,7 +27,7 @@ import { I_ProductionSwitcherModalUniversal, T_ProductionSettings, T_TimeGroup, 
 
 interface I_UseSwitchProductionFuture {
     actions : T_Action[], 
-    setActions : React.Dispatch<React.SetStateAction<T_Action[]>>, 
+    setActions :(data : T_Action[]) => void,
 }
 
 type T_OutputUseProductionSwitcher = {

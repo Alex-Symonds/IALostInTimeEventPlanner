@@ -38,7 +38,7 @@ interface I_UseSwitchProductionNow {
     initialProdSettings : T_ProductionSettings,
     gameState : T_GameState, 
     timeIDGroups : T_TimeGroup[],
-    setProdSettingsNow : React.Dispatch<React.SetStateAction<T_ProductionSettingsNow | null>>,
+    setProdSettingsNow : (data : T_ProductionSettingsNow | null) => void,
     prodSettingsBeforeNowRef : MutableRefObject<T_ProductionSettings | undefined>
 }
 

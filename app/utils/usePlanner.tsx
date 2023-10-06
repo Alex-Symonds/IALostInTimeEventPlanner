@@ -36,15 +36,32 @@ export default function usePlanner(){
         null 
         : calcTimeGroups({purchaseData, switchData, timeData});
 
+    function updateGameState(data : T_GameState){
+      setGameState(data)
+    }
+
+    function updateOfflinePeriods(data : T_OfflinePeriod[]){
+      setOfflinePeriods(data);
+    }
+
+    function updateProdSettingsNow(data : T_ProductionSettingsNow | null){
+      setProdSettingsNow(data);
+    }
+
+    function updateActions(data : T_Action[]){
+      setActions(data);
+    }
+
+
     return {
         gameState, 
-        setGameState,
+        setGameState: updateGameState,
         offlinePeriods, 
-        setOfflinePeriods,
+        setOfflinePeriods: updateOfflinePeriods,
         actions, 
-        setActions,
+        setActions: updateActions,
         prodSettingsNow,
-        setProdSettingsNow,
+        setProdSettingsNow: updateProdSettingsNow,
         purchaseData,
         switchData,
         timeIDGroups,

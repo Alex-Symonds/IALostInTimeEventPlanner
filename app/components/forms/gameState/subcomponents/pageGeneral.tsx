@@ -108,7 +108,7 @@ function TimeRemainingFieldset({timeRemaining, setTimeRemaining}
                     />
                 </div>
                 { isError ?
-                    <div className={"text-xs border-1 text-neutral-700 px-1 py-1 w-56"}>
+                    <div data-testid={"timeRemainingInputErrorMessage"} className={"text-xs border-1 text-neutral-700 px-1 py-1 w-56"}>
                         {capitalise(message)}
                     </div>
                     : null

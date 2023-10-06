@@ -27,6 +27,7 @@ export default function FormSetMode({ mode, setMode, close }
 
     const planIsSelected = (controlled === null && mode === PlanMode.plan) || controlled === PlanMode.plan;
     const activeIsSelected = (controlled === null && mode === PlanMode.active) || controlled === PlanMode.active;
+    const radioGroupName = "setMode";
     return  <form onSubmit={(e) => onSubmit(e)}>
                 <InputPageWrapper isVisible={true}>
                     <fieldset className={"flex flex-col gap-6"}>
@@ -38,8 +39,9 @@ export default function FormSetMode({ mode, setMode, close }
                         <Radio 
                             checked={ planIsSelected }
                             disabled={ false }
-                            handleSelection={ () => setControlled(PlanMode.plan) }
+                            onChange={ () => setControlled(PlanMode.plan) }
                             value={"planMode"}
+                            name={radioGroupName}
                             >
                                 <OptionBox 
                                     title={"Plan"}
@@ -54,8 +56,9 @@ export default function FormSetMode({ mode, setMode, close }
                         <Radio 
                             checked={ activeIsSelected }
                             disabled={ false }
-                            handleSelection={ () => setControlled(PlanMode.active) }
+                            onChange={ () => setControlled(PlanMode.active) }
                             value={"activeMode"}
+                            name={radioGroupName}
                             >
                                 <OptionBox 
                                     title={"Active"}
@@ -77,10 +80,10 @@ export default function FormSetMode({ mode, setMode, close }
                     htmlType={"submit"}
                     disabled={ mode !== PlanMode.active && mode !== PlanMode.plan && controlled === null }
                     >
-                    next&nbsp;&raquo;
+                    next
                 </Button>
             </form>
-}
+}//next&nbsp;&raquo;
 
 
 function OptionBox({title, description, bullets, isSelected} : any){

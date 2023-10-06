@@ -6,7 +6,8 @@
 
 import { useRef } from "react";
 
-import { ModalMultiPageNav, ModalSubmitButton } from "../../../subcomponents/modal";
+import { Button } from "../../subcomponents/buttons";
+import { ModalSubmitButton } from "../../../subcomponents/modal";
 
 import { useActiveGameStatusForm } from "../utils/useActiveGameStatusForm";
 
@@ -45,6 +46,14 @@ export default function FormActiveMode({gameState, setGameState, changeMode, wan
     wantBackToModeSetter.current = wantBackToMode;
     const {activePage, maxPage, changePage, wantDisableBack} = useMultiPageGameStateForm({wantBackToModeSetter, changeMode});
 
+    /*
+        For sighted users, the form will be broken into four pages, navigated with
+        prev/next buttons. On the last page "next" will be replaced with "enter".
+
+        For screenreaders, there's not much point in breaking it up into pages,
+        so the pageNav container is hidden and instead there's a "normal" submit
+        button at the end.
+    */
     return <form onSubmit={(e) => onSubmit(e)}>
                 <InputPageWrapper 
                     isVisible={ activePage === 1 }
@@ -93,7 +102,7 @@ export default function FormActiveMode({gameState, setGameState, changeMode, wan
                     />
                 </InputPageWrapper>
 
-                <ModalMultiPageNav 
+                <PageNav 
                     activePage={activePage} 
                     changePage={changePage} 
                     numPages={maxPage} 
@@ -106,4 +115,105 @@ export default function FormActiveMode({gameState, setGameState, changeMode, wan
                     disabled={false}
                 />
             </form>
+}
+
+
+interface I_PageNav {
+    activePage : number, 
+    numPages : number, 
+    changePage : (pageNum : number) => void,
+    submitLabel? : string,
+    wantDisableBack : (pageNum : number) => boolean
+}
+function PageNav({activePage, numPages, changePage, submitLabel, wantDisableBack}
+    : I_PageNav)
+    : JSX.Element {
+
+    return  <div aria-hidden={true} className={"flex flex-col justify-center gap-5"}>
+                <NavButtonBox activePage={activePage} numPages={numPages} changePage={changePage} submitLabel={submitLabel} wantDisableBack={wantDisableBack}/>
+                <ProgressStatus activePage={activePage} numPages={numPages} changePage={changePage} />
+            </div>
+}
+
+
+function NavButtonBox({activePage, numPages, changePage, submitLabel, wantDisableBack}
+    : I_PageNav)
+    : JSX.Element {
+
+    const isLastPage = activePage === numPages
+
+    return  <div className={"flex justify-center"}>
+                <div className={"flex justify-between w-full"}>
+                    <Button
+                        colours={'secondary'}
+                        htmlType={'button'}
+                        size={'twin'}
+                        onClick={() => changePage(activePage - 1)}
+                        disabled={wantDisableBack(activePage - 1)}
+                        >
+                        &laquo;&nbsp;back
+                    </Button>
+                    {
+                        isLastPage ?
+                            <Button
+                                key={'submitBtn'}
+                                colours={'primary'}
+                                htmlType={'submit'}
+                                size={'twin'}
+                                onClick={undefined}
+                                disabled={false}
+                                extraCSS={"border-2"}
+                            >
+                                { submitLabel ?? "submit" }
+                            </Button>
+                        :
+                            <Button
+                                key={'nextBtn'}
+                                colours={'primary'}
+                                htmlType={'button'}
+                                size={'twin'}
+                                onClick={() => changePage(activePage + 1)}
+                                disabled={isLastPage}
+                                extraCSS={"border-2"}
+                            >
+                                next&nbsp;&raquo;
+                            </Button>
+                    }
+                </div>
+            </div>
+}
+
+
+function ProgressStatus({activePage, numPages, changePage}
+    : Pick<I_PageNav, "activePage" | "numPages" | "changePage">)
+    : JSX.Element {
+
+    const range = (start : number, stop : number, step : number) =>
+        Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);
+
+    return  <div aria-hidden={true} className={"w-full flex gap-4 justify-center"}>
+                {
+                    range(1, numPages, 1).map(ele => {
+                        return <CircleButton key={`formProgBtn${ele}`} 
+                                    isActive={activePage === ele} 
+                                    text={`page ${ele}`}
+                                    handleClick={ () => changePage(ele) } 
+                                />
+                    })
+                }
+            </div>
+}
+
+
+function CircleButton({isActive, text, handleClick}
+    : { isActive : boolean, text : string, handleClick : () => void })
+    : JSX.Element {
+
+    const selectionCSS = isActive ? 
+            "bg-violet-500"
+            :
+            "bg-neutral-300 hover:bg-neutral-400";
+    return  <button type={'button'} className={"rounded-full w-3 h-3" + " " + selectionCSS} onClick={handleClick}>
+                <span className={'sr-only'}>{text}</span>
+            </button>
 }

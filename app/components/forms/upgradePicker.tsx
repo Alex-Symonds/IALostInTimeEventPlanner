@@ -130,7 +130,7 @@ function UpgradeRadio({checked, myKey, data, handleSelection, disabled}
     : JSX.Element {
 
     return(
-        <Radio checked={checked} disabled={disabled} handleSelection={handleSelection} value={myKey}>
+        <Radio checked={checked} disabled={disabled} onChange={handleSelection} value={myKey} name={"upgradePicker"}>
             <UnitPickerCard checked={checked} disabled={disabled} data={data}/>
         </Radio>
     )

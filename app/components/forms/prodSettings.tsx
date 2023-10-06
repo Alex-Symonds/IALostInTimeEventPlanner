@@ -103,8 +103,9 @@ function ProductionToggle({ myKey, toggledTo, handleSelection, disabled }
                                 extraCSS={"w-2/4"} 
                                 checked={output === toggledTo} 
                                 disabled={false} 
-                                handleSelection={() => handleSelection(myKey, output)} 
+                                onChange={() => handleSelection(myKey, output)} 
                                 value={`${myKey}_${output}`}
+                                name={"productionSettings"}
                                 >
                                 <ToggleDisplay 
                                     thisOption={output} 

@@ -13,6 +13,7 @@ export default function StockpilesDisplay({stockpiles, extraCSS}
 
     return (
         <div className={`flex ${extraCSS}`}>
+            <p className={'sr-only'}>Egg Stockpiles</p>
             <Stockpile myKey={'blue'} data={stockpiles} />
             <Stockpile myKey={'green'} data={stockpiles} />
             <Stockpile myKey={'red'} data={stockpiles} />

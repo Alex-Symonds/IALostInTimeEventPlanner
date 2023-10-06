@@ -21,12 +21,12 @@ import { useUpgradePicker, T_PropsUpgradePickerModal } from './utils/useUpgradeP
 
 interface I_Planner {
     actions : T_Action[], 
-    setActions : React.Dispatch<React.SetStateAction<T_Action[]>>, 
+    setActions : (data : T_Action[]) => void, 
     gameState : T_GameState, 
     purchaseData : T_PurchaseData[],
     timeIDGroups : T_TimeGroup[],
     prodSettingsNow : T_ProductionSettingsNow | null,
-    setProdSettingsNow : React.Dispatch<React.SetStateAction<T_ProductionSettingsNow | null>>,
+    setProdSettingsNow : (data : T_ProductionSettingsNow | null) => void,
     prodSettingsBeforeNow : T_ProductionSettings,
 }
 
