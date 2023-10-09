@@ -1,10 +1,12 @@
 //@ts-nocheck
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import SectionGameState from "./sectionGameState";
 
 import { PlanMode } from "../utils/usePlanMode";
 import { defaultGameState } from "../utils/defaults";
+import { capitalise, toThousands } from "../utils/formatting";
+import { levels, nonZeroEggStockpiles } from "../utils/testVariables";
 
 
 describe(SectionGameState, () => {
@@ -79,40 +81,47 @@ describe(SectionGameState, () => {
     })
 
 
-    it("renders levels correctly", () => {
-        const KEY = 'Trinity';
-        const LEVEL = 10;
+    test.each(Object.keys(levels).map((k : string) => {
+        if(['blue', 'green', 'red', 'yellow'].includes(k)){
+            return [k[0], levels[k]];
+        }
+        return [capitalise(k.slice(0, 2)), levels[k]];
+    }))('.(renders %s level correctly (%i))', (key, level) => {
 
         const {} = render(
             <SectionGameState   
-                gameState={ { ...defaultGameState,
-                            levels: {
-                                ...defaultGameState.levels,
-                                [KEY.toLowerCase()]: LEVEL,
-                            }
+                gameState={ { 
+                            ...defaultGameState,
+                            levels
                         } }
                 openEditForm={() => {}}
                 mode={ PlanMode.active }
             />
         );
 
-        const unitKeyQuery = screen.queryAllByText(KEY.slice(0, 2));
-        expect(unitKeyQuery).not.toHaveLength(0);
+        const levelsHeadingQuery = screen.queryAllByText("Upgrade Levels");
+        expect(levelsHeadingQuery).toHaveLength(1);
+        const levelsSection = levelsHeadingQuery[0].parentElement;
+
+        const unitKeyQuery = within(levelsSection).queryAllByText(key);
+        expect(unitKeyQuery).toHaveLength(1);
         const unitValueEle = unitKeyQuery[0].nextSibling;
-        expect(unitValueEle).toBeTruthy();
-        expect(unitValueEle.textContent).toEqual(LEVEL.toString());
+        expect(unitValueEle).not.toBeNull();
+        expect(unitValueEle.textContent).toEqual(level.toString());
     })
 
-    
-    it("renders stockpiles correctly", () => {
-        const KEY = 'Green';
-        const VALUE = 100;
+
+    test.each(Object.keys(nonZeroEggStockpiles).map((k : string) => {
+        return [k[0], nonZeroEggStockpiles[k]];
+    }))('.(renders %s stockpile correctly (%i))', (key, quantity) => {
+
         render(
             <SectionGameState   
-                gameState={ { ...defaultGameState,
+                gameState={ { 
+                            ...defaultGameState,
                             stockpiles: {
-                                ...defaultGameState.stockpiles,
-                                [KEY.toLowerCase()]: VALUE,
+                                ...nonZeroEggStockpiles,
+                                dust: 42,
                             }
                         } }
                 openEditForm={() => {}}
@@ -120,15 +129,19 @@ describe(SectionGameState, () => {
             />
         );
 
-        const stockpileKeyQuery = screen.queryAllByText(KEY.charAt(0).toLowerCase());
-        expect(stockpileKeyQuery).not.toHaveLength(0);
+        const stockpilesHeadingQuery = screen.queryAllByText("Egg Stockpiles");
+        expect(stockpilesHeadingQuery).toHaveLength(1);
+        const stockpilesSection = stockpilesHeadingQuery[0].parentElement;
+
+        const stockpileKeyQuery = within(stockpilesSection).queryAllByText(key);
+        expect(stockpileKeyQuery).toHaveLength(1);
         const stockpileValueEle = stockpileKeyQuery[0].nextSibling;
-        expect(stockpileValueEle).toBeTruthy();
-        expect(stockpileValueEle.textContent).toEqual(VALUE.toLocaleString());
-    })
+        expect(stockpileValueEle).not.toBeNull();
+        expect(stockpileValueEle.textContent).toEqual(toThousands(quantity));
+    });
 
 
-    it("renders all eggs correctly", () => {
+    it("renders premium 'all eggs' correctly", () => {
         const numberAllEggs = 2;
         render(
             <SectionGameState   
@@ -199,6 +212,7 @@ describe(SectionGameState, () => {
         expect(adBoostValueEle).toHaveTextContent(`❌no`);
     })
 
+
     it("renders start time correctly", () => {
         const startedAt = new Date('1995-12-17T03:24:00')
         render(
@@ -218,6 +232,7 @@ describe(SectionGameState, () => {
         expect(startTimeValueEle).not.toBeNull();
         expect(startTimeValueEle).toHaveTextContent("17 Dec 03:24");
     })
+
 
     it("renders time remaining correctly", () => {
         const daysRemaining = 2;
@@ -244,6 +259,7 @@ describe(SectionGameState, () => {
         expect(timeRemainingValueEle).toHaveTextContent(`${daysRemaining}d ${hoursRemaining}h ${minutesRemaining}m`);
     })
 
+
     it("renders time entered correctly", () => {
         const timeEntered = new Date('1995-12-17T03:24:00')
         render(
@@ -265,3 +281,4 @@ describe(SectionGameState, () => {
         expect(timeEnteredValueEle).toHaveTextContent("17 Dec 03:24");
     })
 })
+

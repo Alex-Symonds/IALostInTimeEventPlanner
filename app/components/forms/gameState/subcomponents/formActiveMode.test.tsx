@@ -1,10 +1,9 @@
 // @ts-nocheck
-
-
 import { render, screen, within } from "@testing-library/react";
 import userEvent from '@testing-library/user-event'
 import FormActiveMode from "./formActiveMode";
 import { defaultGameState } from "@/app/utils/defaults";
+import { levels, nonZeroStockpiles, workerLevels } from "@/app/utils/testVariables";
 
 
 async function userSubmitsForm(){
@@ -21,6 +20,9 @@ async function checkSelect(selectEle, optionText, optionId){
 }
 
 
+function findTimeRemainingErrorMessage(){
+    return screen.getByTestId("timeRemainingInputErrorMessage");
+}
 
 
 function findGeneralSection(){
@@ -116,111 +118,46 @@ describe(FormActiveMode, () => {
         expect(accessibleSubmitButton?.classList.contains("sr-only")).toBe(true);
     })
 
-    it("visually displays only general page when opened", () => {
+    
+    test.each([
+        [0],
+        [1],
+        [2],
+        [3],
+    ])(`visually displays correct page when next button is clicked %i times`, async (numNextClicks) => {
         render( <FormActiveMode 
-                    gameState={defaultGameState} 
-                    setGameState={(data : any) => {}}
-                    changeMode={() => {}}
-                    wantBackToMode={false} 
-                    closeModal={() => {}}
-                />);
+            gameState={defaultGameState} 
+            setGameState={() => {}}
+            changeMode={() => {}}
+            wantBackToMode={false} 
+            closeModal={() => {}}
+        />);
 
         const {
             generalSection,
             stockPilesSection,
             workerLevelsSection,
             otherLevelsSection,
+            nextButton
         } = findCommonElements();
 
-        expect(generalSection).not.toHaveClass("sr-only");
-        expect(stockPilesSection).toHaveClass("sr-only");
-        expect(workerLevelsSection).toHaveClass("sr-only");
-        expect(otherLevelsSection).toHaveClass("sr-only");
-    });
-
-    it("visually displays only stockpiles page when next is clicked once", async () => {
-        render( <FormActiveMode 
-                    gameState={defaultGameState} 
-                    setGameState={(data : any) => {}}
-                    changeMode={() => {}}
-                    wantBackToMode={false} 
-                    closeModal={() => {}}
-                />);
-
-        const {
-            generalSection,
-            stockPilesSection,
-            workerLevelsSection,
-            otherLevelsSection,
-            nextButton,
-        } = findCommonElements();
-
-        expect(nextButton).not.toBeNull();
-        await userEvent.click(nextButton);
-
-        expect(generalSection).toHaveClass("sr-only");
-        expect(stockPilesSection).not.toHaveClass("sr-only");
-        expect(workerLevelsSection).toHaveClass("sr-only");
-        expect(otherLevelsSection).toHaveClass("sr-only");
-    });
-
-
-    it("visually displays only worker levels page when next is clicked twice", async () => {
-        render( <FormActiveMode 
-                    gameState={defaultGameState} 
-                    setGameState={(data : any) => {}}
-                    changeMode={() => {}}
-                    wantBackToMode={false} 
-                    closeModal={() => {}}
-                />);
-
-
-        const {
-            generalSection,
-            stockPilesSection,
-            workerLevelsSection,
-            otherLevelsSection,
-            nextButton,
-        } = findCommonElements();
-
-        expect(nextButton).not.toBeNull();
-        await userEvent.click(nextButton);
-        await userEvent.click(nextButton);
-
-        expect(generalSection).toHaveClass("sr-only");
-        expect(stockPilesSection).toHaveClass("sr-only");
-        expect(workerLevelsSection).not.toHaveClass("sr-only");
-        expect(otherLevelsSection).toHaveClass("sr-only");
-    });
-
-    it("visually displays only other levels page when next is clicked thrice", async () => {
-        render( <FormActiveMode 
-                    gameState={defaultGameState} 
-                    setGameState={(data : any) => {}}
-                    changeMode={() => {}}
-                    wantBackToMode={false} 
-                    closeModal={() => {}}
-                />);
-
-
-        const {
-            generalSection,
-            stockPilesSection,
-            workerLevelsSection,
-            otherLevelsSection,
-            nextButton,
-        } = findCommonElements();
-
-        expect(nextButton).not.toBeNull();
-        await userEvent.click(nextButton);
-        await userEvent.click(nextButton);
-        await userEvent.click(nextButton);
-
-        expect(generalSection).toHaveClass("sr-only");
-        expect(stockPilesSection).toHaveClass("sr-only");
-        expect(workerLevelsSection).toHaveClass("sr-only");
-        expect(otherLevelsSection).not.toHaveClass("sr-only");
-    });
+        for(let i = 0; i < numNextClicks; i++){
+            await userEvent.click(nextButton);
+        }
+        
+        [   generalSection, 
+            stockPilesSection, 
+            workerLevelsSection, 
+            otherLevelsSection
+        ].forEach((section, index) => {
+            if(index === numNextClicks){
+                expect(section).not.toHaveClass("sr-only");
+            }
+            else{
+                expect(section).toHaveClass("sr-only");
+            }
+        })
+    })
 
 
     it("visually displays only general page when: next is clicked once and then back is clicked once", async () => {
@@ -266,7 +203,6 @@ describe(FormActiveMode, () => {
             backButton
         } = findCommonElements();
 
-        expect(backButton).not.toBeNull();
         expect(backButton).toBeDisabled();
     })
 
@@ -287,14 +223,19 @@ describe(FormActiveMode, () => {
     })
 
 
-    it("clicking any progress button skips to correct page", async () => {
+    test.each([
+        [0],
+        [3],
+        [1],
+        [2]
+    ])(`clicking progress button %i skips to correct page`, async (idx) => {
         render( <FormActiveMode 
-            gameState={defaultGameState} 
-            setGameState={() => {}}
-            changeMode={() => {}}
-            wantBackToMode={true} 
-            closeModal={() => {}}
-        />);
+                gameState={defaultGameState} 
+                setGameState={() => {}}
+                changeMode={() => {}}
+                wantBackToMode={true} 
+                closeModal={() => {}}
+            />);
 
         const {
             generalSection,
@@ -306,31 +247,22 @@ describe(FormActiveMode, () => {
         const progressButtons = screen.queryAllByText(/page \d/i);
         expect(progressButtons).toHaveLength(4);
 
-        await userEvent.click(progressButtons[3]);
-        expect(generalSection).toHaveClass("sr-only");
-        expect(stockPilesSection).toHaveClass("sr-only");
-        expect(workerLevelsSection).toHaveClass("sr-only");
-        expect(otherLevelsSection).not.toHaveClass("sr-only");
+        await userEvent.click(progressButtons[idx]);
 
-        await userEvent.click(progressButtons[0]);
-        expect(generalSection).not.toHaveClass("sr-only");
-        expect(stockPilesSection).toHaveClass("sr-only");
-        expect(workerLevelsSection).toHaveClass("sr-only");
-        expect(otherLevelsSection).toHaveClass("sr-only");
-
-        await userEvent.click(progressButtons[2]);
-        expect(generalSection).toHaveClass("sr-only");
-        expect(stockPilesSection).toHaveClass("sr-only");
-        expect(workerLevelsSection).not.toHaveClass("sr-only");
-        expect(otherLevelsSection).toHaveClass("sr-only");
-
-        await userEvent.click(progressButtons[1]);
-        expect(generalSection).toHaveClass("sr-only");
-        expect(stockPilesSection).not.toHaveClass("sr-only");
-        expect(workerLevelsSection).toHaveClass("sr-only");
-        expect(otherLevelsSection).toHaveClass("sr-only");
+        [
+            generalSection, 
+            stockPilesSection, 
+            workerLevelsSection, 
+            otherLevelsSection
+        ].forEach((section, index) => {
+            if(index === idx){
+                expect(section).not.toHaveClass("sr-only");
+            }
+            else{
+                expect(section).toHaveClass("sr-only");
+            }
+        })
     });
-
 
 
     it("shows enter button instead of next button on last page", async () => {
@@ -443,7 +375,7 @@ describe("time remaining fieldset", () => {
 
         await userEvent.type(dayInput, "{selectall}{backspace}7", {delay: 5});
         expect(dayInput.value).toBe("3");
-        let errorMsg = screen.getByTestId("timeRemainingInputErrorMessage");
+        let errorMsg = findTimeRemainingErrorMessage();
         expect(errorMsg).not.toBeNull();
 
         await userEvent.type(dayInput, "{selectall}{backspace}2", {delay: 5});
@@ -452,7 +384,7 @@ describe("time remaining fieldset", () => {
 
         await userEvent.type(hourInput, "{selectall}{backspace}37", {delay: 5});
         expect(hourInput.value).toBe("23");
-        errorMsg = screen.getByTestId("timeRemainingInputErrorMessage");
+        errorMsg = findTimeRemainingErrorMessage();
         expect(errorMsg).not.toBeNull();
 
         await userEvent.type(hourInput, "{selectall}{backspace}{backspace}5", {delay: 5});
@@ -462,7 +394,7 @@ describe("time remaining fieldset", () => {
 
         await userEvent.type(minuteInput, "{selectall}{backspace}70", {delay: 5});
         expect(minuteInput.value).toBe("59");
-        errorMsg = screen.getByTestId("timeRemainingInputErrorMessage");
+        errorMsg = findTimeRemainingErrorMessage();
         expect(errorMsg).not.toBeNull();
         
         await userEvent.type(minuteInput, "{selectall}{backspace}{backspace}42", {delay: 5});
@@ -474,13 +406,13 @@ describe("time remaining fieldset", () => {
         expect(dayInput.value).toBe("3");
         expect(minuteInput.value).toBe("0");
         expect(minuteInput.value).toBe("0");
-        errorMsg = screen.getByTestId("timeRemainingInputErrorMessage");
+        errorMsg = findTimeRemainingErrorMessage();
         expect(errorMsg).not.toBeNull();
     });
 });
 
 
-describe("form function", () => {
+describe("form functionality", () => {
 
     it("has a functional all eggs select", async () => {
         const submitFn = jest.fn((data) => data);
@@ -538,7 +470,12 @@ describe("form function", () => {
         expect(submitFn.mock.results[1].value.premiumInfo.adBoost).toBe(false);
     });
 
-    it("has a functional stockpiles page", async () => {
+
+    test.each(
+        Object.keys(nonZeroStockpiles).map((ele) => { 
+            return [ele];
+        })
+    )('.(has a functional stockpile field for %s)', async (key) => {
         const submitFn = jest.fn((data) => data);
         render( <FormActiveMode 
             gameState={defaultGameState} 
@@ -547,56 +484,23 @@ describe("form function", () => {
             wantBackToMode={true} 
             closeModal={() => {}}
         />);
-
-        const values = {
-            dust: "47845747",
-            blue: "46375",
-            green: "6674",
-            red: "76407",
-            yellow: "2"
-        }
 
         const stockpilesSection = findStockpilesSection();
 
-        const dustInput = within(stockpilesSection).queryByLabelText(/dust/i);
-        expect(dustInput).not.toBeNull();
-        expect(dustInput.value).toBe("0");
-        await userEvent.type(dustInput, `{selectall}{backspace}${values.dust}`);
-        expect(dustInput.value).toBe(values.dust);
-
-        const blueInput = within(stockpilesSection).queryByLabelText(/blue/i);
-        expect(blueInput).not.toBeNull();
-        expect(blueInput.value).toBe("0");
-        await userEvent.type(blueInput, `{selectall}{backspace}${values.blue}`);
-        expect(blueInput.value).toBe(values.blue);
-
-        const greenInput = within(stockpilesSection).queryByLabelText(/green/i);
-        expect(greenInput).not.toBeNull();
-        expect(greenInput.value).toBe("0");
-        await userEvent.type(greenInput, `{selectall}{backspace}${values.green}`);
-        expect(greenInput.value).toBe(values.green);
-
-        const redInput = within(stockpilesSection).queryByLabelText(/red/i);
-        expect(redInput).not.toBeNull();
-        expect(redInput.value).toBe("0");
-        await userEvent.type(redInput, `{selectall}{backspace}${values.red}`);
-        expect(redInput.value).toBe(values.red);
-
-        const yellowInput = within(stockpilesSection).queryByLabelText(/yellow/i);
-        expect(yellowInput).not.toBeNull();
-        expect(yellowInput.value).toBe("0");
-        await userEvent.type(yellowInput, `{selectall}{backspace}${values.yellow}`);
-        expect(yellowInput.value).toBe(values.yellow);
+        const inputEle = within(stockpilesSection).queryByLabelText(new RegExp(`${key}`, "i"));
+        expect(inputEle).not.toBeNull();
+        expect(inputEle.value).toBe("0");
+        await userEvent.type(inputEle, `{selectall}{backspace}${nonZeroStockpiles[key]}`);
+        expect(inputEle.value).toBe(nonZeroStockpiles[key].toString());
 
         await userSubmitsForm();
-        expect(submitFn.mock.results[0].value.stockpiles.dust).toBe(parseInt(values.dust));
-        expect(submitFn.mock.results[0].value.stockpiles.blue).toBe(parseInt(values.blue));
-        expect(submitFn.mock.results[0].value.stockpiles.green).toBe(parseInt(values.green));
-        expect(submitFn.mock.results[0].value.stockpiles.red).toBe(parseInt(values.red));
-        expect(submitFn.mock.results[0].value.stockpiles.yellow).toBe(parseInt(values.yellow));
-    });
+        expect(submitFn.mock.results[0].value.stockpiles[key]).toBe(parseInt(nonZeroStockpiles[key]));
 
-    it("has a functional worker levels page", async () => {
+    })
+
+    test.each(
+        Object.keys(workerLevels).map((key) => [key])
+    )('.(worker levels page has a functional select for %s)', async (key) => {
         const submitFn = jest.fn((data) => data);
         render( <FormActiveMode 
             gameState={defaultGameState} 
@@ -606,64 +510,23 @@ describe("form function", () => {
             closeModal={() => {}}
         />);
 
-        const values = {
-            trinity: 10,
-            bronte: 9,
-            anne: 8,
-            petra: 7,
-            manny: 6,
-            tony: 5,
-            ruth: 4,
-            rex: 3
-        }
-
         const workerLevelsSection = findWorkerLevelsSection();
-
-        const trinitySelect = within(workerLevelsSection).queryByLabelText(/trinity/i);
-        expect(trinitySelect).not.toBeNull();
-        await checkSelect(trinitySelect, `${values.trinity}`, `trinity_${values.trinity}`);
-
-        const bronteSelect = within(workerLevelsSection).queryByLabelText(/bronte/i);
-        expect(bronteSelect).not.toBeNull();
-        await checkSelect(bronteSelect, `${values.bronte}`, `bronte_${values.bronte}`);
-
-        const anneSelect = within(workerLevelsSection).queryByLabelText(/anne/i);
-        expect(anneSelect).not.toBeNull();
-        await checkSelect(anneSelect, `${values.anne}`, `anne_${values.anne}`);
-        
-        const petraSelect = within(workerLevelsSection).queryByLabelText(/petra/i);
-        expect(petraSelect).not.toBeNull();
-        await checkSelect(petraSelect, `${values.petra}`, `petra_${values.petra}`);
-
-        const mannySelect = within(workerLevelsSection).queryByLabelText(/manny/i);
-        expect(mannySelect).not.toBeNull();
-        await checkSelect(mannySelect, `${values.manny}`, `manny_${values.manny}`);
-
-        const tonySelect = within(workerLevelsSection).queryByLabelText(/tony/i);
-        expect(tonySelect).not.toBeNull();
-        await checkSelect(tonySelect, `${values.tony}`, `tony_${values.tony}`);
-
-        const ruthSelect = within(workerLevelsSection).queryByLabelText(/ruth/i);
-        expect(ruthSelect).not.toBeNull();
-        await checkSelect(ruthSelect, `${values.ruth}`, `ruth_${values.ruth}`);
-
-        const rexSelect = within(workerLevelsSection).queryByLabelText(/rex/i);
-        expect(rexSelect).not.toBeNull();
-        await checkSelect(rexSelect, `${values.rex}`, `rex_${values.rex}`);
-
+        const workerSelect = within(workerLevelsSection).queryByLabelText(new RegExp(`${key}`, "i"));
+        expect(workerSelect).not.toBeNull();
+        await checkSelect(workerSelect, `${workerLevels[key]}`, `${key}_${workerLevels[key]}`);
         await userSubmitsForm();
-
-        expect(submitFn.mock.results[0].value.levels.trinity).toBe(values.trinity);
-        expect(submitFn.mock.results[0].value.levels.bronte).toBe(values.bronte);
-        expect(submitFn.mock.results[0].value.levels.anne).toBe(values.anne);
-        expect(submitFn.mock.results[0].value.levels.petra).toBe(values.petra);
-        expect(submitFn.mock.results[0].value.levels.manny).toBe(values.manny);
-        expect(submitFn.mock.results[0].value.levels.tony).toBe(values.tony);
-        expect(submitFn.mock.results[0].value.levels.ruth).toBe(values.ruth);
-        expect(submitFn.mock.results[0].value.levels.rex).toBe(values.rex);
+        expect(submitFn.mock.results[0].value.levels[key]).toBe(workerLevels[key]);
     })
 
-    it("has a functional other levels page", async () => {
+
+    test.each([
+        ['blue', `${levels.blue}`, `blue_${levels.blue}`, levels.blue],
+        ['green', `${levels.green}`, `green_${levels.green}`, levels.green],
+        ['red', `${levels.red}`, `red_${levels.red}`, levels.red],
+        ['yellow', `${levels.yellow}`, `yellow_${levels.yellow}`, levels.yellow],
+        ['speed', "-15%", "Speed_3", 3],
+        ['dust', "100%", "Dust_4", 4]
+    ])(`.(worker levels page has a functional select for %s)`, async (key, optionStr, optionID, level) => {
         const submitFn = jest.fn((data) => data);
         render( <FormActiveMode 
             gameState={ {
@@ -679,47 +542,12 @@ describe("form function", () => {
             closeModal={() => {}}
         />);
 
-        const eggLevels = {
-            blue: 4,
-            green: 3,
-            red: 2,
-            yellow: 1,
-        }
-
         const otherLevelsSection = findOtherLevelsSection();
 
-        const blueSelect = within(otherLevelsSection).queryByLabelText(/blue/i);
-        expect(blueSelect).not.toBeNull();
-        await checkSelect(blueSelect, `${eggLevels.blue}`, `blue_${eggLevels.blue}`);
-
-        const greenSelect = within(otherLevelsSection).queryByLabelText(/green/i);
-        expect(greenSelect).not.toBeNull();
-        await checkSelect(greenSelect, `${eggLevels.green}`, `green_${eggLevels.green}`);
-
-        const redSelect = within(otherLevelsSection).queryByLabelText(/red/i);
-        expect(redSelect).not.toBeNull();
-        await checkSelect(redSelect, `${eggLevels.red}`, `red_${eggLevels.red}`);
-
-        const yellowSelect = within(otherLevelsSection).queryByLabelText(/yellow/i);
-        expect(yellowSelect).not.toBeNull();
-        await checkSelect(yellowSelect, `${eggLevels.yellow}`, `yellow_${eggLevels.yellow}`);
-
-        // In the mobile game, dust and speed are displayed as percentages, so replicate that here
-        const speedSelect = within(otherLevelsSection).queryByLabelText(/speed/i);
-        expect(speedSelect).not.toBeNull();
-        await checkSelect(speedSelect, "-15%", "Speed_3");
-
-        const dustSelect = within(otherLevelsSection).queryByLabelText(/Dust/i);
-        expect(dustSelect[0]).not.toBeNull();
-        await checkSelect(dustSelect, "100%", "Dust_4");
-
+        const targetSelect = within(otherLevelsSection).queryByLabelText(new RegExp(key, "i"));
+        expect(targetSelect).not.toBeNull();
+        await checkSelect(targetSelect, optionStr, optionID);
         await userSubmitsForm();
-
-        expect(submitFn.mock.results[0].value.levels.blue).toBe(eggLevels.blue);
-        expect(submitFn.mock.results[0].value.levels.green).toBe(eggLevels.green);
-        expect(submitFn.mock.results[0].value.levels.red).toBe(eggLevels.red);
-        expect(submitFn.mock.results[0].value.levels.yellow).toBe(eggLevels.yellow);
-        expect(submitFn.mock.results[0].value.levels.speed).toBe(3);
-        expect(submitFn.mock.results[0].value.levels.dust).toBe(4);
-    })
+        expect(submitFn.mock.results[0].value.levels[key]).toBe(level);
+    });
 })
