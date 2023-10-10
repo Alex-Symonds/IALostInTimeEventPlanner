@@ -3,25 +3,30 @@ import { useState } from "react";
 import { capitalise, resourceCSS } from '@/app/utils/formatting';
 import { T_DATA_KEYS, getWorkerOutputsFromJSON } from "@/app/utils/getDataFromJSON";
 import { calcInitSettingsForModal } from "@/app/utils/productionSettingsHelpers";
-import { T_Levels, T_ProductionSettings, T_SwitchAction } from '@/app/utils/types';
+import { T_Levels, T_ProductionSettings, T_SwitchAction, } from '@/app/utils/types';
 
 import Modal, { ModalHeading, ModalSubmitButton, ModalFieldsWrapper, I_Modal } from '../subcomponents/modal';
 
 import Radio from './subcomponents/radio';
-
-
+import { calcDateDisplayStr, convertDateToTimeID } from "@/app/utils/dateAndTimeHelpers";
+import { T_ProdSettingsNowModalProps } from "../planner/utils/useSwitchProductionNow";
+import { useCurrentMinute } from "./utils/useCurrentMinute";
 
 interface I_ModalProdSettings extends Pick<I_Modal, "closeModal"> {
     initialProdSettings : T_ProductionSettings, 
     currentSwitches : T_SwitchAction[], 
     updateProdSettings : (data : T_ProductionSettings) => void, 
-    levels : T_Levels
+    levels : T_Levels,
+    nowModalProps? : T_ProdSettingsNowModalProps,
 }
-export default function ModalProdSettings({closeModal, initialProdSettings, currentSwitches, updateProdSettings, levels} 
+export default function ModalProdSettings({closeModal, initialProdSettings, currentSwitches, updateProdSettings, levels, nowModalProps } 
     : I_ModalProdSettings)
     : JSX.Element {
 
     const [toggles, setToggles] = useState<T_ProductionSettings>(calcInitSettingsForModal(initialProdSettings, currentSwitches));
+    
+    const timeNow : Date = useCurrentMinute();
+    const disableEntireForm = isTooLateForSwitchAtTop({nowModalProps, timeNow});
 
     function handleChange(key : string, changeTo : string){
         setToggles(prev => {
@@ -40,6 +45,25 @@ export default function ModalProdSettings({closeModal, initialProdSettings, curr
     return(
         <Modal closeModal={closeModal}>
             <ModalHeading>Production Settings</ModalHeading>
+            {
+                nowModalProps === undefined ?
+                    null
+                    : disableEntireForm ?
+                        <NotificationAtTop
+                            message={"Too close to the time of the first upgrade. Please update game status."}
+                            mode={"error"}
+                        />
+                        : nowModalProps.firstTimeGroup === undefined ?
+                            <NotificationAtTop
+                                message={"All upgrades are purchased, so changing production settings here will have no effect."}
+                                mode={"attention"}
+                            />
+                            :                    
+                            <MessageForNow 
+                                firstTimeGroup={nowModalProps.firstTimeGroup}
+                                timeNow={timeNow}
+                            />
+            }
             <form onSubmit={handleSubmit} className={"flex flex-col w-full"}>
                 <ModalFieldsWrapper>
                     <div className={"flex flex-col items-center gap-6 my-1 mx-1"}>
@@ -49,13 +73,13 @@ export default function ModalProdSettings({closeModal, initialProdSettings, curr
                                         myKey={myKey} 
                                         toggledTo={toggles[myKey as keyof typeof toggles]} 
                                         handleSelection={handleChange} 
-                                        disabled={levels[myKey as keyof typeof levels] === 0}
+                                        disabled={disableEntireForm || levels[myKey as keyof typeof levels] === 0}
                                     />
                         })
                     }
                     </div>
                 </ModalFieldsWrapper>
-                <ModalSubmitButton label={"set"} extraCSS={''} disabled={false} />
+                <ModalSubmitButton label={"set"} extraCSS={''} disabled={disableEntireForm} />
             </form>
         </Modal>
     )
@@ -173,4 +197,54 @@ function ToggleDisplay({thisOption, activeOption, roundLeft, roundRight, disable
             { thisOption.charAt(0).toLowerCase() }
         </div>
     )
+}
+
+
+function NotificationAtTop({message, mode}
+    : { message : string, mode : "error" | "attention" })
+    : JSX.Element {
+
+    let conditionalCSSForP : string = mode === "error" ?
+        "border-red-600 bg-white"
+        : "border-amber-500 bg-amber-50";
+
+    return  <p className={`mt-5 py-1 text-xs border-l-4 shadow px-2 ${conditionalCSSForP}`}>
+                {message}
+            </p>
+}
+
+
+function MessageForNow({firstTimeGroup, timeNow }:
+    Pick<T_ProdSettingsNowModalProps, "firstTimeGroup"> & { timeNow : Date })
+    : JSX.Element | null {
+
+    if(firstTimeGroup === undefined){
+        return  <NotificationAtTop
+                    message={"An error has occurred. Try refreshing the page or updating the game status."}
+                    mode={"error"}
+                />
+    }
+
+    return  <p className={"mt-5 text-sm flex flex-col items-center gap-1 bg-white rounded py-2"}>
+                Adjusting settings starting from
+                <span className={"block font-semibold inline rounded px-1.5 py-0.5 bg-violet-100"}>
+                    {calcDateDisplayStr(timeNow)}
+                </span>
+            </p>
+}
+
+
+function isTooLateForSwitchAtTop({nowModalProps, timeNow}
+    : Pick<I_ModalProdSettings, "nowModalProps"> & { timeNow: Date })
+    : boolean {
+
+    let disableEntireForm = false;
+    if(nowModalProps !== undefined && nowModalProps.firstTimeGroup !== undefined){
+        const minimumProductionTimeUnit = 1;
+        const adjustForTimeIDRoundingErrors = 2;
+        const expiryTimeID = nowModalProps.firstTimeGroup.timeID - minimumProductionTimeUnit - adjustForTimeIDRoundingErrors;
+        const nowTimeID = convertDateToTimeID(timeNow, nowModalProps.gameState);
+        disableEntireForm = nowTimeID >= expiryTimeID;
+    }
+    return disableEntireForm;
 }

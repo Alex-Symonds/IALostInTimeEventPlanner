@@ -139,6 +139,7 @@ function Modals({ purchaseData, gameState, upgradePickerProps, switchProdFutureP
                         currentSwitches={ [] } 
                         updateProdSettings={ switchNow.updateProdSettings }
                         levels={ switchNow.levelsAtStart }
+                        nowModalProps={ switchNow.modalProps }
                     />
                     : null;
 }

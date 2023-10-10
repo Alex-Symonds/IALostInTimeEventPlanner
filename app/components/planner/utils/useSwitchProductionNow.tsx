@@ -45,7 +45,13 @@ interface I_UseSwitchProductionNow {
 export type T_PropsSwitchProdNowModal = 
     I_ProductionSwitcherModalUniversal & {
     initialProdSettings : T_ProductionSettings,
-    levelsAtStart : T_Levels
+    levelsAtStart : T_Levels,
+    modalProps : T_ProdSettingsNowModalProps
+}
+
+export type T_ProdSettingsNowModalProps = {
+    firstTimeGroup? : T_TimeGroup,
+    gameState : T_GameState,
 }
 
 type T_OutputUseSwitchProductionNow = {
@@ -76,7 +82,11 @@ export function useSwitchProductionNow({ initialProdSettings, setProdSettingsNow
         closeModal: () => setIsVisible(false),
         initialProdSettings,
         updateProdSettings: updateSettings,
-        levelsAtStart: timeIDGroups.length > 0 ? timeIDGroups[0].levelsAtEnd : maxLevels()
+        levelsAtStart: timeIDGroups.length > 0 ? timeIDGroups[0].levelsAtEnd : maxLevels(),
+        modalProps: {
+            firstTimeGroup: timeIDGroups.length > 0 ? timeIDGroups[0] : undefined,
+            gameState
+        }
     }
 
     return {
