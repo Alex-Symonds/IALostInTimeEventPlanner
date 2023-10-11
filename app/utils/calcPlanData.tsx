@@ -4,7 +4,7 @@ import { calcDustAtEndWithMaxDustProduction } from './calcResults';
 import { MAX_TIME, OUT_OF_TIME, deepCopy } from './consts';
 import { T_DATA_COSTS, T_DATA_KEYS, getProductionCostsFromJSON } from './getDataFromJSON';
 import { isDuringOfflinePeriod, getOfflinePeriodAsTimeIDs } from './offlinePeriodHelpers';
-import { calcProductionSettings as calcProductionSettings } from './productionSettingsHelpers';
+import { calcProductionSettingsBeforeIndex as calcProductionSettingsBeforeIndex } from './productionSettingsHelpers';
 import { T_SwitchAction, T_ProductionRates, T_PurchaseData, T_Levels, T_OfflinePeriod, T_UpgradeAction, T_ProductionSettings, T_Stockpiles, T_Action, T_SwitchData, T_ProductionSettingsNow, T_GameState, T_TimeData, T_TimeDataUnit } from './types';
 
 interface I_CalcPlanData {
@@ -58,7 +58,7 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
     let switchData : T_SwitchData = {};
     let timeData : T_TimeData = {};
 
-    const productionSettingsBeforeFirstAction = calcProductionSettings({actions, index: 0});
+    const productionSettingsBeforeFirstAction = calcProductionSettingsBeforeIndex({actions, index: 0});
     let productionSettingsBeforeNow : T_ProductionSettings = deepCopy(productionSettingsBeforeFirstAction);
     let flagFirstIsDone = false;
 
@@ -106,24 +106,26 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
         activeProductionSettings[switchAction.key as keyof typeof activeProductionSettings] = switchAction.to;
 
         // Add to switchData, under either the current timeID or the timeID at the end of the offline period
-        let newSwitch = {
-            key: switchAction.key,
-            to: switchAction.to,
-            actionsIdx: idx
+        if(flagFirstIsDone){
+            let newSwitch = {
+                key: switchAction.key,
+                to: switchAction.to,
+                actionsIdx: idx
+            }
+            
+            const switchKey = activeOfflinePeriod === null ? timeID.toString() : activeOfflinePeriod.endTimeID.toString();
+            if(!(switchKey in switchData)){
+                switchData[switchKey] = [];
+            }
+    
+            const idxSameWorker = switchData[switchKey].findIndex(ele => ele.key === newSwitch.key);
+            if(idxSameWorker === -1){
+                switchData[switchKey].push(newSwitch);
+            }
+            else{
+                switchData[switchKey][idxSameWorker] = newSwitch;
+            }    
         }
-        
-        const switchKey = activeOfflinePeriod === null ? timeID.toString() : activeOfflinePeriod.endTimeID.toString();
-        if(!(switchKey in switchData)){
-            switchData[switchKey] = [];
-        }
-
-        const idxSameWorker = switchData[switchKey].findIndex(ele => ele.key === newSwitch.key);
-        if(idxSameWorker === -1){
-            switchData[switchKey].push(newSwitch);
-        }
-        else{
-            switchData[switchKey][idxSameWorker] = newSwitch;
-        }         
     }
 
 

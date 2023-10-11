@@ -17,7 +17,7 @@ import ChangeModeButton from './subcomponents/changeModeButton';
 
 
 export interface I_StatusFormSharedProps {
-    setGameState : Dispatch<SetStateAction<T_GameState>>,
+    setGameState : (data : T_GameState) => void,
     gameState : T_GameState,
     closeModal : () => void,
 }
@@ -30,7 +30,15 @@ export default function StatusForm({setGameState, gameState, modeKit, closeModal
 
     return (
         <Modal closeModal={closeModal}>
-            <ModalHeading>{modeKit.mode !== PlanMode.active ? "Active" : "Plan"} Game Status</ModalHeading>
+            <ModalHeading>
+                {`${modeKit.mode === PlanMode.active && !userWantsToChangeMode ? 
+                    "Active " 
+                    : modeKit.mode === PlanMode.plan && !userWantsToChangeMode ?
+                        "Plan "
+                        : ""
+                    }Game Status`
+                 }
+            </ModalHeading>
             { !isInitialisingMode && !userWantsToChangeMode ?
                 <ChangeModeButton changeMode={() => setUserWantsToChangeMode(true)} />
                 : null
@@ -68,7 +76,7 @@ export function InputPageWrapper({ isVisible, heading, children }
     : JSX.Element {
 
     const visibilityCSS = isVisible ? "" : "sr-only";
-    return  <section className={"" + " " + visibilityCSS}>
+    return  <section className={visibilityCSS}>
                 <ModalFieldsWrapper>
                 {
                     heading === undefined ?

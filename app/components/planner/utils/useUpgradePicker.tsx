@@ -9,7 +9,7 @@ import { moveIsValid, T_ValidMoveOutput } from './moveIsValid';
 
 interface I_UseUpgradePicker {
     actions : T_Action[], 
-    setActions : React.Dispatch<React.SetStateAction<T_Action[]>>, 
+    setActions :(data : T_Action[]) => void, 
     purchaseData : T_PurchaseData[],
 }
 

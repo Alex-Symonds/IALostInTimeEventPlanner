@@ -60,3 +60,8 @@ export function convertOfflineTimeToTimeID(offlineTime : T_TimeOfflinePeriod, st
     return Math.round(differenceInMs / MS_PER_MINUTE);
 }
 
+
+export function printOfflineTime(dhm : T_TimeOfflinePeriod) : string{
+    return `${dhm.dateOffset}d${dhm.hours}h${dhm.minutes}m`
+}
+

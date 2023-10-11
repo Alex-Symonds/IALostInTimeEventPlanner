@@ -31,10 +31,10 @@ export default function InputLevelsOther({gameState, levels, handleLevelChange}
     ]
     
     const productionUpgrades = [
-        { id: "id_Blue",    labelDisplay: "Blue",   optionsProps: { name: "Blue", max: 4 }},
-        { id: "id_Green",   labelDisplay: "Green",  optionsProps: { name: "Green", max: 3 }},
-        { id: "id_Red",     labelDisplay: "Red",    optionsProps: { name: "Red", max: 2 }},
-        { id: "id_Yellow",  labelDisplay: "Yellow", optionsProps: { name: "Yellow", max: 1 }},
+        { id: "id_BlueLevel",    labelDisplay: "Blue",   optionsProps: { name: "Blue", max: 4 }},
+        { id: "id_GreenLevel",   labelDisplay: "Green",  optionsProps: { name: "Green", max: 3 }},
+        { id: "id_RedLevel",     labelDisplay: "Red",    optionsProps: { name: "Red", max: 2 }},
+        { id: "id_YellowLevel",  labelDisplay: "Yellow", optionsProps: { name: "Yellow", max: 1 }},
     ]
 
 
@@ -59,7 +59,7 @@ export default function InputLevelsOther({gameState, levels, handleLevelChange}
                 <SubSection heading={"Buff Levels"}>
                     <UnitLevelInput
                         keyName={"speed"} 
-                        idStr={"id_speed"} 
+                        idStr={"id_speedLevel"} 
                         labelStr={"Speed"} 
                         initValue={gameState === null ? undefined : speedOptions[gameState.levels.speed].valueStr}
                         options={speedOptions} 
@@ -68,7 +68,7 @@ export default function InputLevelsOther({gameState, levels, handleLevelChange}
                     />
                     <UnitLevelInput
                         keyName={"dust"} 
-                        idStr={"id_dust"} 
+                        idStr={"id_dustLevel"} 
                         labelStr={"Dust"} 
                         initValue={gameState === null ? undefined : dustOptions[gameState.levels.dust].valueStr}
                         options={dustOptions} 

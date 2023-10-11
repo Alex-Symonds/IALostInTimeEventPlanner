@@ -70,26 +70,6 @@ export function calcDHMString(timeAsDHM : T_TimeRemainingDHM) : string {
 }
 
 
-
-
-function OLDcalcStartTime(
-    gameState : T_GameState) 
-    : Date {
-        
-    let startedAt : Date;
-    const TIME_REMAINING_AT_START = 3 * 24 * 60;
-
-    if(gameState.timeRemaining === TIME_REMAINING_AT_START){
-        startedAt = gameState.timeEntered;
-    }
-    else{
-        let timePassed = (TIME_REMAINING_AT_START - gameState.timeRemaining) * MS_PER_MINUTE;
-        startedAt = new Date(gameState.timeEntered.getTime() - timePassed);
-    }
-    return startedAt;
-}
-
-
 export function calcMonthName(monthNumber : number) : string {
     const date = new Date();
     date.setMonth(monthNumber);

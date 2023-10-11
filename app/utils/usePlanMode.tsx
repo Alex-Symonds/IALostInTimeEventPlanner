@@ -7,14 +7,18 @@ export enum PlanMode {
 
 export type T_PlanModeKit = {
     mode : PlanMode | null,
-    setMode: Dispatch<SetStateAction<PlanMode | null>>,
+    setMode: (data : PlanMode | null) => void,
 }
 
 export function usePlanMode(){
     const [mode, setMode] = useState<PlanMode | null>(null);
 
+    function updateMode(data : PlanMode | null){
+        setMode(data);
+    }
+
     return {
         mode,
-        setMode : setMode
+        setMode : updateMode
     }
 }

@@ -1,8 +1,8 @@
-import { calcDateDisplayStr, printOfflineTime } from "../utils/dateAndTimeHelpers";
-import { convertOfflineTimeToDate } from "../utils/offlinePeriodHelpers";
+import { calcDateDisplayStr } from "../utils/dateAndTimeHelpers";
+import { convertOfflineTimeToDate, printOfflineTime } from "../utils/offlinePeriodHelpers";
 import { T_GameState, T_OfflinePeriod } from "../utils/types";
 
-import { DisplayInputSection, EditButtonBox } from './sectionDisplayUserInput';
+import { EditButtonBox } from './sectionDisplayUserInput';
 import { Button } from './forms/subcomponents/buttons';
 
 
@@ -20,13 +20,10 @@ export default function SectionOfflinePeriods({offlinePeriods, openModal, gameSt
         return null;
     }
 
-    return  <DisplayInputSection title={"Offline Periods"}>
-                <div className={'overflow-y-auto overflow-x-hidden max-h-[calc(100vh-5rem)] px-2'}>
-                    <OfflineDisplay offlinePeriods={offlinePeriods} gameState={gameState} openForm={openModal} idxEdit={idxEdit} />
-                    <EditButtonBox openEditForm={() => openModal(null)} label={`add`} />
-                </div>
-            </DisplayInputSection>
-
+    return  <div className={'overflow-y-auto overflow-x-hidden max-h-[calc(100vh-5rem)] px-2'}>
+                <OfflineDisplay offlinePeriods={offlinePeriods} gameState={gameState} openForm={openModal} idxEdit={idxEdit} />
+                <EditButtonBox openEditForm={() => openModal(null)} label={`add`} />
+            </div>
 }
 
 
@@ -44,7 +41,8 @@ function OfflineDisplay({offlinePeriods, gameState, openForm, idxEdit}
             { (offlinePeriods === undefined || offlinePeriods.length === 0) ?
                 <p>None entered</p>
                 :
-                offlinePeriods.map((ele, idx) => {
+                <ol>
+                {offlinePeriods.map((ele, idx) => {
                     let conditionalWrapperCSS = "";
                     if(idxEdit === idx){
                         conditionalWrapperCSS = "text-gray-300";
@@ -53,7 +51,7 @@ function OfflineDisplay({offlinePeriods, gameState, openForm, idxEdit}
                     let startDate : Date = convertOfflineTimeToDate(ele.start, gameState.startTime);
                     let endDate : Date = convertOfflineTimeToDate(ele.end, gameState.startTime);
 
-                    return  <div key={`${printOfflineTime(ele.start)}_${printOfflineTime(ele.end)}`} className={"flex justify-between items-center mb-2" + " " + conditionalWrapperCSS}>
+                    return  <li key={`${printOfflineTime(ele.start)}_${printOfflineTime(ele.end)}`} className={"flex justify-between items-center mb-2" + " " + conditionalWrapperCSS}>
                                 <div className={"text-violet-800 font-bold"}>
                                     {idx + 1}
                                 </div>
@@ -69,8 +67,9 @@ function OfflineDisplay({offlinePeriods, gameState, openForm, idxEdit}
                                 >
                                     edit
                                 </Button>
-                            </div>
-                })
+                            </li>
+                })}
+                </ol>
             }
             </div>
 

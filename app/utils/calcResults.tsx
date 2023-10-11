@@ -3,8 +3,9 @@ import { calcProductionRates, calcProductionRate } from "./calcProductionRates";
 import { calcStockpilesAdvancedByTime } from './calcStockpilesAdvancedByTime';
 import { T_DATA_KEYS, getWorkerOutputsFromJSON } from "./getDataFromJSON";
 import { T_Levels, T_SuggestionData, T_ResultData, T_Action, T_PurchaseData, T_PremiumInfo, T_ProductionSettings, T_AllToDustOutput, T_GameState, T_TimeGroup, T_Stockpiles } from "./types";
-import { calcProductionSettings } from "./productionSettingsHelpers";
+import { calcProductionSettingsBeforeIndex } from "./productionSettingsHelpers";
 import { startingProductionSettings } from "./defaults";
+import { convertDateToTimeID } from "./dateAndTimeHelpers";
 
 
 
@@ -63,7 +64,7 @@ export function calcResultOfPlan({ gameState, actions, timeIDGroups }
     : T_ResultData {
 
     let { timeRemaining, stockpiles, levels, productionSettings } 
-        = calcStatusAtLastInTime({ gameState, actions, timeIDGroups });
+        = calcStatusAfterLastInTime({ gameState, actions, timeIDGroups });
 
     let stockpilesAtEnd = calcStockpilesAtEnd({
         timeRemaining,
@@ -74,7 +75,14 @@ export function calcResultOfPlan({ gameState, actions, timeIDGroups }
     });
     let dustAtEnd = stockpilesAtEnd === null ? -1 : stockpilesAtEnd.dust;
 
-    let allToDust = calcBestAllToDust({ timeIDGroups, dustAtEnd });
+    let allToDust = timeIDGroups.length > 0 ?
+        calcBestAllToDustFromTimeGroups({ timeIDGroups, dustAtEnd })
+        : calcAllToDustAtEndFromNow({
+            gameState,
+            stockpiles,
+            levels,
+            productionSettings 
+        });
 
     return {
         hasWon: dustAtEnd >= WIN_CONDITION,
@@ -84,7 +92,7 @@ export function calcResultOfPlan({ gameState, actions, timeIDGroups }
 }
 
 
-function calcStatusAtLastInTime({ gameState, actions, timeIDGroups } 
+function calcStatusAfterLastInTime({ gameState, actions, timeIDGroups } 
     : I_CalcResultOfPlan)
     : Pick<T_GameState, "levels" | "timeRemaining" | "stockpiles"> & { productionSettings : T_ProductionSettings}{
 
@@ -94,7 +102,7 @@ function calcStatusAtLastInTime({ gameState, actions, timeIDGroups }
             timeRemaining: gameState.timeRemaining,
             stockpiles: gameState.stockpiles,
             levels: gameState.levels,
-            productionSettings: calcProductionSettings({ actions, index: actions.length - 1 })
+            productionSettings: calcProductionSettingsBeforeIndex({actions, index: null})
         }
     }
 
@@ -142,21 +150,38 @@ function calcStockpilesAtEnd({timeRemaining, stockpiles, levels, premiumInfo, pr
 }
 
 
-function calcBestAllToDust({ timeIDGroups, dustAtEnd }
+function calcBestAllToDustFromTimeGroups({ timeIDGroups, dustAtEnd }
     : Pick<I_CalcResultOfPlan, "timeIDGroups"> & { dustAtEnd : number } )
     : T_SuggestionData | null {
 
-    if(timeIDGroups.length > 0){
-        let maxDustInfo = calcMaxDustInfo(timeIDGroups);
-        if(maxDustInfo.max > dustAtEnd){
-            return { 
-                dust: maxDustInfo.max, 
-                position: maxDustInfo.pos
-            };
-        }
+    let maxDustInfo = calcMaxDustInfo(timeIDGroups);
+    if(maxDustInfo.max > dustAtEnd){
+        return { 
+            dust: maxDustInfo.max, 
+            position: maxDustInfo.pos
+        };
     }
     return null;
 }
+
+
+function calcAllToDustAtEndFromNow({gameState, stockpiles, levels, productionSettings}
+    : Pick<I_CalcResultOfPlan, "gameState"> & any){
+
+    const dustData = calcDustAtEndWithMaxDustProduction({
+        timeID: convertDateToTimeID(gameState.timeEntered, gameState), 
+        stockpiles, 
+        levels, 
+        premiumInfo: gameState.premiumInfo, 
+        productionSettings
+    });
+
+    return {
+        dust: dustData.value,
+        position: -1,
+    }
+}
+
 
 function calcMaxDustInfo(timeIDGroups : T_TimeGroup[])
     : { max : number, pos : number } {

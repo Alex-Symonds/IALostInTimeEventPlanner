@@ -3,13 +3,17 @@ import { startingProductionSettings } from './defaults';
 import { T_Action, T_SwitchAction, T_DisplaySwitch as T_SwitchDisplay, T_ProductionSettings, T_TimeGroup } from './types';
 
 
-export function calcProductionSettings({actions, index} 
-    : {actions : T_Action[], index : number})
+export function calcProductionSettingsBeforeIndex({actions, index} 
+    : {actions : T_Action[], index : number | null})
     : T_ProductionSettings {
 
     let result = deepCopy(startingProductionSettings);
+    actions = deepCopy(actions);
 
-    let prodSwitchesOnly = actions.slice(0, index).filter((ele) => ele.type === 'switch');
+    let prodSwitchesOnly = index === null ?
+        actions.filter((ele) => ele.type === 'switch')
+        : actions.slice(0, index).filter((ele) => ele.type === 'switch');
+
     for(let i = 0; i < prodSwitchesOnly.length; i++){
         let thisSwitch = prodSwitchesOnly[i];
 

@@ -1,10 +1,10 @@
-import { SetStateAction, useState, Dispatch } from "react";
+import { useState } from "react";
 
 import { T_OfflinePeriod, T_ModalData, T_GameState } from "./types";
 
 interface I_UseOfflinePeriodsModal {
     offlinePeriods: T_OfflinePeriod[],
-    setOfflinePeriods: Dispatch<SetStateAction<T_OfflinePeriod[]>>,
+    setOfflinePeriods: (data : T_OfflinePeriod[]) => void,
     gameState : T_GameState
 }
 

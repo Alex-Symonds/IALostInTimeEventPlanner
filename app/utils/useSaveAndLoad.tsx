@@ -5,11 +5,11 @@ import { T_OfflinePeriod, T_GameState, T_Action, T_PremiumInfo, T_ModalWithToggl
 
 interface I_SaveAndLoad {
     actions : T_Action[],
-    setActions : Dispatch<SetStateAction<T_Action[]>>,
+    setActions : (data : T_Action[]) => void,
     offlinePeriods : T_OfflinePeriod[],
-    setOfflinePeriods : Dispatch<SetStateAction<T_OfflinePeriod[]>>,
+    setOfflinePeriods : (data : T_OfflinePeriod[]) => void,
     gameState : T_GameState,
-    setGameState : Dispatch<SetStateAction<T_GameState>>,
+    setGameState : (data : T_GameState) => void,
 }
 
 type T_LocalStorage = {
@@ -75,11 +75,9 @@ export default function useSaveAndLoad({actions, setActions, offlinePeriods, set
         }
 
         if('premiumInfo' in inputs){
-            setGameState(prev => {
-                return {
-                ...prev,
+            setGameState({
+                ...gameState,
                 premiumInfo: inputs.premiumInfo
-                }
             });
         }
     }

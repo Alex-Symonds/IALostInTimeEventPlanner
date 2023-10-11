@@ -15,7 +15,7 @@ export default function Select({id, selectExtraCSS, options, handleChange, initV
 
     initValue = initValue === null ? undefined : initValue;
 
-    return  <select id={id} onChange={(e) => handleChange(e)} defaultValue={initValue} className={"border border-neutral-300 rounded-sm"+ " " + selectExtraCSS}>
+    return  <select id={id} onChange={(e) => handleChange(e)} defaultValue={initValue} className={`border border-neutral-300 rounded-sm ${selectExtraCSS}`}>
             {
                 options.map( (ele, idx) => {
                     return <Option key={idx} valueStr={ele.valueStr} displayStr={ele.displayStr} />
