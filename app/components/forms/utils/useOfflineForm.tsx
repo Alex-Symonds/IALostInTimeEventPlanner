@@ -2,8 +2,7 @@ import { useState, SyntheticEvent } from "react";
 
 import { deepCopy } from "@/app/utils/consts";
 import { defaultOfflinePeriodStart, defaultOfflinePeriodEnd } from '@/app/utils/defaults';
-import { printOfflineTime } from '@/app/utils/dateAndTimeHelpers';
-import { convertOfflineTimeToTimeID } from "@/app/utils/offlinePeriodHelpers";
+import { printOfflineTime, convertOfflineTimeToTimeID } from "@/app/utils/offlinePeriodHelpers";
 import { T_OfflinePeriodForm, T_GameState, T_OfflinePeriod } from "@/app/utils/types";
 
 

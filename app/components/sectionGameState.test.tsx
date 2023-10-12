@@ -6,7 +6,7 @@ import SectionGameState from "./sectionGameState";
 import { PlanMode } from "../utils/usePlanMode";
 import { defaultGameState } from "../utils/defaults";
 import { capitalise, toThousands } from "../utils/formatting";
-import { levels, nonZeroEggStockpiles } from "../utils/testVariables";
+import { levels, nonZeroEggStockpiles } from "../utils/testHelpers";
 
 
 describe(SectionGameState, () => {

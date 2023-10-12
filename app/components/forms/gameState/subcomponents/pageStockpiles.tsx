@@ -7,16 +7,12 @@ export default function InputStockpiles({ controlledStockpileValue, updateStockp
     : I_InputStockpiles)
     : JSX.Element {
 
-    const eggKeys = ['blue', 'green', 'red', 'yellow'];
-
-
     return  <div className={"flex flex-col gap-3"}>
                 <DustInput 
                     controlledStockpileValue={controlledStockpileValue} 
                     updateStockpiles={updateStockpiles} 
                 />
-                {
-                    eggKeys.map((ele) => 
+                { ['blue', 'green', 'red', 'yellow'].map((ele) => 
                         <StockpileInput key={ele}
                             keyId={ele} 
                             controlledStockpileValue={controlledStockpileValue} 
@@ -24,26 +20,6 @@ export default function InputStockpiles({ controlledStockpileValue, updateStockp
                         />
                     )
                 }
-                {/* <StockpileInput 
-                    keyId={'blue'} 
-                    controlledStockpileValue={controlledStockpileValue} 
-                    updateStockpiles={updateStockpiles} 
-                />
-                <StockpileInput 
-                    keyId={'green'} 
-                    controlledStockpileValue={controlledStockpileValue} 
-                    updateStockpiles={updateStockpiles} 
-                />
-                <StockpileInput 
-                    keyId={'red'} 
-                    controlledStockpileValue={controlledStockpileValue} 
-                    updateStockpiles={updateStockpiles} 
-                />
-                <StockpileInput 
-                    keyId={'yellow'} 
-                    controlledStockpileValue={controlledStockpileValue} 
-                    updateStockpiles={updateStockpiles} 
-                /> */}
             </div>
 
 }

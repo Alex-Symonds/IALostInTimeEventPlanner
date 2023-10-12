@@ -80,7 +80,7 @@ export default function FormSetMode({ mode, setMode, close }
                     htmlType={"submit"}
                     disabled={ mode !== PlanMode.active && mode !== PlanMode.plan && controlled === null }
                     >
-                    next
+                    next&nbsp;&raquo;
                 </Button>
             </form>
 }//next&nbsp;&raquo;

@@ -6,8 +6,9 @@ import { T_GameState } from "@/app/utils/types";
 
 import Select from '../../subcomponents/select';
 
-import { Label, getUpgradeOptions, formatValueStr } from "../gameState";
+import { formatSelectValueStr } from "../utils/levelSelectHelpers";
 
+import { Label, getUpgradeOptions } from "../gameState";
 
 export interface I_AllEggs {
     gameState : T_GameState, 
@@ -22,7 +23,7 @@ export default function AllEggs({gameState, handleLevelChange}
                 <Select 
                     selectExtraCSS={undefined} 
                     id={"id_AllEggs"} 
-                    initValue={gameState === null ? undefined : formatValueStr("All", gameState.premiumInfo.allEggs)} 
+                    initValue={gameState === null ? undefined : formatSelectValueStr("All", gameState.premiumInfo.allEggs)} 
                     options={getUpgradeOptions({ name: "All", max: 5 })} 
                     handleChange={handleLevelChange} 
                 />

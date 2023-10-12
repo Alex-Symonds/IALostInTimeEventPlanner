@@ -7,7 +7,7 @@ import { T_GameState } from "@/app/utils/types";
 
 import { I_StatusFormSharedProps } from "../gameState";
 
-import { calcLevelKeyValue } from "./calcLevelKeyValue";
+import { calcLevelKeyValue } from "./levelSelectHelpers";
 import { useAdBoost } from "./useAdBoost";
 import { I_AdBoostInputEle } from "../subcomponents/fieldAdBoost";
 
