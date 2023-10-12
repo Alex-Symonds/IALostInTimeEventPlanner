@@ -12,8 +12,9 @@ import { I_InputLevelsOther } from '../subcomponents/pageLevelsOther';
 import { I_StatusFormSharedProps } from "../gameState";
 
 import { useAdBoost } from "./useAdBoost";
-import { calcLevelKeyValue } from "./calcLevelKeyValue";
 import { I_AdBoostInputEle } from "../subcomponents/fieldAdBoost";
+import { calcLevelKeyValue, calcValidLevel } from "./levelSelectHelpers";
+
 
 type T_OutputUseGameStatusForm = 
     Pick<I_InputGeneral, 
@@ -73,15 +74,16 @@ export function useActiveGameStatusForm({gameState, setGameState, closeModal}
 
     function handleLevelChange(e : React.ChangeEvent<HTMLSelectElement>){
         const {key, value} = calcLevelKeyValue(e);
+        const validValue = calcValidLevel(key, value);
 
         if(key === "all"){
-            setAllEggsLevel(value);
+            setAllEggsLevel(validValue);
             return;
         }
 
         let newLevels : T_Levels = deepCopy(levels);
         if(key in newLevels){
-            newLevels[key as keyof typeof newLevels] = value;
+            newLevels[key as keyof typeof newLevels] = validValue;
         }
 
         setLevels(newLevels);

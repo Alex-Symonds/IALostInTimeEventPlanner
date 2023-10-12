@@ -3,7 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from '@testing-library/user-event'
 import FormActiveMode from "./formActiveMode";
 import { defaultGameState } from "@/app/utils/defaults";
-import { levels, nonZeroStockpiles, workerLevels } from "@/app/utils/testVariables";
+import { checkSelect, levels, nonZeroStockpiles, workerLevels } from "@/app/utils/testHelpers";
 
 
 async function userSubmitsForm(){
@@ -12,16 +12,6 @@ async function userSubmitsForm(){
 
     const submitBtn = findVisualSubmitButton();
     await userEvent.click(submitBtn);
-}
-
-async function checkSelect(selectEle, optionText, optionId){
-    await userEvent.selectOptions(selectEle, [within(selectEle).getByText(optionText)]);
-    expect(selectEle.value).toBe(optionId);
-}
-
-
-function findTimeRemainingErrorMessage(){
-    return screen.getByTestId("timeRemainingInputErrorMessage");
 }
 
 
@@ -190,7 +180,7 @@ describe(FormActiveMode, () => {
     });
 
 
-    it("disables back button", () => {
+    it("disables back button on page 1 normally", () => {
         render( <FormActiveMode 
             gameState={defaultGameState} 
             setGameState={(data : any) => {}}
@@ -206,7 +196,7 @@ describe(FormActiveMode, () => {
         expect(backButton).toBeDisabled();
     })
 
-    it("enables back button", () => {
+    it("enables back button on page 1 when opened after setting a mode", () => {
         render( <FormActiveMode 
             gameState={defaultGameState} 
             setGameState={(data : any) => {}}
@@ -329,17 +319,21 @@ describe(FormActiveMode, () => {
 })
 
 
-describe("time remaining fieldset", () => {
+describe("form functionality", () => {
 
-    it("allows and submits valid inputs", async () => {
+    it("has a functional time remaining fieldset", async () => {
         const submitFn = jest.fn((data) => data);
         render( <FormActiveMode 
-                    gameState={defaultGameState} 
-                    setGameState={submitFn}
-                    changeMode={() => {}}
-                    wantBackToMode={true} 
-                    closeModal={() => {}}
-                />);
+            gameState={defaultGameState} 
+            setGameState={submitFn}
+            changeMode={() => {}}
+            wantBackToMode={true} 
+            closeModal={() => {}}
+        />);
+
+        const NUM_DAYS = 1;
+        const NUM_HOURS = 20;
+        const NUM_MINUTES = 5;
 
         const timeRemLegend = screen.queryByText(/time remaining/i);
         const timeRemFieldset = timeRemLegend?.closest('fieldset');
@@ -347,72 +341,13 @@ describe("time remaining fieldset", () => {
         const hourInput = within(timeRemFieldset).getByLabelText(/h/i);
         const minuteInput = within(timeRemFieldset).getByLabelText(/m/i);
 
-        await userEvent.type(dayInput, "{selectall}{backspace}2", {delay: 5});
-        await userEvent.type(hourInput, "23", {delay: 5});
-        await userEvent.type(minuteInput, "50", {delay: 5});
-
+        await userEvent.type(dayInput, `{selectall}{backspace}${NUM_DAYS}`, {delay: 5});
+        await userEvent.type(hourInput, NUM_HOURS.toString(), {delay: 5});
+        await userEvent.type(minuteInput, NUM_MINUTES.toString(), {delay: 5});
         await userSubmitsForm();
-
-        const expectedTimeRemainingNumber = 2 * 24 * 60 + 23 * 60 + 50;
-        expect(submitFn.mock.results[0].value.timeRemaining).toBe(expectedTimeRemainingNumber);
+        expect(submitFn.mock.results[0].value.timeRemaining).toBe(NUM_DAYS * 24 * 60 + NUM_HOURS * 60 + NUM_MINUTES);
     });
 
-
-    it("corrects invalid inputs and shows/hides warning", async () => {
-        render( <FormActiveMode 
-                gameState={defaultGameState} 
-                setGameState={() => {}}
-                changeMode={() => {}}
-                wantBackToMode={true} 
-                closeModal={() => {}}
-            />);
-
-        const timeRemLegend = screen.queryByText(/time remaining/i);
-        const timeRemFieldset = timeRemLegend?.closest('fieldset');
-        const dayInput = within(timeRemFieldset).getByLabelText(/d/i);
-        const hourInput = within(timeRemFieldset).getByLabelText(/h/i);
-        const minuteInput = within(timeRemFieldset).getByLabelText(/m/i);
-
-        await userEvent.type(dayInput, "{selectall}{backspace}7", {delay: 5});
-        expect(dayInput.value).toBe("3");
-        let errorMsg = findTimeRemainingErrorMessage();
-        expect(errorMsg).not.toBeNull();
-
-        await userEvent.type(dayInput, "{selectall}{backspace}2", {delay: 5});
-        errorMsg = screen.queryByTestId("timeRemainingInputErrorMessage");
-        expect(errorMsg).toBeNull();
-
-        await userEvent.type(hourInput, "{selectall}{backspace}37", {delay: 5});
-        expect(hourInput.value).toBe("23");
-        errorMsg = findTimeRemainingErrorMessage();
-        expect(errorMsg).not.toBeNull();
-
-        await userEvent.type(hourInput, "{selectall}{backspace}{backspace}5", {delay: 5});
-        expect(hourInput.value).toBe("5");
-        errorMsg = screen.queryByTestId("timeRemainingInputErrorMessage");
-        expect(errorMsg).toBeNull();
-
-        await userEvent.type(minuteInput, "{selectall}{backspace}70", {delay: 5});
-        expect(minuteInput.value).toBe("59");
-        errorMsg = findTimeRemainingErrorMessage();
-        expect(errorMsg).not.toBeNull();
-        
-        await userEvent.type(minuteInput, "{selectall}{backspace}{backspace}42", {delay: 5});
-        expect(minuteInput.value).toBe("42");
-        errorMsg = screen.queryByTestId("timeRemainingInputErrorMessage");
-        expect(errorMsg).toBeNull();
-
-        await userEvent.type(dayInput, "{selectall}{backspace}3", {delay: 5});
-        expect(dayInput.value).toBe("3");
-        expect(minuteInput.value).toBe("0");
-        expect(minuteInput.value).toBe("0");
-        errorMsg = findTimeRemainingErrorMessage();
-        expect(errorMsg).not.toBeNull();
-    });
-});
-
-
-describe("form functionality", () => {
 
     it("has a functional all eggs select", async () => {
         const submitFn = jest.fn((data) => data);
@@ -433,9 +368,7 @@ describe("form functionality", () => {
         const allEggsSelect = screen.queryByLabelText(/all eggs/i);
         expect(allEggsSelect).not.toBeNull();
         await checkSelect(allEggsSelect, "2", "all_2");
-
         await userSubmitsForm();
-
         expect(submitFn.mock.results[0].value.premiumInfo.allEggs).toBe(2);
     });
 
@@ -458,12 +391,10 @@ describe("form functionality", () => {
         const adBoostCheckbox = screen.queryByLabelText(/ad boost/i);
         expect(adBoostCheckbox).not.toBeNull();
         expect(adBoostCheckbox).not.toBeChecked();
-
         await userEvent.click(adBoostCheckbox);
         expect(adBoostCheckbox).toBeChecked();
         await userSubmitsForm();
         expect(submitFn.mock.results[0].value.premiumInfo.adBoost).toBe(true);
-
         await userEvent.click(adBoostCheckbox);
         expect(adBoostCheckbox).not.toBeChecked();
         await userSubmitsForm();
@@ -492,7 +423,6 @@ describe("form functionality", () => {
         expect(inputEle.value).toBe("0");
         await userEvent.type(inputEle, `{selectall}{backspace}${nonZeroStockpiles[key]}`);
         expect(inputEle.value).toBe(nonZeroStockpiles[key].toString());
-
         await userSubmitsForm();
         expect(submitFn.mock.results[0].value.stockpiles[key]).toBe(parseInt(nonZeroStockpiles[key]));
 
@@ -543,11 +473,12 @@ describe("form functionality", () => {
         />);
 
         const otherLevelsSection = findOtherLevelsSection();
-
         const targetSelect = within(otherLevelsSection).queryByLabelText(new RegExp(key, "i"));
         expect(targetSelect).not.toBeNull();
         await checkSelect(targetSelect, optionStr, optionID);
         await userSubmitsForm();
         expect(submitFn.mock.results[0].value.levels[key]).toBe(level);
     });
+
+
 })

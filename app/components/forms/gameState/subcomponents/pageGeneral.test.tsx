@@ -5,6 +5,9 @@ import userEvent from '@testing-library/user-event'
 
 import InputGeneral from "./pageGeneral";
 import { defaultGameState, startingTimeRemaining } from "@/app/utils/defaults";
+import { useState } from "react";
+
+
 
 
 
@@ -70,4 +73,172 @@ describe(InputGeneral, () => {
         await userEvent.type(minuteInput, "50", {delay: 5});
         expect(onChange).toBeCalledTimes(6);
     });
+
+
+    it("allows valid inputs for time remaining fieldset without showing error", async () => {
+        const submitFn = jest.fn((data) => data);
+        const Controlled = () => {
+            const [timeRemaining, setTimeRemaining] = useState(startingTimeRemaining);
+
+            function handleChange(dhm){
+                setTimeRemaining(dhm);
+                submitFn();
+            }
+
+            return <InputGeneral 
+                        timeEntered={new Date()}
+                        setStateOnChange={() => {}}
+                        setTimeEntered={() => {}}
+                        timeRemaining={timeRemaining}
+                        setTimeRemaining={handleChange}
+                        gameState={defaultGameState}
+                        handleLevelChange={() => {}}
+                        hasAdBoost={false}
+                        toggleAdBoost={() => {}}
+                    />
+        }
+        render( <Controlled />);
+
+        const timeRemLegend = screen.queryByText(/time remaining/i);
+        const timeRemFieldset = timeRemLegend?.closest('fieldset');
+        const dayInput = within(timeRemFieldset).getByLabelText(/d/i);
+        const hourInput = within(timeRemFieldset).getByLabelText(/h/i);
+        const minuteInput = within(timeRemFieldset).getByLabelText(/m/i);
+
+        await userEvent.type(dayInput, "{selectall}{backspace}2", {delay: 5});
+        expect(findTimeRemainingErrorMessage()).toBeNull();
+
+        await userEvent.type(hourInput, "23", {delay: 5});
+        expect(findTimeRemainingErrorMessage()).toBeNull();
+
+        await userEvent.type(minuteInput, "50", {delay: 5});
+        expect(findTimeRemainingErrorMessage()).toBeNull();
+    });
+    
+    
+    it("corrects invalid inputs in the time remaining fieldset and shows/hides warning", async () => {
+        const Controlled = () => {
+            const [timeRemaining, setTimeRemaining] = useState(startingTimeRemaining);
+            return <InputGeneral 
+                        timeEntered={new Date()}
+                        setStateOnChange={() => {}}
+                        setTimeEntered={() => {}}
+                        timeRemaining={timeRemaining}
+                        setTimeRemaining={setTimeRemaining}
+                        gameState={defaultGameState}
+                        handleLevelChange={() => {}}
+                        hasAdBoost={false}
+                        toggleAdBoost={() => {}}
+                    />
+        }
+        render( <Controlled />);
+
+        const timeRemLegend = screen.queryByText(/time remaining/i);
+        const timeRemFieldset = timeRemLegend?.closest('fieldset');
+        const dayInput = within(timeRemFieldset).getByLabelText(/d/i);
+        const hourInput = within(timeRemFieldset).getByLabelText(/h/i);
+        const minuteInput = within(timeRemFieldset).getByLabelText(/m/i);
+
+        await userEvent.type(dayInput, "{selectall}{backspace}7", {delay: 5});
+        expect(dayInput.value).toBe("3");
+        let errorMsg = findTimeRemainingErrorMessage();
+        expect(errorMsg).not.toBeNull();
+
+        await userEvent.type(dayInput, "{selectall}{backspace}2", {delay: 5});
+        errorMsg = screen.queryByTestId("timeRemainingInputErrorMessage");
+        expect(errorMsg).toBeNull();
+
+        await userEvent.type(hourInput, "{selectall}{backspace}37", {delay: 5});
+        expect(hourInput.value).toBe("23");
+        errorMsg = findTimeRemainingErrorMessage();
+        expect(errorMsg).not.toBeNull();
+
+        await userEvent.type(hourInput, "{selectall}{backspace}{backspace}5", {delay: 5});
+        expect(hourInput.value).toBe("5");
+        errorMsg = screen.queryByTestId("timeRemainingInputErrorMessage");
+        expect(errorMsg).toBeNull();
+
+        await userEvent.type(minuteInput, "{selectall}{backspace}70", {delay: 5});
+        expect(minuteInput.value).toBe("59");
+        errorMsg = findTimeRemainingErrorMessage();
+        expect(errorMsg).not.toBeNull();
+        
+        await userEvent.type(minuteInput, "{selectall}{backspace}{backspace}42", {delay: 5});
+        expect(minuteInput.value).toBe("42");
+        errorMsg = screen.queryByTestId("timeRemainingInputErrorMessage");
+        expect(errorMsg).toBeNull();
+
+        await userEvent.type(dayInput, "{selectall}{backspace}3", {delay: 5});
+        expect(dayInput.value).toBe("3");
+        expect(minuteInput.value).toBe("0");
+        expect(minuteInput.value).toBe("0");
+        errorMsg = findTimeRemainingErrorMessage();
+        expect(errorMsg).not.toBeNull();
+    });
+
+    it("has a time remaining fieldset which handles letters and negatives correctly", async () => {
+        const Controlled = () => {
+            const [timeRemaining, setTimeRemaining] = useState(startingTimeRemaining);
+            return <InputGeneral 
+                        timeEntered={new Date()}
+                        setStateOnChange={() => {}}
+                        setTimeEntered={() => {}}
+                        timeRemaining={timeRemaining}
+                        setTimeRemaining={setTimeRemaining}
+                        gameState={defaultGameState}
+                        handleLevelChange={() => {}}
+                        hasAdBoost={false}
+                        toggleAdBoost={() => {}}
+                    />
+        }
+        render( <Controlled />);
+
+        const timeRemLegend = screen.queryByText(/time remaining/i);
+        const timeRemFieldset = timeRemLegend?.closest('fieldset');
+        const dayInput = within(timeRemFieldset).getByLabelText(/d/i);
+        const hourInput = within(timeRemFieldset).getByLabelText(/h/i);
+        const minuteInput = within(timeRemFieldset).getByLabelText(/m/i);
+
+        await userEvent.type(dayInput, "{selectall}{backspace}-2", {delay: 5});
+        expect(dayInput.value).toBe("2");
+        expect(findTimeRemainingErrorMessage()).toBeNull();
+        await userEvent.type(dayInput, "{selectall}{backspace}-", {delay: 5});
+        expect(dayInput.value).toBe("0");
+        expect(findTimeRemainingErrorMessage()).toBeNull();
+        await userEvent.type(dayInput, "{selectall}{backspace}-7", {delay: 5});
+        expect(dayInput.value).toBe("3");
+        expect(findTimeRemainingErrorMessage()).not.toBeNull();
+        await userEvent.type(dayInput, "{selectall}{backspace}a", {delay: 5});
+        expect(dayInput.value).toBe("0");
+        expect(findTimeRemainingErrorMessage()).toBeNull();
+
+        await userEvent.type(dayInput, "{selectall}{backspace}2", {delay: 5});
+        await userEvent.type(hourInput, "{selectall}{backspace}-2", {delay: 5});
+        expect(hourInput.value).toBe("2");
+        expect(findTimeRemainingErrorMessage()).toBeNull();
+        await userEvent.type(hourInput, "{selectall}{backspace}-77", {delay: 5});
+        expect(hourInput.value).toBe("23");
+        expect(findTimeRemainingErrorMessage()).not.toBeNull();
+        await userEvent.type(hourInput, "{selectall}{backspace}a", {delay: 5});
+        expect(hourInput.value).toBe("2");
+        expect(findTimeRemainingErrorMessage()).toBeNull();
+
+        await userEvent.type(minuteInput, "{selectall}{backspace}-2", {delay: 5});
+        expect(minuteInput.value).toBe("2");
+        expect(findTimeRemainingErrorMessage()).toBeNull();
+        await userEvent.type(minuteInput, "{selectall}{backspace}-77", {delay: 5});
+        expect(minuteInput.value).toBe("59");
+        expect(findTimeRemainingErrorMessage()).not.toBeNull();
+        await userEvent.type(minuteInput, "{selectall}{backspace}{backspace}a", {delay: 5});
+        expect(minuteInput.value).toBe("0");
+        expect(findTimeRemainingErrorMessage()).toBeNull();
+    });
+
+
+
+
 })
+
+function findTimeRemainingErrorMessage(){
+    return screen.queryByTestId("timeRemainingInputErrorMessage");
+}

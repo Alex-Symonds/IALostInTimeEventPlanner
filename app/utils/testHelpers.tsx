@@ -1,3 +1,6 @@
+import { within } from "@testing-library/dom"
+import userEvent from "@testing-library/user-event"
+
 export const offlinePeriodOvernight = {
     start: {    
         dateOffset: 1,
@@ -51,4 +54,10 @@ export const nonZeroEggStockpiles = {
 export const nonZeroStockpiles = {
     ...nonZeroEggStockpiles,
     dust: 47845747,
+}
+
+
+export async function checkSelect(selectEle : HTMLSelectElement, optionText : string, optionId : string){
+    await userEvent.selectOptions(selectEle, [within(selectEle).getByText(optionText)]);
+    expect(selectEle.value).toBe(optionId);
 }

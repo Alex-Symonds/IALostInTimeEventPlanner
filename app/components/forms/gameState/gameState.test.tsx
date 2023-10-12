@@ -120,7 +120,7 @@ describe(StatusForm, () => {
     })
 
 
-    it("changes display to mode picker when change mode nutton is clicked", async () => {
+    it("changes display to mode picker when change mode button is clicked", async () => {
         render(
             <StatusForm 
                 setGameState={(data : any) => {}}
@@ -140,4 +140,5 @@ describe(StatusForm, () => {
         expect(screen.queryByText("Select input mode")).not.toBeNull();
     })
 
+    
 })

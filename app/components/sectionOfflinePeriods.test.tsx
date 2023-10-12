@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import SectionOfflinePeriods from "./sectionOfflinePeriods";
 
 import { defaultGameState } from "../utils/defaults";
-import { offlinePeriodOvernight } from "../utils/testVariables";
+import { offlinePeriodOvernight } from "../utils/testHelpers";
 
 
 describe(SectionOfflinePeriods, () => {

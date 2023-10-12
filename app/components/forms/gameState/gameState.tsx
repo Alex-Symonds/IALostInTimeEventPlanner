@@ -14,6 +14,8 @@ import FormSetMode from './subcomponents/formSetMode';
 import FormPlanMode from './subcomponents/formPlanMode';
 
 import ChangeModeButton from './subcomponents/changeModeButton';
+import { maxLevels } from '@/app/utils/defaults';
+import { formatSelectValueStr } from './utils/levelSelectHelpers';
 
 
 export interface I_StatusFormSharedProps {
@@ -30,6 +32,7 @@ export default function StatusForm({setGameState, gameState, modeKit, closeModal
 
     return (
         <Modal closeModal={closeModal}>
+            {/* <SkipToTheEndButton modeKit={modeKit} setGameState={setGameState} closeModal={closeModal} /> */}
             <ModalHeading>
                 {`${modeKit.mode === PlanMode.active && !userWantsToChangeMode ? 
                     "Active " 
@@ -161,10 +164,12 @@ export function InputNumberAsText({idStr, value, handleChange, cssStr}
     : I_PropsInputNumberAsText)
     : JSX.Element {
 
-    let valueStr = value.toString();
-    if(typeof value !== 'number' || isNaN(value)){
-        valueStr = "0";
-    }
+    
+    const valueStr = typeof value === 'string' ?
+        value
+        : typeof value !== 'number' || isNaN(value) || value === undefined ? 
+            "0" 
+            : value.toString();
 
     if(cssStr === undefined || !cssStr.includes('border')){
         cssStr += ' border-neutral-300 ';
@@ -189,17 +194,12 @@ export function getInitValueForLevelSelect(name : string, gameState : T_GameStat
     let keyName = name.toLowerCase();
     if(gameState !== null){
         let level = gameState.levels[keyName as keyof typeof gameState.levels];
-        initValue = formatValueStr(name, level);
+        initValue = formatSelectValueStr(name, level);
     }
     return initValue;
 }
 
 
-export function formatValueStr(name : string, numStr : number)
-    : string {
-
-    return `${ name.toLowerCase() }_${ numStr.toString() }`
-}
 
 
 export function getUpgradeOptions({name, max} 
@@ -209,7 +209,7 @@ export function getUpgradeOptions({name, max}
     let options = [];
 
     for(let i=0; i<=max; i++){
-        let newOption = { valueStr: formatValueStr(name, i), displayStr: `${ i }` };
+        let newOption = { valueStr: formatSelectValueStr(name, i), displayStr: `${ i }` };
         options.push(newOption);
     }
 
@@ -217,5 +217,31 @@ export function getUpgradeOptions({name, max}
 }
 
 
-
+function SkipToTheEndButton({modeKit, setGameState, closeModal} : any){
+    return <button onClick={() => {
+        modeKit.setMode(PlanMode.active);
+        setGameState({
+            timeEntered : new Date(),
+            startTime : new Date(),
+            timeRemaining : 24 * 60,
+            premiumInfo : {
+                adBoost: true,
+                allEggs: 2
+            },
+            stockpiles : {
+                blue: 99999,
+                green: 0,
+                red: 0,
+                yellow: 0,
+                dust: 0
+            },
+            levels : {
+                ...maxLevels(),
+                manny: 9
+            },
+        }); 
+        closeModal();}
+     } 
+    className={"bg-red-600 text-white"}>SKIP TO THE END</button>
+}
 
