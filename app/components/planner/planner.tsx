@@ -1,12 +1,16 @@
 import { MutableRefObject, useRef } from 'react';
 
-import { MAX_TIME } from '../../utils/consts';
-import { startingProductionSettings } from '../../utils/defaults';
-import { calcNewSwitchDisplay } from '../../utils/productionSettingsHelpers';
-import { T_ProductionSettings, T_PurchaseData, T_TimeGroup, T_Action, T_GameState, T_ProductionSettingsNow } from '../../utils/types';
+import { T_DATA_COSTS, T_DATA_KEYS, getProductionCostsFromJSON } from '@/app/utils/getDataFromJSON';
+import { MAX_TIME } from '@/app/utils/consts';
+import { startingProductionSettings } from '@/app/utils/defaults';
+import { capitalise } from '@/app/utils/formatting';
+import { calcNewSwitchDisplay } from '@/app/utils/productionSettingsHelpers';
+import { T_ProductionSettings, T_PurchaseData, T_TimeGroup, T_Action, T_GameState, T_ProductionSettingsNow, T_ProductionRates } from '@/app/utils/types';
 
 import ProductionSwitcher from '../forms/prodSettings';
 import UpgradePicker from '../forms/upgradePicker';
+
+import { BadgeCost } from '../subcomponents/badges';
 
 import TimeGroup from '../timeGroup/timeGroup';
 
@@ -18,6 +22,8 @@ import AllUpgradesPurchased from './subcomponents/allUpgradesPurchased';
 import { useSwitchProductionNow, T_PropsSwitchProdNowModal } from './utils/useSwitchProductionNow';
 import { useSwitchProductionFuture, T_PropsSwitchProdFutureModal } from './utils/useSwitchProductionFuture';
 import { useUpgradePicker, T_PropsUpgradePickerModal } from './utils/useUpgradePicker';
+
+
 
 interface I_Planner {
     actions : T_Action[], 
@@ -70,15 +76,16 @@ export default function Planner({timeIDGroups, gameState, actions, setActions, p
             />
             { timeIDGroups.length === 0 ?
                 <AllUpgradesPurchased />
-            : <>
-                <Modals 
-                    purchaseData={purchaseData} 
-                    gameState={gameState} 
-                    upgradePickerProps={upgradePickerProps}
-                    switchProdFutureProps={switchProdFutureProps}
-                    switchProdNowProps={switchProdNowProps}
-                />
-                <div className={"flex flex-col gap-1 w-min"}>
+                : <>
+                    <Modals 
+                        purchaseData={purchaseData} 
+                        gameState={gameState} 
+                        upgradePickerProps={upgradePickerProps}
+                        switchProdFutureProps={switchProdFutureProps}
+                        switchProdNowProps={switchProdNowProps}
+                    />
+
+                    <div className={"flex flex-col gap-1 w-full px-4 items-center planMd:px-0 planMd:w-min"}>
                         { gameState.levels.trinity > 0 ?
                             <ControlsRow 
                                 displaySwitches={ calcDisplaySwitchesForProdSettingsNow() }
@@ -88,19 +95,19 @@ export default function Planner({timeIDGroups, gameState, actions, setActions, p
                             />
                             : null
                         }
-                    <TimeGroupsList
-                        gameState={gameState}
-                        timeIDGroups={timeIDGroups}
-                        openUpgradePicker={openUpgradePicker}
-                        openProdSwitcherModal={openSwitchFutureModal}
-                        purchasesPassTimeLimit={numValid < purchaseData.length}
-                    />
-                </div>
+                        <TimeGroupsList
+                            gameState={gameState}
+                            timeIDGroups={timeIDGroups}
+                            openUpgradePicker={openUpgradePicker}
+                            openProdSwitcherModal={openSwitchFutureModal}
+                            purchasesPassTimeLimit={numValid < purchaseData.length}
+                        />
+                    </div>
                 { purchaseData !== null && purchaseData.length > 0 ?
                     <PlannerFooter unboughtUpgrades={purchaseData.length - numValid} />
                     : null
                 }
-            </>
+                </>
             }
         </div>
     )
@@ -158,6 +165,19 @@ function TimeGroupsList({timeIDGroups, gameState, openUpgradePicker, openProdSwi
     return <>
             { timeIDGroups.map((data, idx) => {
                 if(data.timeID > MAX_TIME){
+                    const targetUpgrade = data.upgrades[0];
+                    const {costs, costsWithZeroRate} = insufficientProductionData({ rates: data.ratesDuring, targetUpgrade});
+                    if(costsWithZeroRate.length > 0){
+                        return  <div key={"nextUpgradeIsImpossibleWarningThingKey"}
+                                    className={"w-full plnMd:w-[32.5rem] max-w-full border-l-[4px] border-amber-400 bg-amber-50 text-black my-3 px-4 py-5 text-sm"}
+                                    >
+                                    <InsufficientProductionMessage
+                                        targetUpgrade={targetUpgrade}
+                                        costs={costs}
+                                        costsWithZeroRate={costsWithZeroRate}
+                                    />
+                                </div>
+                    }
                     return null;
                 }
 
@@ -166,7 +186,8 @@ function TimeGroupsList({timeIDGroups, gameState, openUpgradePicker, openProdSwi
                 });
 
                 let nextPos = data.startPos + data.upgrades.length;
-                return <div key={'tgcr' + idx} className={"w-min"}>
+                return <>
+                        <div key={'tgcr' + idx} className={"w-min"}>
                             <TimeGroup 
                                 groupData={data} 
                                 startPos={data.startPos} 
@@ -181,8 +202,62 @@ function TimeGroupsList({timeIDGroups, gameState, openUpgradePicker, openProdSwi
                                 showUpgradeButton={ idx < timeIDGroups.length - 1 || purchasesPassTimeLimit }
                             />
                         </div>
+                    </>
             })}
         </>
 }
 
 
+function InsufficientProductionMessage({targetUpgrade, costs, costsWithZeroRate}
+    : { costs : T_DATA_COSTS, costsWithZeroRate : T_DATA_COSTS, targetUpgrade : T_PurchaseData })
+    : JSX.Element {
+
+    return  <>
+            <p>
+                {`Your next upgrade, `}
+                <span className={"font-semibold"}>
+                    { capitalise(targetUpgrade.key) }&nbsp;{ targetUpgrade.level }
+                </span>
+                {`, costs `}
+                <span className={"inline-block"}>
+                    <span className={"flex gap-1"}>
+                    { costs.map(cost =>
+                        <BadgeCost key={`failedPurchaseCost${cost.egg}`} 
+                            data={cost} 
+                            extraCSS={"justify-between max-w-max px-2 py-0.5 rounded text-xs"}
+                        />
+                    )}
+                    </span>
+                </span>
+                {` but your production of ${ 
+                    costsWithZeroRate.length === 1 ?
+                        `${costsWithZeroRate[0].egg}`
+                        : `both ${costsWithZeroRate[0].egg} and ${costsWithZeroRate[1].egg}`
+                    } 
+                    eggs is zero.`}
+            </p>
+
+            <p className={"mt-4"}>
+                {`Try switching your workers to producing ${costsWithZeroRate[0].egg}${
+                    costsWithZeroRate.length === 1 ?
+                        ""
+                        : ` and ${costsWithZeroRate[1].egg}`
+                    } eggs or select a different upgrade.`
+                }
+            </p>
+        </>
+}
+
+
+function insufficientProductionData({rates, targetUpgrade}
+    : { rates : T_ProductionRates, targetUpgrade : T_PurchaseData }
+    ){
+
+    const costs = getProductionCostsFromJSON(targetUpgrade.key as T_DATA_KEYS, targetUpgrade.level);
+    const costsWithZeroRate = costs.filter((cost) => rates[cost.egg as keyof typeof rates] === 0);
+    
+    return {
+        costs,
+        costsWithZeroRate
+    }
+}

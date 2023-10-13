@@ -88,7 +88,7 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
         return { purchaseData, switchData, productionSettingsBeforeNow, timeData };
     }
     catch(e){
-        console.log(e);
+        //console.log(e);
         return null;
     }
 
@@ -105,27 +105,11 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
         let activeProductionSettings = activeOfflinePeriod === null ? productionSettings : activeOfflinePeriod.productionSettings;
         activeProductionSettings[switchAction.key as keyof typeof activeProductionSettings] = switchAction.to;
 
-        // Add to switchData, under either the current timeID or the timeID at the end of the offline period
+        // If the first upgrade has been purchased, this switch action hasn't happened yet. 
+        // Add it to switchData so it can appear under the upgrades in the time group.
         if(flagFirstIsDone){
-            let newSwitch = {
-                key: switchAction.key,
-                to: switchAction.to,
-                actionsIdx: idx
-            }
-            
-            const switchKey = activeOfflinePeriod === null ? timeID.toString() : activeOfflinePeriod.endTimeID.toString();
-            if(!(switchKey in switchData)){
-                switchData[switchKey] = [];
-            }
-    
-            const idxSameWorker = switchData[switchKey].findIndex(ele => ele.key === newSwitch.key);
-            if(idxSameWorker === -1){
-                switchData[switchKey].push(newSwitch);
-            }
-            else{
-                switchData[switchKey][idxSameWorker] = newSwitch;
-            }    
-        }
+            addToSwitchData({switchAction, idx});
+        } 
     }
 
 
@@ -163,6 +147,31 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
     }
 
 
+    function addToSwitchData({switchAction, idx}
+        : T_SwitchLoop){
+
+        // Store switchData under either the current timeID or the timeID at the end of the offline period.
+        let newSwitch = {
+            key: switchAction.key,
+            to: switchAction.to,
+            actionsIdx: idx
+        }
+        
+        const switchKey = activeOfflinePeriod === null ? timeID.toString() : activeOfflinePeriod.endTimeID.toString();
+        if(!(switchKey in switchData)){
+            switchData[switchKey] = [];
+        }
+
+        const idxSameWorker = switchData[switchKey].findIndex(ele => ele.key === newSwitch.key);
+        if(idxSameWorker === -1){
+            switchData[switchKey].push(newSwitch);
+        }
+        else{
+            switchData[switchKey][idxSameWorker] = newSwitch;
+        } 
+    }
+
+    
     function addToTimeData(keyTimeID : number) 
         : void {
 
@@ -241,6 +250,9 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
             const eggsInStockpile = stockpiles[costEggKey as keyof typeof stockpiles];
 
             if(eggsNeeded > eggsInStockpile){
+                if(productionRates[costEggKey as keyof typeof productionRates] === 0){
+                    return OUT_OF_TIME;
+                }
                 const eggShortfall = eggsNeeded - eggsInStockpile;
                 const timeToProduce = Math.ceil(eggShortfall / productionRates[costEggKey as keyof typeof productionRates]);
                 timeNeeded = timeNeeded > timeToProduce ? timeNeeded : timeToProduce;
@@ -375,7 +387,7 @@ export default function calcPlanData({ gameState, actions, offlinePeriods, prodS
 
         return  prodSettingsNow !== null 
                 && !flagFirstIsDone
-                && prodSettingsNow.timeID > prevTimeID 
+                && prodSettingsNow.timeID >= prevTimeID 
                 && prodSettingsNow.timeID < thisTimeID;
     }
 
