@@ -13,10 +13,10 @@ export function BadgeCost({data, extraCSS}
     extraCSS = extraCSS ?? "justify-between items-center px-2 py-0.5 rounded text-xs";
     
     return (
-        <div className={"flex" + " " + extraCSS + " " + resourceCSS[data.egg as keyof typeof resourceCSS].badge}>
+        <span className={"flex" + " " + extraCSS + " " + resourceCSS[data.egg as keyof typeof resourceCSS].badge}>
             <span className={"block mr-1"}>{data.egg.charAt(0)}</span>
             <span className={"block"}>{ displayQty }</span>
-        </div>
+        </span>
     )
 }
 

@@ -17,7 +17,7 @@ export default function ControlsRow({displaySwitches, showUpgradeButton, handleP
                                             "w-20"
                                             : "w-40";
     return(
-        <div className={"flex justify-between px-1 py-1 plnMd:justify-start plnMd:grid plnMd:gap-4 plnMd:grid-rows-1 plnMd:[grid-template-columns:18rem_auto]"}>
+        <div className={"w-full plnMd:w-min flex justify-between px-1 py-1 plnMd:justify-start plnMd:grid plnMd:gap-4 plnMd:grid-rows-1 plnMd:[grid-template-columns:18rem_auto]"}>
             
             {showUpgradeButton ?
             <div className={'flex flex-col justify-start plnMd:[grid-column-start:1] plnMd:justify-self-start plnMd:self-start'}>

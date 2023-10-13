@@ -30,7 +30,6 @@
 import { MutableRefObject, useState } from 'react';
 
 import { convertDateToTimeID } from '../../../utils/dateAndTimeHelpers';
-import { maxLevels } from '../../../utils/defaults';
 import { I_ProductionSwitcherModalUniversal, T_ProductionSettings, T_TimeGroup, T_GameState, T_Levels, T_ProductionSettingsNow } from '../../../utils/types';
 import { exactMatch } from '../../../utils/productionSettingsHelpers';
 
@@ -82,7 +81,7 @@ export function useSwitchProductionNow({ initialProdSettings, setProdSettingsNow
         closeModal: () => setIsVisible(false),
         initialProdSettings,
         updateProdSettings: updateSettings,
-        levelsAtStart: timeIDGroups.length > 0 ? timeIDGroups[0].levelsAtEnd : maxLevels(),
+        levelsAtStart: gameState.levels,
         modalProps: {
             firstTimeGroup: timeIDGroups.length > 0 ? timeIDGroups[0] : undefined,
             gameState

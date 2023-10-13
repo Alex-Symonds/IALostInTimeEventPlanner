@@ -1,4 +1,4 @@
-import { deepCopy, MAX_TIME, WIN_CONDITION } from "./consts";
+import { deepCopy, MAX_TIME, OUT_OF_TIME, WIN_CONDITION } from "./consts";
 import { calcProductionRates, calcProductionRate } from "./calcProductionRates";
 import { calcStockpilesAdvancedByTime } from './calcStockpilesAdvancedByTime';
 import { T_DATA_KEYS, getWorkerOutputsFromJSON } from "./getDataFromJSON";
@@ -75,7 +75,10 @@ export function calcResultOfPlan({ gameState, actions, timeIDGroups }
     });
     let dustAtEnd = stockpilesAtEnd === null ? -1 : stockpilesAtEnd.dust;
 
-    let allToDust = timeIDGroups.length > 0 ?
+    const hasAtLeastOneValidTimeGroup = timeIDGroups.length > 1 
+                                        || (timeIDGroups.length === 1 && timeIDGroups[0].timeID < OUT_OF_TIME);
+
+    let allToDust = hasAtLeastOneValidTimeGroup ?
         calcBestAllToDustFromTimeGroups({ timeIDGroups, dustAtEnd })
         : calcAllToDustAtEndFromNow({
             gameState,

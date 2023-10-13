@@ -57,9 +57,9 @@ export const defaultGameState : T_GameState = {
 }
 
 export const maxLevels = () => {
-    let maxLevels = deepCopy(startingLevels);
+    let maxLevels : T_Levels = deepCopy(startingLevels);
     Object.keys(maxLevels).forEach(key => {
-        maxLevels[key] = getMaxLevelFromJSON(key as T_DATA_KEYS);
+        maxLevels[key as keyof typeof maxLevels] = getMaxLevelFromJSON(key as T_DATA_KEYS);
     });
     return maxLevels;
 }
