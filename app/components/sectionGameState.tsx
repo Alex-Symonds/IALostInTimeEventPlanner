@@ -1,4 +1,4 @@
-import { calcDateDisplayStr, convertTimeIDToTimeRemaining } from '../utils/dateAndTimeHelpers';
+import { calcDateWithTimeDisplayStr, convertTimeIDToTimeRemaining } from '../utils/dateAndTimeHelpers';
 import { getUnitDataFromJSON, getMaxLevelFromJSON, T_DATA_KEYS } from "../utils/getDataFromJSON";
 import { resourceCSS, toBillions, nbsp, maxedLevelCSS, capitalise } from '../utils/formatting';
 import { T_Levels, T_GameState, T_Stockpiles } from '../utils/types';
@@ -43,7 +43,7 @@ function TimeAndPremiumStatus({gameState, mode}
                 { mode === PlanMode.active ?
                 <>
                 <GridRowWrapper title={"Updated"}>
-                    <dd suppressHydrationWarning={true}>{calcDateDisplayStr(gameState.timeEntered)}</dd>
+                    <dd suppressHydrationWarning={true}>{calcDateWithTimeDisplayStr(gameState.timeEntered)}</dd>
                 </GridRowWrapper>
 
                 <GridRowWrapper title={"Remaining"}>
@@ -55,7 +55,7 @@ function TimeAndPremiumStatus({gameState, mode}
 
                 { mode === PlanMode.plan ?
                 <GridRowWrapper title={"Start Time"}>
-                    <dd>{calcDateDisplayStr(gameState.startTime)}</dd>
+                    <dd>{calcDateWithTimeDisplayStr(gameState.startTime)}</dd>
                 </GridRowWrapper>
                 : null 
                 }

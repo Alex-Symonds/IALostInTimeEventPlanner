@@ -56,13 +56,6 @@ export type T_TimeOfflinePeriod = {
     minutes : number
 }
 
-export type T_OfflinePeriodForm = 
-    T_OfflinePeriod & {
-        id: string,
-        isValid : boolean
-}
-
-
 export type T_Action = {
     type : string,
 } & (T_UpgradeAction | T_SwitchAction);

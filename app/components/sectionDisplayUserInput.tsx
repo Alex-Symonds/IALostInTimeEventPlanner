@@ -30,7 +30,7 @@ export default function DisplayUserInput({gameState, openGameStateModal, mode, o
     }
 
     return  <div className={"sticky h-0 top-12 relative z-20 md:sticky md:[grid-area:status] md:[top:calc(7.5rem_+_1px)]"}>
-                <div className={`w-full bg-violet-900 flex flex-col items-center md:bg-transparent md:border-none md:shadow-none md:min-w-[20rem] md:[height:calc(100vh-10rem)] md:gap-3 md:px-3 md:pt-0 md:pb-1.5 ${containerVisibilityCSS}`}>
+                <div className={`w-full bg-violet-900 flex flex-col items-center md:bg-transparent md:border-none md:shadow-none md:min-w-[20rem] md:[height:calc(100vh-8rem)] md:gap-3 md:px-3 md:pt-0 md:pb-1.5 ${containerVisibilityCSS}`}>
                     
                     <DisplayInputSection title={"Game Status"} extraCSS={`md:mt-0 ${gameStateVisibilityCSS}`}>
                         <SectionGameState   
@@ -40,7 +40,7 @@ export default function DisplayUserInput({gameState, openGameStateModal, mode, o
                         />
                     </DisplayInputSection>
 
-                    <DisplayInputSection title={"Offline Periods"} extraCSS={offlinePeriodCSS}>
+                    <DisplayInputSection title={"Offline Periods"} extraCSS={`md:max-h-[calc(100vh-33rem)] ${offlinePeriodCSS}`}>
                         <SectionOfflinePeriods  
                             offlinePeriods={offlinePeriods}
                             gameState={gameState}
@@ -57,8 +57,9 @@ function DisplayInputSection({title, extraCSS, children}
     : {title : string, extraCSS : string, children : React.ReactNode})
     : JSX.Element {
 
+    const cssOverflowHandling = "overflow-y-auto overflow-x-hidden max-h-[calc(100vh-10rem)] flex-shrink-0";
     return(
-        <section className={`mt-1 mb-1 shadow-xl bg-white px-2 py-2 w-full max-w-xs rounded text-sm overflow-y-auto overflow-x-hidden max-h-[calc(100vh-5rem)] w-full pb-2 ${extraCSS}`}>
+        <section className={`mt-1 mb-1 px-2 py-2 w-full max-w-xs text-sm bg-white rounded shadow-xl ${cssOverflowHandling} ${extraCSS}`}>
             <h2 className={"text-lg font-bold ml-1 mb-3"}>{title}</h2>
             {children}
         </section>

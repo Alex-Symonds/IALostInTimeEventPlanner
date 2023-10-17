@@ -1,4 +1,4 @@
-import { useId, ChangeEvent } from 'react';
+import { useId, useRef, ChangeEvent } from 'react';
 
 
 import { T_OfflinePeriod, T_GameState, T_TimeOfflinePeriod } from '../../utils/types';
@@ -11,6 +11,8 @@ import FieldsetWrapper from './subcomponents/fieldsetWrapper';
 
 import { validDatesKit } from './utils/timeOptions';
 import { useOfflineForm, I_UseOfflineForm } from './utils/useOfflineForm';
+import { calcDateWithTimeDisplayStr } from '@/app/utils/dateAndTimeHelpers';
+import { convertOfflineTimeToDate } from '@/app/utils/offlinePeriodHelpers';
 
 /*
     Note: the dates on offline period times must be stored as an offset to the 
@@ -22,31 +24,34 @@ import { useOfflineForm, I_UseOfflineForm } from './utils/useOfflineForm';
     should only need to adjust them if their schedule would alter.
 */
 
-interface I_OfflineForm extends Pick<I_UseOfflineForm, "setOfflinePeriods" | "idxToEdit" | "offlinePeriods"> {
+interface I_OfflineForm extends Pick<I_UseOfflineForm, "setOfflinePeriods" | "idxToEdit"> {
     closeForm : () => void,
     offlinePeriod: T_OfflinePeriod | null, 
+    offlinePeriods: T_OfflinePeriod[] | null, 
     gameState : T_GameState,
-    pos : number,
 }
 
 type T_AriaError = {
     isInvalid : boolean,
-    errorMessageId : string,
+    errorMessageId : string
 }
 
-export default function OfflineForm({closeForm, offlinePeriod, gameState, pos, setOfflinePeriods, idxToEdit, offlinePeriods} 
+export default function OfflineForm({closeForm, offlinePeriod, gameState, setOfflinePeriods, idxToEdit, offlinePeriods} 
     : I_OfflineForm)
     : JSX.Element {
 
+    const refOfflinePeriods = useRef<T_OfflinePeriod[] | null>(null);
+    refOfflinePeriods.current = offlinePeriods;
+    
     let isNewOfflinePeriod = offlinePeriod === null;
-
     const {
             formOfflinePeriod,
             handleSubmit,
             handleSingleKeyChange,
             removeOfflinePeriod,
+            errorMessage,
             showError,
-        } = useOfflineForm({offlinePeriod, idxToEdit, setOfflinePeriods, closeForm, offlinePeriods, gameState});
+        } = useOfflineForm({offlinePeriod, idxToEdit, setOfflinePeriods, closeForm, refOfflinePeriods});
     
     const id = useId();
     const ariaError : T_AriaError = {
@@ -56,7 +61,10 @@ export default function OfflineForm({closeForm, offlinePeriod, gameState, pos, s
 
     return  <Modal closeModal={closeForm}>
                 <ModalHeading>
-                    { isNewOfflinePeriod ? `New Offline Period` : `Offline Period ${pos}` }
+                    { offlinePeriod === null ? 
+                        `New Offline Period` 
+                        : `Edit Offline Period` 
+                    }
                 </ModalHeading>
                 <form onSubmit={ (e) => handleSubmit(e) } >
                     <ModalFieldsWrapper>
@@ -65,8 +73,18 @@ export default function OfflineForm({closeForm, offlinePeriod, gameState, pos, s
                             aria-errormessage={ariaError.errorMessageId}
                             >
                             <ModalLegend>
-                                Set time range
+                                {offlinePeriod === null ? "Set" : "Update"} time range
+                                { offlinePeriod === null ?
+                                null
+                                : <span className={"block font-normal text-neutral-600 text-xs"}>
+                                    {"Period "}
+                                    {calcDateWithTimeDisplayStr(convertOfflineTimeToDate(offlinePeriod.start, gameState.startTime))}
+                                    &nbsp;to&nbsp;
+                                    {calcDateWithTimeDisplayStr(convertOfflineTimeToDate(offlinePeriod.end, gameState.startTime))}
+                                </span>
+                            }
                             </ModalLegend>
+
                             <div className={"flex flex-col gap-5 items-center"}>
                                 <OfflineTimeInput 
                                     legend={"from"} 
@@ -75,7 +93,7 @@ export default function OfflineForm({closeForm, offlinePeriod, gameState, pos, s
                                     dhm={formOfflinePeriod.start} 
                                     handleSingleKeyChange={handleSingleKeyChange} 
                                     gameState={gameState} 
-                                    showError={showError && !formOfflinePeriod.isValid} 
+                                    showError={showError && (!formOfflinePeriod.isValid.start || !formOfflinePeriod.isValid.end)} 
                                 />
                                 <OfflineTimeInput 
                                     legend={"to"} 
@@ -84,11 +102,11 @@ export default function OfflineForm({closeForm, offlinePeriod, gameState, pos, s
                                     dhm={formOfflinePeriod.end} 
                                     handleSingleKeyChange={handleSingleKeyChange} 
                                     gameState={gameState} 
-                                    showError={showError && !formOfflinePeriod.isValid} 
+                                    showError={showError && (!formOfflinePeriod.isValid.start || !formOfflinePeriod.isValid.end)} 
                                 />
                             
-                                {showError && !formOfflinePeriod.isValid ?
-                                    <ErrorMessage idStr={ariaError.errorMessageId} />
+                                {showError && (!formOfflinePeriod.isValid.start || !formOfflinePeriod.isValid.end) ?
+                                    <ErrorMessage idStr={ariaError.errorMessageId} message={errorMessage}/>
                                     : null
                                 }
                             </div>
@@ -120,8 +138,8 @@ export default function OfflineForm({closeForm, offlinePeriod, gameState, pos, s
 }
 
 
-function ErrorMessage({idStr} 
-    : { idStr : string })
+function ErrorMessage({idStr, message} 
+    : { idStr : string, message : string })
     : JSX.Element {
 
     return  <p 
@@ -129,7 +147,7 @@ function ErrorMessage({idStr}
                 className={"text-sm border-l-4 border-red-500 bg-red-200 bg-opacity-30 text-black px-3 py-2"}
                 aria-live={"polite"}
                 >
-                Invalid input: offline period ends before it begins
+                {message}
             </p>
 }
 

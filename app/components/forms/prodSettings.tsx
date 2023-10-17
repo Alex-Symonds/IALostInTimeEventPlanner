@@ -8,7 +8,7 @@ import { T_Levels, T_ProductionSettings, T_SwitchAction, } from '@/app/utils/typ
 import Modal, { ModalHeading, ModalSubmitButton, ModalFieldsWrapper, I_Modal } from '../subcomponents/modal';
 
 import Radio from './subcomponents/radio';
-import { calcDateDisplayStr, convertDateToTimeID } from "@/app/utils/dateAndTimeHelpers";
+import { calcDateWithTimeDisplayStr, convertDateToTimeID } from "@/app/utils/dateAndTimeHelpers";
 import { T_ProdSettingsNowModalProps } from "../planner/utils/useSwitchProductionNow";
 import { useCurrentMinute } from "./utils/useCurrentMinute";
 
@@ -228,7 +228,7 @@ function MessageForNow({firstTimeGroup, timeNow }:
     return  <p className={"mt-5 text-sm flex flex-col items-center gap-1 bg-white rounded py-2"}>
                 Adjusting settings starting from
                 <span className={"block font-semibold inline rounded px-1.5 py-0.5 bg-violet-100"}>
-                    {calcDateDisplayStr(timeNow)}
+                    {calcDateWithTimeDisplayStr(timeNow)}
                 </span>
             </p>
 }

@@ -44,7 +44,6 @@ export default function useOfflinePeriodsModal({offlinePeriods, setOfflinePeriod
             gameState,
             displayStr: "offline",
             offlinePeriod: idxToEdit === null ? null : offlinePeriods[idxToEdit],
-            pos: idxToEdit === null ? offlinePeriods.length + 1 : idxToEdit + 1,
         }
     }
 }

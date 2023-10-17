@@ -186,8 +186,7 @@ function TimeGroupsList({timeIDGroups, gameState, openUpgradePicker, openProdSwi
                 });
 
                 let nextPos = data.startPos + data.upgrades.length;
-                return <>
-                        <div key={'tgcr' + idx} className={"w-min"}>
+                return <div key={'tgcr' + idx} className={"w-min"}>
                             <TimeGroup 
                                 groupData={data} 
                                 startPos={data.startPos} 
@@ -202,7 +201,6 @@ function TimeGroupsList({timeIDGroups, gameState, openUpgradePicker, openProdSwi
                                 showUpgradeButton={ idx < timeIDGroups.length - 1 || purchasesPassTimeLimit }
                             />
                         </div>
-                    </>
             })}
         </>
 }

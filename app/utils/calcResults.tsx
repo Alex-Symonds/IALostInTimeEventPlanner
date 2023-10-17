@@ -194,6 +194,7 @@ function calcMaxDustInfo(timeIDGroups : T_TimeGroup[])
     const maxDust = Math.max(...validTimeGroups.map(ele => ele.allToDustAfter !== null ? ele.allToDustAfter.value : 0));
     const maxDustTimeGroupIdx = validTimeGroups.findIndex(ele => ele.allToDustAfter !== null && maxDust === ele.allToDustAfter.value);
     const timeGroupWithMaxDust = timeIDGroups[maxDustTimeGroupIdx];
+
     return {
         max: maxDust,
         pos: timeGroupWithMaxDust.startPos + timeGroupWithMaxDust.upgrades.length - 1
