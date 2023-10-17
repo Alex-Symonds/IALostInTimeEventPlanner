@@ -120,7 +120,6 @@ function Modals({modals} : { modals : { [key : string] :  T_ModalData} }){
                     <OfflineForm 
                         closeForm={ modals.offlinePeriods.closeModal } 
                         idxToEdit = { modals.offlinePeriods.data.idxToEdit }
-                        pos={ modals.offlinePeriods.data.pos }
                         offlinePeriod={ modals.offlinePeriods.data.offlinePeriod } 
                         offlinePeriods = { modals.offlinePeriods.data.offlinePeriods }
                         setOfflinePeriods = { modals.offlinePeriods.action }

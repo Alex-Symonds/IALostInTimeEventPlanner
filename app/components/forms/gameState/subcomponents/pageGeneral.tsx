@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 
-import { calcDateDisplayStr } from '../../../../utils/dateAndTimeHelpers';
+import { calcDateWithTimeDisplayStr } from '../../../../utils/dateAndTimeHelpers';
 import { capitalise } from '../../../../utils/formatting';
 
 import { Button } from '../../subcomponents/buttons';
@@ -58,7 +58,7 @@ function Entered({timeEntered, setStateOnChange, setTimeEntered}
                 suppressHydrationWarning={true} 
                 className={"ml-2"}
                 >
-                { calcDateDisplayStr(timeEntered) }
+                { calcDateWithTimeDisplayStr(timeEntered) }
             </p>
             <input 
                 hidden 

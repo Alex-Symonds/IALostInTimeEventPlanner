@@ -1,18 +1,26 @@
-import { useState, SyntheticEvent } from "react";
+import { useState, useEffect, SyntheticEvent, MutableRefObject } from "react";
 
-import { deepCopy } from "@/app/utils/consts";
+import { MAX_TIME, deepCopy } from "@/app/utils/consts";
 import { defaultOfflinePeriodStart, defaultOfflinePeriodEnd } from '@/app/utils/defaults';
-import { printOfflineTime, convertOfflineTimeToTimeID } from "@/app/utils/offlinePeriodHelpers";
-import { T_OfflinePeriodForm, T_GameState, T_OfflinePeriod } from "@/app/utils/types";
+import { printOfflineTime, fixOfflineTimeStrings, convertOfflineTimeToNumber } from "@/app/utils/offlinePeriodHelpers";
+import { T_OfflinePeriod, T_TimeOfflinePeriod } from "@/app/utils/types";
 
 
+
+type T_OfflinePeriodForm = 
+    T_OfflinePeriod & {
+        id: string,
+        isValid : {
+            start : boolean,
+            end : boolean
+        }
+}
 
 export interface I_UseOfflineForm {
-    gameState : T_GameState,
     closeForm : () => void,
-    offlinePeriods : T_OfflinePeriod[] | null
     setOfflinePeriods : React.Dispatch<React.SetStateAction<T_OfflinePeriod[]>>,
     idxToEdit : number | null,  
+    refOfflinePeriods : MutableRefObject<T_OfflinePeriod[] | null>,
     offlinePeriod: T_OfflinePeriod | null,
 }
 
@@ -21,33 +29,77 @@ type T_OutputUseOfflineForm = {
     handleSubmit : (e : SyntheticEvent) => void,
     removeOfflinePeriod : () => void,
     showError : boolean,
+    errorMessage : string,
     handleSingleKeyChange : (roleKey : string, unitKey : string, newValue : number) => void,
 }
 
-export function useOfflineForm({offlinePeriod, idxToEdit, setOfflinePeriods, closeForm, offlinePeriods, gameState}
+export function useOfflineForm({offlinePeriod, idxToEdit, setOfflinePeriods, closeForm, refOfflinePeriods}
     : I_UseOfflineForm)
     : T_OutputUseOfflineForm {
 
+    const [otherOfflinePeriods, setOtherOfflinePeriods] = useState(setupOtherOfflinePeriodTimes());
+    const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+
     const initValue = offlinePeriod === null ?
         defaultOfflinePeriodForm() 
-        : {
-            ...offlinePeriod, 
-            isValid: true, 
-            id: generateKey(`${printOfflineTime(offlinePeriod.start)}_${printOfflineTime(offlinePeriod.end)}`)
-    };
-
+        : convertOffinePeriodToOfflinePeriodForm(offlinePeriod);
     const [formOfflinePeriod, setFormOfflinePeriod] = useState<T_OfflinePeriodForm>(initValue);
-    const [showError, setShowError] = useState(false);
+
+    useEffect(() => {
+        setOtherOfflinePeriods(setupOtherOfflinePeriodTimes());
+    }, [refOfflinePeriods.current])
+
+
+    function setupOtherOfflinePeriodTimes(){
+        if(refOfflinePeriods.current === null){
+            return [];
+        }
+
+        let result = [];
+
+        const targetStart = offlinePeriod === null ? -1 : convertOfflineTimeToNumber(offlinePeriod.start);
+        const targetEnd = offlinePeriod === null ? -1 : convertOfflineTimeToNumber(offlinePeriod.end);
+
+        for(let i = 0; i < refOfflinePeriods.current.length; i++){
+            const existingStart = convertOfflineTimeToNumber(refOfflinePeriods.current[i].start);
+            const existingEnd = convertOfflineTimeToNumber(refOfflinePeriods.current[i].end);
+
+            if(targetStart !== existingStart && targetEnd !== existingEnd){
+                result.push({start: existingStart, end: existingEnd});
+            }
+        }
+
+        return result;
+    }
 
 
     function defaultOfflinePeriodForm()
         : T_OfflinePeriodForm {
-            
+        
+        const isValid = calcIsValid(defaultOfflinePeriodStart, defaultOfflinePeriodEnd);
         return {
-            id: generateKey(`${printOfflineTime(defaultOfflinePeriodStart)}_${printOfflineTime(defaultOfflinePeriodEnd)}`),
             start: defaultOfflinePeriodStart,
             end: defaultOfflinePeriodEnd,
-            isValid: true
+            isValid: isValid === undefined ? { start: true, end: true } : isValid,
+            id: generateKey(`${printOfflineTime(defaultOfflinePeriodStart)}_${printOfflineTime(defaultOfflinePeriodEnd)}`),
+        }
+    }
+
+
+    function convertOffinePeriodToOfflinePeriodForm(op : T_OfflinePeriod)
+        : T_OfflinePeriodForm {
+
+        let safeOP = {
+            start: fixOfflineTimeStrings(op.start),
+            end: fixOfflineTimeStrings(op.end),
+        }
+
+        const isValid = calcIsValid(safeOP.start, safeOP.end);
+        return {
+            ...safeOP,
+            isValid: isValid === undefined ? { start: true, end: true } : isValid, 
+            id: generateKey(`${printOfflineTime(op.start)}_${printOfflineTime(op.end)}`)
         }
     }
 
@@ -68,7 +120,7 @@ export function useOfflineForm({offlinePeriod, idxToEdit, setOfflinePeriods, clo
         }
         else{
             // update existing offline period
-            let deepCopyData : T_OfflinePeriod[] = deepCopy(offlinePeriods);
+            let deepCopyData : T_OfflinePeriod[] = deepCopy(refOfflinePeriods.current);
             deepCopyData[idxToEdit] = newOfflinePeriod;
             setOfflinePeriods(deepCopyData);
             closeForm();
@@ -81,24 +133,16 @@ export function useOfflineForm({offlinePeriod, idxToEdit, setOfflinePeriods, clo
             closeForm();
             return;
         }
-        let deepCopyData : T_OfflinePeriod[] = deepCopy(offlinePeriods);
+        let deepCopyData : T_OfflinePeriod[] = deepCopy(refOfflinePeriods.current);
         setOfflinePeriods(deepCopyData.slice(0, idxToEdit).concat(deepCopyData.slice(idxToEdit + 1)));
         closeForm();
     }
 
 
-    function handleSubmit(e : React.SyntheticEvent){
-        e.preventDefault();
-        if(formOfflinePeriod.isValid){
-            let newOfflinePeriod = deepCopy(formOfflinePeriod);
-            delete newOfflinePeriod['id'];
-            delete newOfflinePeriod['isValid'];
-            updateOfflinePeriod(newOfflinePeriod);
-            closeForm();
-        }
-        else{
-            setShowError(true);
-        }
+    function handleSingleKeyChange(roleKey : string, unitKey : string, newValue : number){
+        let newDataDeepCopy = deepCopy(formOfflinePeriod);
+        newDataDeepCopy[roleKey][unitKey] = newValue;
+        handleChange(newDataDeepCopy);
     }
 
 
@@ -110,15 +154,191 @@ export function useOfflineForm({offlinePeriod, idxToEdit, setOfflinePeriods, clo
     }
 
 
-    function handleSingleKeyChange(roleKey : string, unitKey : string, newValue : number){
-        let newDataDeepCopy = deepCopy(formOfflinePeriod);
-        newDataDeepCopy[roleKey][unitKey] = newValue;
+    function handleSubmit(e : React.SyntheticEvent){
+        e.preventDefault();
+        if(validateOnSubmit()){
+            let newOfflinePeriod = deepCopy(formOfflinePeriod);
+            delete newOfflinePeriod['id'];
+            delete newOfflinePeriod['isValid'];
+            updateOfflinePeriod(newOfflinePeriod);
+            closeForm();
+        }
+    }
 
-        let startTimeID = convertOfflineTimeToTimeID(newDataDeepCopy.start, gameState.startTime);
-        let endTimeID = convertOfflineTimeToTimeID(newDataDeepCopy.end, gameState.startTime);
 
-        newDataDeepCopy.isValid = startTimeID < endTimeID;
-        handleChange(newDataDeepCopy);
+    function calcIsValid(startOfflineTime : T_TimeOfflinePeriod, endOfflineTime: T_TimeOfflinePeriod){
+        const start = convertOfflineTimeToNumber(startOfflineTime);
+        const end = convertOfflineTimeToNumber(endOfflineTime);
+        const checks = runChecklist(start, end);
+
+        for(let i = 0; i < checks.length; i++){
+            if(checks[i].isValid !== undefined){
+                return checks[i].isValid;
+            }
+        }
+        return { start: true, end: true };
+    }
+
+
+    function validateOnSubmit(){
+        const start = convertOfflineTimeToNumber(formOfflinePeriod.start);
+        const end = convertOfflineTimeToNumber(formOfflinePeriod.end);
+        const checks = runChecklist(start, end);
+
+        for(let i = 0; i < checks.length; i++){
+            if(checks[i].result === false){
+ 
+                if(checks[i].message !== undefined){
+                    setErrorMessage(checks[i].message as string);
+                    setShowError(true);
+                }
+
+                if(checks[i].isValid !== undefined){
+                    setFormOfflinePeriod(prev => { return {
+                        ...prev,
+                        isValid: {
+                            start: checks[i].isValid?.start as boolean,
+                            end: checks[i].isValid?.end as boolean
+                        }
+                    }})
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    function runChecklist(start : number, end : number){
+        return [
+            checkIsWithinMaxQuantity(),
+            checkBeginsBeforeItEnds(start, end),
+            checkIsOfSufficientLength(start, end),
+            checkDoesNotAlreadyExist(start, end),
+            checkDoesNotCoverExistingOfflinePeriod(start, end),
+            checkIsNotWithinExistingOfflinePeriod(start, end),
+            checkNotTooLong(start, end)
+        ]
+    }
+
+
+    function checkIsWithinMaxQuantity(){
+        const MAX_NUM_OFFLINE_PERIODS = 150;
+        if(refOfflinePeriods.current !== null && refOfflinePeriods.current.length > MAX_NUM_OFFLINE_PERIODS){
+            return {
+                result: false,
+                message: "You have entered the maximum number of offline periods",
+                isValid: { start: false, end: false }
+            }
+        }
+        return { result: true };
+    }
+
+
+    function checkIsOfSufficientLength(start : number, end : number){
+        if(end - start < 1){
+            return {
+                result: false,
+                message: "Invalid input: offline period must last for at least one minute",
+                isValid: { start: false, end: false }
+            }
+        }
+        return { result: true };
+    }
+
+
+    function checkBeginsBeforeItEnds(start : number, end : number){
+        if(start > end){
+            return {
+                result: false,
+                message: "Invalid input: offline period ends before it begins",
+                isValid: { start: false, end: false }
+            }
+        }
+        return { result: true };
+    }
+
+
+    function checkDoesNotAlreadyExist(start : number, end : number){
+        if(performCheckAgainstExistingOfflinePeriods((existingStart, existingEnd) => {
+            return start === existingStart && end === existingEnd;
+        })){
+            return {
+                result: false,
+                message: "Invalid input: this time range already exists",
+                isValid: { start: false, end: false }
+            }
+        }
+        return { result: true };
+    }
+
+
+    function checkDoesNotCoverExistingOfflinePeriod(start : number, end : number){
+        if(performCheckAgainstExistingOfflinePeriods((existingStart, existingEnd) => {
+            return start < existingStart && end > existingEnd;
+        })){
+            return {
+                result: false,
+                message: "Invalid input: this time range is partially covered by an existing offline period",
+                isValid: { start: false, end: false }
+            }
+        }
+        return { result: true };
+    }
+
+
+    function checkIsNotWithinExistingOfflinePeriod(start : number, end : number){
+        const startOverlaps = performCheckAgainstExistingOfflinePeriods((existingStart, existingEnd) => {
+            return start >= existingStart && start <= existingEnd
+        });
+
+        const endOverlaps = performCheckAgainstExistingOfflinePeriods((existingStart, existingEnd) => {
+            return end >= existingStart && end <= existingEnd
+        });
+
+        let message = startOverlaps && !endOverlaps ?
+                        "Invalid input: start of offline period overlaps an existing offline period"
+                    : !startOverlaps && endOverlaps ?
+                        "Invalid input: end of offline period overlaps an existing offline period"
+                    : startOverlaps && endOverlaps ?
+                        "Invalid input: this time range is entirely covered by an existing offline period"
+                        : "";
+
+        if(startOverlaps || endOverlaps){
+            return {
+                result: false,
+                message,
+                isValid: {
+                    start: !startOverlaps,
+                    end: !endOverlaps
+                }
+            }
+        }
+        return { result: true };
+    }
+
+    function checkNotTooLong(start : number, end : number){
+        const otherOfflineDurations = otherOfflinePeriods.map(ele => ele.end - ele.start);
+        const totalOtherOfflineDuration = otherOfflineDurations.reduce((accumulator, currentValue) => accumulator += currentValue, 0);
+        
+        if(end - start + totalOtherOfflineDuration > MAX_TIME){
+            return {
+                result: false,
+                message: "Invalid input: this time range would make offline periods cover the entire event",
+                isValid: { start: false, end: false }
+            }
+        }
+        return { result: true };
+    }
+
+
+    function performCheckAgainstExistingOfflinePeriods(checkFunction : (existingStart : number, existingEnd : number) => boolean){
+        for(let i = 0; i < otherOfflinePeriods.length; i++){
+            if(checkFunction(otherOfflinePeriods[i].start, otherOfflinePeriods[i].end)){
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -127,6 +347,7 @@ export function useOfflineForm({offlinePeriod, idxToEdit, setOfflinePeriods, clo
         handleSubmit,
         removeOfflinePeriod,
         showError,
+        errorMessage,
         handleSingleKeyChange
     }
 }

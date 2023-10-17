@@ -1,5 +1,5 @@
 import { nbsp } from './formatting';
-import { T_GameState, T_TimeOfflinePeriod, T_TimeRemainingDHM } from "./types";
+import { T_GameState, T_TimeRemainingDHM } from "./types";
 import { MS_PER_MINUTE } from './consts';
 
 
@@ -79,11 +79,20 @@ export function calcMonthName(monthNumber : number) : string {
 }
 
 
-export function calcDateDisplayStr(myDate : Date) : string {
-    return myDate.getDate().toString().padStart(2, '0') + nbsp() + calcMonthName(myDate.getMonth()) + nbsp() + myDate.toLocaleTimeString([], {timeStyle: 'short', hourCycle: 'h23' });
+export function calcDateWithTimeDisplayStr(myDate : Date) : string {
+    return calcDateDisplayStr(myDate) + nbsp() + calcTimeDisplayStr(myDate);
 }
 
-export function printOfflineTime(dhm : T_TimeOfflinePeriod) : string{
-    return `${dhm.dateOffset}d${dhm.hours}h${dhm.minutes}m`
+
+export function calcDateDisplayStr(myDate : Date) : string {
+    return myDate.getDate().toString().padStart(2, '0') + nbsp() + calcMonthName(myDate.getMonth());
 }
+
+export function calcTimeDisplayStr(myDate : Date) : string {
+    return myDate.toLocaleTimeString([], {timeStyle: 'short', hourCycle: 'h23' });
+}
+
+
+
+
 
