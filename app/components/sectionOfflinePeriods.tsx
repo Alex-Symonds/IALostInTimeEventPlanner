@@ -19,10 +19,18 @@ export default function SectionOfflinePeriods({offlinePeriods, openModal, gameSt
     if(gameState === null){
         return null;
     }
-//overflow-y-auto overflow-x-hidden max-h-[calc(100vh-5rem)] plnMd:max-h-[22rem]
+
     return  <div className={'px-2'}>
-                <OfflineDisplay offlinePeriods={offlinePeriods} gameState={gameState} openForm={openModal} idxEdit={idxEdit} />
-                <EditButtonBox openEditForm={() => openModal(null)} label={`add`} />
+                <OfflineDisplay 
+                    offlinePeriods={offlinePeriods} 
+                    gameState={gameState} 
+                    openForm={openModal} 
+                    idxEdit={idxEdit} 
+                />
+                <EditButtonBox 
+                    openEditForm={() => openModal(null)} 
+                    label={`add`} 
+                />
             </div>
 }
 
@@ -40,7 +48,7 @@ function OfflineDisplay({offlinePeriods, gameState, openForm, idxEdit}
     const dayGroups = convertOfflinePeriodsToDayGroups(offlinePeriods);
     const isEmpty = dayGroups === undefined || dayGroups.length === 0;
 
-    return  <div className={"overflow-y-auto overflow-x-hidden max-h-[calc(100vh-10rem)] plnMd:max-h-[18rem]"}>
+    return  <div className={"overflow-y-auto overflow-x-hidden max-h-[calc(100vh-20rem)] plnMd:max-h-[17rem]"}>
                 {
                     isEmpty ?
                         <p>None entered</p>

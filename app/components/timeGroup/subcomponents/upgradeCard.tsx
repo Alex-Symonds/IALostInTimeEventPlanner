@@ -42,7 +42,7 @@ export default function UpgradeCard({data, pos, openUpgradePicker, isDuringOffli
                 {pos}
             </Button>
             <button onClick={() => openUpgradePicker(indexPlanData)}>
-                <div className={"w-52 flex items-center text-black px-1.5 py-0.5 gap-3.5 border"  + " " + conditionalClass}>
+                <div className={`w-52 flex items-center text-black px-1.5 py-0.5 gap-3.5 border ${conditionalClass}`}>
                     <span className={"w-10 block text-sm flex items-center"}>{name}</span>
                     <span className={"w-5 block text-sm font-bold flex items-center justify-center"}>{data.level}</span>
                     <div className={"flex gap-1"} >

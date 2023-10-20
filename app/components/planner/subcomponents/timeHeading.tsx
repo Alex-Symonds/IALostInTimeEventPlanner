@@ -20,8 +20,8 @@ export default function TimeGroupHeading({data, gameState} : I_TimeGroupHeading)
     const isDuringOfflinePeriod = data.startOfflinePeriodTimeID !== null;
 
     const conditionalClass = isDuringOfflinePeriod ?
-                                "bg-greyBlue-500 border-greyBlue-600 text-white"
-                                : "bg-violet-100 border-violet-200 text-black";
+                                "bg-greyBlue-500 border-greyBlue-600 text-white border-2"
+                                : "border-neutral-200 text-black border-b-2";
     const fullOfflinePeriodCSS = isDuringOfflinePeriod && showFullOfflinePeriod ?
                                     "text-sm"
                                     : "";
@@ -36,7 +36,7 @@ export default function TimeGroupHeading({data, gameState} : I_TimeGroupHeading)
                             : shortDisplayStr;
 
     return(
-        <div className={"flex items-center justify-between px-1 border-2 rounded-sm" + " " + conditionalClass}>
+        <h3 className={"w-full flex items-center justify-between px-1 rounded-sm" + " " + conditionalClass}>
             <div>
                 {calcDHMString(timeAsDHM)}
             </div>
@@ -53,15 +53,19 @@ export default function TimeGroupHeading({data, gameState} : I_TimeGroupHeading)
                         }
                         <button 
                             suppressHydrationWarning={true} 
-                            className={"hover:text-greyBlue-100" + " " + fullOfflinePeriodCSS} 
+                            className={"hover:text-greyBlue-100 plnMd:hidden" + " " + fullOfflinePeriodCSS} 
                             onClick={() => setShowFullOfflinePeriod(prev => !prev)}
                             onMouseEnter={() => setIsHover(true)}
                             onMouseLeave={() => setIsHover(false)}
                             >
                             { showFullOfflinePeriod ? fullDisplayStr : shortDisplayStr }
                         </button>
+                        <div className={"text-sm hidden plnMd:block"} suppressHydrationWarning={true}>
+                            { fullDisplayStr }
+                        </div>
+
                     </>
             } 
-        </div>
+        </h3>
     )
 }

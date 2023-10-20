@@ -3,7 +3,7 @@ import { MutableRefObject, useRef } from 'react';
 import { T_DATA_COSTS, T_DATA_KEYS, getProductionCostsFromJSON } from '@/app/utils/getDataFromJSON';
 import { MAX_TIME } from '@/app/utils/consts';
 import { startingProductionSettings } from '@/app/utils/defaults';
-import { capitalise } from '@/app/utils/formatting';
+import { capitalise, theme } from '@/app/utils/formatting';
 import { calcNewSwitchDisplay } from '@/app/utils/productionSettingsHelpers';
 import { T_ProductionSettings, T_PurchaseData, T_TimeGroup, T_Action, T_GameState, T_ProductionSettingsNow, T_ProductionRates } from '@/app/utils/types';
 
@@ -22,6 +22,7 @@ import AllUpgradesPurchased from './subcomponents/allUpgradesPurchased';
 import { useSwitchProductionNow, T_PropsSwitchProdNowModal } from './utils/useSwitchProductionNow';
 import { useSwitchProductionFuture, T_PropsSwitchProdFutureModal } from './utils/useSwitchProductionFuture';
 import { useUpgradePicker, T_PropsUpgradePickerModal } from './utils/useUpgradePicker';
+import TimeGroupHeading from './subcomponents/timeHeading';
 
 
 
@@ -67,7 +68,7 @@ export default function Planner({timeIDGroups, gameState, actions, setActions, p
     }
 
     return(
-        <div className={"flex flex-col items-center bg-white rounded-l"}>
+        <div className={`flex flex-col items-center ${theme.panelBg}`}>
             <ResultAtTop 
                 planData={purchaseData} 
                 gameState={gameState} 
@@ -85,7 +86,7 @@ export default function Planner({timeIDGroups, gameState, actions, setActions, p
                         switchProdNowProps={switchProdNowProps}
                     />
 
-                    <div className={"flex flex-col gap-1 w-full px-4 items-center planMd:px-0 planMd:w-min"}>
+                    <div className={"flex flex-col gap-4 w-full px-1 sm:px-4 items-center"}>
                         { gameState.levels.trinity > 0 ?
                             <ControlsRow 
                                 displaySwitches={ calcDisplaySwitchesForProdSettingsNow() }
@@ -169,7 +170,7 @@ function TimeGroupsList({timeIDGroups, gameState, openUpgradePicker, openProdSwi
                     const {costs, costsWithZeroRate} = insufficientProductionData({ rates: data.ratesDuring, targetUpgrade});
                     if(costsWithZeroRate.length > 0){
                         return  <div key={"nextUpgradeIsImpossibleWarningThingKey"}
-                                    className={"w-full plnMd:w-[32.5rem] max-w-full border-l-[4px] border-amber-400 bg-amber-50 text-black my-3 px-4 py-5 text-sm"}
+                                    className={"w-full border-l-[4px] border-amber-400 bg-amber-50 text-black my-3 px-4 py-5 text-sm"}
                                     >
                                     <InsufficientProductionMessage
                                         targetUpgrade={targetUpgrade}
@@ -185,21 +186,30 @@ function TimeGroupsList({timeIDGroups, gameState, openUpgradePicker, openProdSwi
                     return data.productionSettingsDuring[ele.key as keyof typeof data.productionSettingsDuring] !== ele.to;
                 });
 
+                const bgConditionalOnOffline = data.startOfflinePeriodTimeID !== null ?
+                    "bg-black bg-opacity-5 rounded-b"
+                    : "";
                 let nextPos = data.startPos + data.upgrades.length;
-                return <div key={'tgcr' + idx} className={"w-min"}>
-                            <TimeGroup 
-                                groupData={data} 
-                                startPos={data.startPos} 
-                                openUpgradePicker={ openUpgradePicker } 
-                                gameState={gameState} 
-                                remainingGroups={timeIDGroups.slice(idx + 1)}
+                return  <div key={'tgcr' + idx} className={"w-full flex flex-col items-center" + " " + bgConditionalOnOffline}>
+                            <TimeGroupHeading 
+                                data={data} 
+                                gameState={gameState}
                             />
-                            <ControlsRow
-                                displaySwitches={displaySwitches}
-                                handleProductionClick={() => openProdSwitcherModal(data)} 
-                                handleUpgradeClick={() => openUpgradePicker(nextPos - 1)}
-                                showUpgradeButton={ idx < timeIDGroups.length - 1 || purchasesPassTimeLimit }
-                            />
+                            <div className={"w-min"}>
+                                <TimeGroup 
+                                    groupData={data} 
+                                    startPos={data.startPos} 
+                                    openUpgradePicker={ openUpgradePicker } 
+                                    gameState={gameState} 
+                                    remainingGroups={timeIDGroups.slice(idx + 1)}
+                                />
+                                <ControlsRow
+                                    displaySwitches={displaySwitches}
+                                    handleProductionClick={() => openProdSwitcherModal(data)} 
+                                    handleUpgradeClick={() => openUpgradePicker(nextPos - 1)}
+                                    showUpgradeButton={ idx < timeIDGroups.length - 1 || purchasesPassTimeLimit }
+                                />
+                            </div>
                         </div>
             })}
         </>

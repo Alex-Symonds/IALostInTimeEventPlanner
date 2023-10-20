@@ -1,6 +1,6 @@
-import { deepCopy, MAX_TIME, OUT_OF_TIME, WIN_CONDITION } from "../../../../utils/consts";
-import { T_DATA_KEYS, getUpgradeDataFromJSON } from '../../../../utils/getDataFromJSON';
-import { T_TimeGroup, T_Stockpiles, T_ProductionRates, T_Levels, T_PremiumInfo, T_GameState } from "../../../../utils/types";
+import { deepCopy, MAX_TIME, OUT_OF_TIME, WIN_CONDITION } from "../../../utils/consts";
+import { T_DATA_KEYS, getUpgradeDataFromJSON } from '../../../utils/getDataFromJSON';
+import { T_TimeGroup, T_Stockpiles, T_ProductionRates, T_Levels, T_PremiumInfo, T_GameState } from "../../../utils/types";
 
 import { T_MoreData, T_ResourceColours } from "./types";
 

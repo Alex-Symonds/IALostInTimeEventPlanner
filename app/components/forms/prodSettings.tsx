@@ -5,7 +5,7 @@ import { T_DATA_KEYS, getWorkerOutputsFromJSON } from "@/app/utils/getDataFromJS
 import { calcInitSettingsForModal } from "@/app/utils/productionSettingsHelpers";
 import { T_Levels, T_ProductionSettings, T_SwitchAction, } from '@/app/utils/types';
 
-import Modal, { ModalHeading, ModalSubmitButton, ModalFieldsWrapper, I_Modal } from '../subcomponents/modal';
+import Modal, { ModalSubmitButton, ModalFieldsWrapper, I_Modal } from '../subcomponents/modal';
 
 import Radio from './subcomponents/radio';
 import { calcDateWithTimeDisplayStr, convertDateToTimeID } from "@/app/utils/dateAndTimeHelpers";
@@ -43,8 +43,10 @@ export default function ModalProdSettings({closeModal, initialProdSettings, curr
     }
 
     return(
-        <Modal closeModal={closeModal}>
-            <ModalHeading>Production Settings</ModalHeading>
+        <Modal 
+            heading={"Production Settings"}
+            closeModal={closeModal}
+            >
             {
                 nowModalProps === undefined ?
                     null
@@ -66,7 +68,7 @@ export default function ModalProdSettings({closeModal, initialProdSettings, curr
             }
             <form onSubmit={handleSubmit} className={"flex flex-col w-full"}>
                 <ModalFieldsWrapper>
-                    <div className={"flex flex-col items-center gap-6 my-1 mx-1"}>
+                    <div className={"flex flex-col items-center gap-6 my-1 mx-2"}>
                     {
                         Object.keys(initialProdSettings).map((myKey : string) => {
                             return <ProductionToggle key={myKey} 
@@ -112,7 +114,7 @@ function ProductionToggle({ myKey, toggledTo, handleSelection, disabled }
     return (
         <fieldset className={"w-full relative flex justify-end"}>
             <legend className={"absolute top-0 left-0 mb-1 flex items-center gap-2 block" + labelCSS} >
-                <span className={"w-16 font-semibold"}>{ capitalise(myKey) }</span>
+                <span className={"w-14 font-semibold"}>{ capitalise(myKey) }</span>
                 <span className={"sr-only"}>is producing</span>
                 {
                     disabled ?
@@ -154,7 +156,7 @@ function CurrentAsCircleBadge({type}
     let typeCSS = resourceCSS[type as keyof typeof resourceCSS];
 
     return(
-        <div>
+        <div className={"flex items-center"}>
             <div className={"inline-block w-3 h-3 rounded-full border" + " " + typeCSS.badge}>             
             </div>
             <span className={"pl-1"}>

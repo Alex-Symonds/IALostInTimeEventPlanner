@@ -1,11 +1,12 @@
 import { useState, Dispatch, SetStateAction } from 'react';
 
-import { toBillions } from '../../../utils/formatting';
+import { theme, toBillions } from '../../../utils/formatting';
 import { T_SuggestionData, T_PurchaseData, T_GameState, T_Action, T_TimeGroup } from "../../../utils/types";
 import { calcResultOfPlan } from '../../../utils/calcResults';
 
 
 import Tooltip from '../../subcomponents/tooltip';
+import HeaderFooterContentWrapper from './sideBorderWrapper';
 
 
 interface I_ResultAtTop { 
@@ -19,20 +20,27 @@ export default function ResultAtTop({gameState, actions, timeIDGroups}
     : JSX.Element {
 
     const resultOfPlan = calcResultOfPlan({gameState, actions, timeIDGroups});
-    const bgColourCSS = 
-        resultOfPlan.hasWon ?
-            "bg-green-700"
-            : "bg-red-700";
-
-    return(
-        <div className={`sticky z-10 top-12 md:[top:calc(7.5rem_+_1px)] w-full mb-4 py-2 flex flex-col items-center shadow-md text-white ${bgColourCSS}`}>
-            <div className={"font-bold text-lg"}>
-                { resultOfPlan.hasWon ? "" : "NOT ENOUGH FOR " }1ST PRIZE
+    return( 
+        <div className={`sticky z-10 top-12 md:[top:calc(7.5rem_+_1px)] w-full ${theme.mainAsBg} mb-4 shadow-md`}>
+            <div className={`${theme.plannerHeaderFooterBgAndText} md:rounded-t w-full py-2 flex flex-col items-start `}>
+            <HeaderFooterContentWrapper 
+                borderColour={resultOfPlan.hasWon ?     "border-green-600"  : "border-red-600"}
+                padding={resultOfPlan.hasWon ?          "pl-3 py-1"         : "pl-3 md:pl-4 py-1"}
+                margins={"mx-4"}
+                >
+                <div className={"font-bold text-lg"}>
+                    { resultOfPlan.hasWon ? "" : "Not enough for " }
+                    <span className={"ordinal"}>1st</span> prize
+                    { resultOfPlan.hasWon ? " is yours!" : "" }
+                </div>
+                <div className={"text-sm"}>
+                { resultOfPlan.allToDust === null ?
+                    <Result dustAtEnd={resultOfPlan.dustAtEnd} />
+                    : <ResultWithRec dustAtEnd={resultOfPlan.dustAtEnd} suggestionData={resultOfPlan.allToDust} />
+                }
+                </div>
+            </HeaderFooterContentWrapper>
             </div>
-            { resultOfPlan.allToDust === null ?
-                <Result dustAtEnd={resultOfPlan.dustAtEnd} />
-                : <ResultWithRec dustAtEnd={resultOfPlan.dustAtEnd} suggestionData={resultOfPlan.allToDust} hasWon={resultOfPlan.hasWon} />
-            }
         </div>
     )
 }
@@ -48,8 +56,8 @@ function Result({dustAtEnd}
 }
 
 
-function ResultWithRec({dustAtEnd, suggestionData, hasWon}
-    : { dustAtEnd: number, suggestionData : T_SuggestionData, hasWon : boolean })
+function ResultWithRec({dustAtEnd, suggestionData}
+    : { dustAtEnd: number, suggestionData : T_SuggestionData })
     : JSX.Element {
 
     const [showTooltip, setShowTooltip] = useState(false);
@@ -62,7 +70,7 @@ function ResultWithRec({dustAtEnd, suggestionData, hasWon}
 
     return  <div className={"relative flex flex-col"}>
                 <ResultWithRecRow label={"now"} quantity={dustAtEnd} />
-                <ResultWithRecRow label={"rec."} quantity={suggestionData.dust} suggestionProps={suggestionProps} hasWon={hasWon} />
+                <ResultWithRecRow label={"rec."} quantity={suggestionData.dust} suggestionProps={suggestionProps} />
             </div>
 }
 
@@ -72,13 +80,11 @@ type T_SuggestionProps = {
     setVisibility : Dispatch<SetStateAction<boolean>>,
     position : number 
 }
-function ResultWithRecRow({label, quantity, suggestionProps, hasWon} 
-    : { label : string, quantity : number, suggestionProps? : T_SuggestionProps, hasWon? : boolean }) 
+function ResultWithRecRow({label, quantity, suggestionProps} 
+    : { label : string, quantity : number, suggestionProps? : T_SuggestionProps }) 
     : JSX.Element {
 
-    const buttonTextColour = hasWon ?
-        "text-green-700"
-        : "text-red-700";
+    const buttonTextColour = "text-neutral-700";
 
     return  <div className={"grid grid-rows-1 [grid-template-columns:4rem_minmax(0,_1fr)_3rem_1.75rem]"}>
                 <div className={"font-semibold"}>{ label }</div>
@@ -95,7 +101,7 @@ function ResultWithRecRow({label, quantity, suggestionProps, hasWon}
 
                     { suggestionProps !== undefined && suggestionProps.isVisible ?
                         <Tooltip posAndWidthCSS={"-top-9 right-0"} close={() => suggestionProps.setVisibility(false)}>
-                            <div className={"text-xs font-bold min-w-max"}>
+                            <div className={"text-xs font-medium min-w-max"}>
                                 Switch all to dust after position {suggestionProps.position}
                             </div>
                         </Tooltip>
