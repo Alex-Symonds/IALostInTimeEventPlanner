@@ -1,6 +1,6 @@
 import { useId } from 'react';
 
-import Modal, { ModalHeading, ModalSubmitButton, ModalFieldsWrapper, I_Modal } from '../subcomponents/modal';
+import Modal, { ModalSubmitButton, ModalFieldsWrapper, I_Modal } from '../subcomponents/modal';
 import { Button } from './subcomponents/buttons';
 import { I_UseSave, useSave } from './utils/useSave';
 
@@ -21,7 +21,10 @@ export default function ModalSave({closeModal, saveInputs, convertToKeyName}
     } = useSave({closeModal, saveInputs, convertToKeyName});
 
     return(
-        <Modal closeModal={closeModal}>
+        <Modal 
+            heading={showOverwrite ? "Warning" : "Save Plan" }
+            closeModal={closeModal}
+            >
             { showOverwrite ?
                 <OverwriteQuestion name={name} goBack={() => setShowOverwrite(false)} acceptOverwrite={saveAndClose}/>
                 : <SaveForm name={name} handleChange={handleChange} showWarning={showWarning} handleSubmit={handleSubmit} />
@@ -43,14 +46,9 @@ function SaveForm({name, handleChange, showWarning, handleSubmit}
 
     const id = useId();
     return(
-        <>
-        <ModalHeading>
-            Save Plan
-        </ModalHeading>
-        
         <form onSubmit={() => handleSubmit()}>
             <ModalFieldsWrapper>
-                <div className={"flex flex-col gap-1"}>
+                <div className={"flex flex-col gap-1 mx-1"}>
                     <label htmlFor={id}>Save as</label>
                     <input className={"px-2 py-1 border border-neutral-200"} type={"text"} id={id} value={name} onChange={(e) => handleChange(e)}/>
                     {
@@ -62,8 +60,6 @@ function SaveForm({name, handleChange, showWarning, handleSubmit}
             </ModalFieldsWrapper>
             <ModalSubmitButton label={"save"} extraCSS={''} disabled={false} />
         </form>
-        
-        </>
     )
 }
 
@@ -77,11 +73,6 @@ function OverwriteQuestion({name, goBack, acceptOverwrite}
     : JSX.Element {
 
     return(
-        <>
-        <ModalHeading>
-            Warning
-        </ModalHeading>
-        
         <div className={"flex flex-col"}>
             <ModalFieldsWrapper>
                 <p>There is already a save called &quot;{name}&quot;.</p>
@@ -103,8 +94,6 @@ function OverwriteQuestion({name, goBack, acceptOverwrite}
                 </Button>
             </div>
         </div>
-        
-        </>
     )
 }
 

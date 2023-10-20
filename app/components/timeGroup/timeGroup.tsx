@@ -4,10 +4,9 @@ import {T_TimeGroup,  T_GameState} from '../../utils/types';
 
 import UpgradeCard from './subcomponents/upgradeCard';
 
-import TimeGroupHeading from './subcomponents/heading';
 import { MoreButton } from '../forms/subcomponents/buttons';
 
-import TimeGroupMore from './timeGroupMore/timeGroupMore';
+import TimeGroupMore from './subcomponents/timeGroupMore';
 
 interface I_TimeGroup {
     gameState : T_GameState, 
@@ -26,19 +25,13 @@ export default function TimeGroup({groupData, startPos, openUpgradePicker, gameS
     const isDuringOfflinePeriod = groupData.startOfflinePeriodTimeID !== null;
     const offlineCSS = isDuringOfflinePeriod ?
                             "bg-greyBlue-200"
-                            : "";
+                            : "bg-white";
     const borderColour = isDuringOfflinePeriod ?
                             "border-greyBlue-300"
                             : "border-neutral-200";
     
     return (
-        <>
-            <TimeGroupHeading 
-                data={groupData} 
-                gameState={gameState}
-            />
         <div className={"flex flex-col mt-1 border-b border-t shadow w-72" + " " + offlineCSS + " " + borderColour}>
-
             <div className={"flex justify-center pt-1 px-1 border-l border-r" + " " + borderColour}>
                 <div className={"flex"}>
                     <UpdateCardContainer 
@@ -66,8 +59,7 @@ export default function TimeGroup({groupData, startPos, openUpgradePicker, gameS
                     />
                 : null
             }
-    </div>
-    </>
+        </div>
     )
 }
 

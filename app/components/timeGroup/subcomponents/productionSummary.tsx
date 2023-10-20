@@ -1,5 +1,5 @@
-import { resourceCSS } from "../../../../utils/formatting"
-import { T_ProductionSettings, T_Levels } from "../../../../utils/types";
+import { resourceCSS } from "../../../utils/formatting"
+import { T_ProductionSettings, T_Levels } from "../../../utils/types";
 
 
 interface I_ProductionSettingsSummary {

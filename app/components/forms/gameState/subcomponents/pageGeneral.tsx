@@ -89,8 +89,8 @@ function TimeRemainingFieldset({timeRemaining, setTimeRemaining}
             <Label extraCSS={"font-semibold w-min px-1"} htmlFor={''} tagName={'legend'}>
                 Time&nbsp;Remaining
             </Label>
-            <div className={'w-full relative flex flex-col items-center gap-1 px-3 ml-1'}>
-                <div className={'w-full flex gap-2 mt-1  py-1 px-2 rounded-md'}>
+            <div className={'w-full relative flex flex-col items-center gap-1 px-2'}>
+                <div className={'w-full flex gap-2 py-1 px-2 rounded-md'}>
                     <TimeRemainingUnit 
                         unitName={"days"} 
                         value={timeRemaining == null ? 0 : timeRemaining.days} 

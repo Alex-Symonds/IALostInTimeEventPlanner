@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require('tailwindcss/colors');
+
 module.exports = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -13,20 +15,22 @@ module.exports = {
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       colors: {
-        'greyBlue-50': '#f6f7f9',
-        'greyBlue-100': '#ebedf3',
-        'greyBlue-200': '#d3d7e4',
-        'greyBlue-300': '#adb6cc',
-        'greyBlue-400': '#808eb0',
-        'greyBlue-500': '#607197',
-        'greyBlue-600': '#54638b',
-        'greyBlue-700': '#3e4966',
-        'greyBlue-800': '#363f56',
-        'greyBlue-900': '#313749',
-        'greyBlue-950': '#202331',
+        'greyBlue': {
+          50: '#f6f7f9',
+          100: '#ebedf3',
+          200: '#d3d7e4',
+          300: '#adb6cc',
+          400: '#808eb0',
+          500: '#607197',
+          600: '#54638b',
+          700: '#3e4966',
+          800: '#363f56',
+          900: '#313749',
+          950: '#202331',
+        },
       },
       screens: {
-        'plnMd' : '880px'
+        'plnMd' : '880px',
       }
     },
   },

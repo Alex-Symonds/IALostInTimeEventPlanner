@@ -1,4 +1,7 @@
 'use client';
+import Image from 'next/image';
+
+import { theme } from './utils/formatting';
 import { T_ModalData } from './utils/types';
 import useSaveAndLoad from './utils/useSaveAndLoad';
 import useOfflinePeriodsModal from './utils/useOfflinePeriodsModal';
@@ -14,6 +17,7 @@ import OfflineForm from './components/forms/offlinePeriods';
 import StickyBar from './components/stickyBar';
 import DisplayUserInput from './components/sectionDisplayUserInput';
 import ErrorWithPlanner from './components/errorWithPlanner';
+
 
 
 export default function Home() {
@@ -36,7 +40,7 @@ export default function Home() {
   const { save : saveModal, load: loadModal } = useSaveAndLoad({actions, setActions, offlinePeriods, setOfflinePeriods, gameState, setGameState});
 
   return (
-    <main className={"flex justify-center bg-violet-50 min-h-screen"}>
+    <main className={`${theme.emptyBg} flex justify-center min-h-screen`}>
 
       <Modals modals={ {
                 save: saveModal,
@@ -46,7 +50,7 @@ export default function Home() {
               } } 
       />
 
-      <div className={'relative z-20 w-full max-w-5xl bg-violet-900 shadow-xl md:grid md:grid-rows-[auto_auto_auto] md:grid-cols-[auto_1fr] md:[grid-template-areas:"heading_heading""buttons_buttons""status_."]'}>
+      <div className={`${theme.mainAsBg} relative z-20 w-full max-w-5xl md:pr-3 md:grid md:grid-rows-[auto_auto_auto] md:grid-cols-[auto_1fr] md:[grid-template-areas:"heading_heading""buttons_buttons""status_."]`}>
         <MainPageHeading />
         
         <StickyBar    
@@ -66,7 +70,7 @@ export default function Home() {
           offlinePeriodIdxEdit = { offlinePeriodsModal.data.idxToEdit }
         />
 
-        <div className={"bg-violet-900 [min-height:calc(100vh-4.5rem-1px-3rem)]"}>
+        <div className={`${theme.mainAsBg} [min-height:calc(100vh-4.5rem-1px-3rem)]`}>
         { gameState === null || purchaseData === undefined || switchData === undefined || timeIDGroups === null || prodSettingsBeforeNow === undefined ?
           <ErrorWithPlanner />
           :
@@ -88,9 +92,12 @@ export default function Home() {
 
 
 function MainPageHeading(){
-  return  <h1 className={"[height:4.5rem] relative z-10 flex flex-col px-3 pt-1 pb-3 block bg-violet-900 md:sticky md:top-0 md:relative md:[grid-area:heading]"}>
-            <span className={"text-3xl font-extrabold block leading-snug text-white"}>Event&nbsp;Planner</span>
-            <span className={"text-sm block leading-none text-violet-50"}>Idle&nbsp;Apocalypse: Lost&nbsp;in&nbsp;Time&nbsp;</span>
+  return  <h1 className={`${theme.mainAsBg} ${theme.mainHeadingText} [height:4.5rem] relative z-10 flex gap-2 px-3 pt-1 pb-3 block md:sticky md:top-0 md:relative md:[grid-area:heading]`}>
+            <Image src={"/planner.svg"} alt="" width={48} height={48} />
+            <div className={"flex flex-col"}>
+            <span className={"text-3xl font-extrabold block leading-snug"}>Event&nbsp;Planner</span>
+            <span className={`${theme.subtleTextOnBg} text-sm block leading-none`}>Idle&nbsp;Apocalypse: Lost&nbsp;in&nbsp;Time&nbsp;</span>
+            </div>
           </h1>
 }
 

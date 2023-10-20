@@ -1,4 +1,20 @@
+
 export const maxedLevelCSS = "border-blue-950 bg-blue-950 text-rose-400";
+
+export const theme = {
+    mainAsBg: "bg-neutral-100",
+    mainAsBorder: "border-neutral-100",
+    borderOnMain: "border-neutral-500",
+    emptyBg: "bg-neutral-400",
+    plannerHeaderFooterBgAndText: "bg-neutral-600 text-white",
+    headingBgAndText: "bg-neutral-500 text-white",
+
+    mainHeadingText: "text-violet-700",
+    subtleTextOnBg: "text-neutral-800",
+    panelBg: "bg-white",
+    primaryOnToolbar: 'primary',
+    secondaryOnToolbar: 'secondary',
+}
 
 export const resourceCSS = {
     blue: {

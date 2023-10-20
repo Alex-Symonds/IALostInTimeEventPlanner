@@ -5,7 +5,7 @@ import { T_GameState, T_PurchaseData, T_Stockpiles, T_CostData, } from "../../ut
 import { moveIsValid } from '../planner/utils/moveIsValid';
 
 import { BadgeCost, BadgeMaxed } from "../subcomponents/badges";
-import Modal, { ModalHeading, ModalLegend, ModalSubmitButton, I_Modal, ModalFieldsWrapper } from '../subcomponents/modal';
+import Modal, { ModalLegend, ModalSubmitButton, I_Modal, ModalFieldsWrapper } from '../subcomponents/modal';
 import StockpilesDisplay from "../subcomponents/stockpilesStrip";
 import Tooltip from '../subcomponents/tooltip';
 
@@ -38,10 +38,10 @@ export default function UpgradePickerModal({closeModal, movePlanElement, pickerT
     }
 
     return(
-        <Modal closeModal={closeModal}>
-            <ModalHeading>
-                Upgrade Picker
-            </ModalHeading>
+        <Modal 
+            heading={"Upgrade Picker"}
+            closeModal={closeModal}
+            >
             <form className={"flex flex-col items-center h-auto"} onSubmit={handleClick}>
                 <fieldset className={"flex flex-col w-full"}> 
                     <ModalFieldsWrapper>
@@ -106,7 +106,7 @@ function StockpilesSection({stockpiles}
 
     return (
         <section className={"text-left"}>
-            <h4 className={"text-sm"}>Current stockpiles</h4>
+            <h4 className={"text-sm font-medium"}>Current stockpiles</h4>
             <div className={"my-1"}>
                 <StockpilesDisplay 
                     stockpiles={stockpiles}
@@ -154,9 +154,10 @@ function UnitPickerCard({checked, disabled, data}
     let wrapperColours = checked ?
                             "bg-violet-100 border-violet-500"
                             : disabled ?
-                                "bg-transparent border-gray-100 text-gray-200"
-                                : "bg-gray-200 border-gray-300 hover:bg-violet-50 hover:border-violet-300";
-    
+                                "bg-transparent border-neutral-100 text-neutral-200"
+                                : "bg-neutral-200 border-neutral-300 hover:bg-violet-50 hover:border-violet-300";
+
+
     let fadeCostBadge = disabled ?
                             "opacity-10"
                             : "";
@@ -166,7 +167,7 @@ function UnitPickerCard({checked, disabled, data}
                         : isHover && !disabled ?
                             "bg-violet-300 border-violet-400"
                             : disabled ?
-                            "bg-gray-50 border-gray-100"
+                            "bg-neutral-50 border-neutral-100"
                             : "bg-white border-neutral-400";
 
     return(

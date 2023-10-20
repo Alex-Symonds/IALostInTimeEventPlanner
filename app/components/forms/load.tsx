@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 
-import Modal, { ModalHeading, ModalSubmitButton, ModalFieldsWrapper, I_Modal } from '../subcomponents/modal';
+import Modal, { ModalSubmitButton, ModalFieldsWrapper, I_Modal } from '../subcomponents/modal';
 import { SelectWithLabel, T_OptionData } from './subcomponents/select';
 
 
@@ -30,10 +30,10 @@ export default function ModalLoad({closeModal, loadInputs, loadOptions}
 
     const id = useId();
     return (
-        <Modal closeModal={closeModal}>
-            <ModalHeading>
-                Load Plan
-            </ModalHeading>
+        <Modal 
+            heading={"Load Plan"}
+            closeModal={closeModal}
+            >
             { options === null ?
                 <ModalFieldsWrapper>
                     <p>There are no saved plans</p>
@@ -41,7 +41,7 @@ export default function ModalLoad({closeModal, loadInputs, loadOptions}
                 :
                 <form onSubmit={() => handleSubmit()}>
                     <ModalFieldsWrapper>
-                        <div className={"flex flex-col gap-1"}>
+                        <div className={"flex flex-col gap-1 mx-1"}>
                             <SelectWithLabel 
                                 id={id} 
                                 selectExtraCSS={"px-2 py-1"} 

@@ -55,7 +55,7 @@ export default function DustStatsSection({moreData, gameState, leftHeadingWidth}
                         <thead>
                             <tr>
                                 <th className={leftHeadingWidth}></th>
-                                <th className={"w-24 text-center border bg-violet-300 border-violet-400 text-black"}>current</th>
+                                <th className={"w-24 text-center border bg-neutral-300 border-neutral-400 text-black"}>current</th>
                                 <th className={`w-24 text-center border ${resourceCSS.dust.badge}`}>max&nbsp;dust</th>
                             </tr>
                         </thead>
@@ -86,7 +86,7 @@ function DustTableRow({data, heading, tooltipProps}
                 </SideHeading>
                 {
                     data.map((ele, idx) => {
-                        const columnCSS = idx === 1 ? resourceCSS.dust.cell : "bg-violet-50 border-violet-300 text-black";
+                        const columnCSS = idx === 1 ? resourceCSS.dust.cell : "bg-neutral-50 border-neutral-300 text-black";
                         return  <td key={idx}
                                     className={ "px-1 border" + " " + columnCSS }
                                     >

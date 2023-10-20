@@ -5,7 +5,7 @@ import { T_GameState } from '@/app/utils/types';
 import { PlanMode, T_PlanModeKit } from '@/app/utils/usePlanMode';
 
 import { BadgeCost, BadgeMaxed } from '../../subcomponents/badges';
-import Modal, { ModalFieldsWrapper, ModalHeading } from '../../subcomponents/modal';
+import Modal, { ModalFieldsWrapper } from '../../subcomponents/modal';
 
 import { SelectWithLabel, T_OptionData } from '../subcomponents/select';
 
@@ -31,17 +31,17 @@ export default function StatusForm({setGameState, gameState, modeKit, closeModal
     const [isInitialisingMode, _] = useState<boolean>(modeKit.mode !== PlanMode.active && modeKit.mode !== PlanMode.plan);
 
     return (
-        <Modal closeModal={closeModal}>
-            {/* <SkipToTheEndButton modeKit={modeKit} setGameState={setGameState} closeModal={closeModal} /> */}
-            <ModalHeading>
-                {`${modeKit.mode === PlanMode.active && !userWantsToChangeMode ? 
-                    "Active " 
-                    : modeKit.mode === PlanMode.plan && !userWantsToChangeMode ?
-                        "Plan "
-                        : ""
-                    }Game Status`
-                 }
-            </ModalHeading>
+
+        <Modal 
+            heading={`${modeKit.mode === PlanMode.active && !userWantsToChangeMode ? 
+                "Active " 
+                : modeKit.mode === PlanMode.plan && !userWantsToChangeMode ?
+                    "Plan "
+                    : ""
+                }Game Status`}
+            closeModal={closeModal}
+            >
+        {/* <SkipToTheEndButton modeKit={modeKit} setGameState={setGameState} closeModal={closeModal} /> */}
             { !isInitialisingMode && !userWantsToChangeMode ?
                 <ChangeModeButton changeMode={() => setUserWantsToChangeMode(true)} />
                 : null
@@ -99,7 +99,7 @@ export function LevelsWrapper({children}
     : { children : React.ReactNode })
     : JSX.Element {
 
-    return  <div className={"pl-4 flex flex-col gap-5"}>
+    return  <div className={"pl-2 flex flex-col gap-5"}>
                 {children}
             </div>
 
@@ -198,8 +198,6 @@ export function getInitValueForLevelSelect(name : string, gameState : T_GameStat
     }
     return initValue;
 }
-
-
 
 
 export function getUpgradeOptions({name, max} 

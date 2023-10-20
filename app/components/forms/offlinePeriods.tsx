@@ -3,7 +3,7 @@ import { useId, useRef, ChangeEvent } from 'react';
 
 import { T_OfflinePeriod, T_GameState, T_TimeOfflinePeriod } from '../../utils/types';
 
-import Modal, { ModalHeading, ModalLegend, ModalFieldsWrapper } from '../subcomponents/modal';
+import Modal, { ModalLegend, ModalFieldsWrapper } from '../subcomponents/modal';
 
 import { SelectWithSRLabel, SelectHours, SelectMinutes } from './subcomponents/select';
 import { Button } from './subcomponents/buttons';
@@ -59,13 +59,12 @@ export default function OfflineForm({closeForm, offlinePeriod, gameState, setOff
         errorMessageId: "offlinePeriodsError"
     }
 
-    return  <Modal closeModal={closeForm}>
-                <ModalHeading>
-                    { offlinePeriod === null ? 
-                        `New Offline Period` 
-                        : `Edit Offline Period` 
-                    }
-                </ModalHeading>
+    return  <Modal 
+                heading={offlinePeriod === null ? 
+                    "New Offline Period" 
+                    : "Edit Offline Period"}
+                closeModal={closeForm}
+                >
                 <form onSubmit={ (e) => handleSubmit(e) } >
                     <ModalFieldsWrapper>
                         <fieldset

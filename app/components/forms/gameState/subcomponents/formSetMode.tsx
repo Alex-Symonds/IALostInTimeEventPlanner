@@ -31,9 +31,9 @@ export default function FormSetMode({ mode, setMode, close }
     return  <form onSubmit={(e) => onSubmit(e)}>
                 <InputPageWrapper isVisible={true}>
                     <fieldset className={"flex flex-col gap-6"}>
-                        <legend className={"flex flex-col mb-5"}>
-                            <span className={"font-bold text-base ml-1"}>Select input mode</span>
-                            <span className={"font-medium text-sm text-neutral-600 ml-1"}>(you can change this later)</span>
+                        <legend className={"flex flex-col mb-5 ml-1"}>
+                            <span className={"font-bold text-base"}>Select input mode</span>
+                            <span className={"font-medium text-sm text-neutral-600"}>(you can change this later)</span>
                         </legend>
 
                         <Radio 
@@ -65,11 +65,12 @@ export default function FormSetMode({ mode, setMode, close }
                                     description={"Event is running now: view and adjust your plan as you go"}
                                     bullets={[
                                         "Skip inputting start time",
-                                        "Update time remaining, stockpiles and levels as necessary",
+                                        "Update time remaining, dust, eggs and upgrade levels as necessary",
                                     ]}
                                     isSelected={ activeIsSelected } 
                                 />
                         </Radio>
+
                     </fieldset>
                 </InputPageWrapper>
             
@@ -83,10 +84,18 @@ export default function FormSetMode({ mode, setMode, close }
                     next&nbsp;&raquo;
                 </Button>
             </form>
-}//next&nbsp;&raquo;
+}
 
 
-function OptionBox({title, description, bullets, isSelected} : any){
+interface I_OptionBox{
+    title : string,
+    description : string,
+    bullets : string[],
+    isSelected : boolean,
+}
+function OptionBox({title, description, bullets, isSelected} 
+    : I_OptionBox)
+    : JSX.Element {
 
     const [hover, setHover] = useState(false);
 
@@ -99,7 +108,7 @@ function OptionBox({title, description, bullets, isSelected} : any){
             "border-violet-300"
             : "border-gray-300";
 
-    return  <div className={`ease-linear duration-75 border-2 rounded px-4 pt-3 pb-5 ${wrapperSelectedCSS} hover:border-violet-`}
+    return  <div className={`ease-linear duration-75 border-2 rounded px-[0.875rem] pt-3 pb-5 ${wrapperSelectedCSS} hover:border-violet-`}
                 onMouseEnter={() => setHover(true) }
                 onMouseLeave={() => setHover(false)}
                 >

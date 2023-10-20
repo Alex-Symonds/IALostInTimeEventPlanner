@@ -1,9 +1,9 @@
 import { T_TimeGroup, T_GameState } from "@/app/utils/types";
 
-import { calcTimeGroupMoreData} from './utils/calcTimeGroupMoreData';
-import ProductionTableSection from './subcomponents/sectionProductionTable';
-import DustStatsSection from './subcomponents/sectionDustStats';
-import ProductionSettingsSection from "./subcomponents/sectionProductionSettings";
+import { calcTimeGroupMoreData} from '../utils/calcTimeGroupMoreData';
+import ProductionTableSection from './sectionProductionTable';
+import DustStatsSection from './sectionDustStats';
+import ProductionSettingsSection from "./sectionProductionSettings";
 
 
 
