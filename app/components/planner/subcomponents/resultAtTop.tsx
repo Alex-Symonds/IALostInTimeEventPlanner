@@ -1,6 +1,6 @@
 import { useState, Dispatch, SetStateAction } from 'react';
 
-import { theme, toBillions } from '../../../utils/formatting';
+import { theme, toBillions, topForStickybar } from '../../../utils/formatting';
 import { T_SuggestionData, T_PurchaseData, T_GameState, T_Action, T_TimeGroup } from "../../../utils/types";
 import { calcResultOfPlan } from '../../../utils/calcResults';
 
@@ -21,8 +21,8 @@ export default function ResultAtTop({gameState, actions, timeIDGroups}
 
     const resultOfPlan = calcResultOfPlan({gameState, actions, timeIDGroups});
     return( 
-        <div className={`sticky z-10 top-12 md:[top:calc(7.5rem_+_1px)] w-full ${theme.mainAsBg} mb-4 shadow-md`}>
-            <div className={`${theme.plannerHeaderFooterBgAndText} md:rounded-t w-full py-2 flex flex-col items-start `}>
+        <div className={`sticky z-10 ${topForStickybar} md:[top:calc(7.25rem_+_1px)] w-full ${theme.mainAsBg} mb-4 shadow-md`}>
+            <div className={`${theme.plannerHeaderFooterBgAndText} mt-1 md:rounded-t w-full py-2 flex flex-col items-start `}>
             <HeaderFooterContentWrapper 
                 borderColour={resultOfPlan.hasWon ?     "border-green-600"  : "border-red-600"}
                 padding={resultOfPlan.hasWon ?          "pl-3 py-1"         : "pl-3 md:pl-4 py-1"}

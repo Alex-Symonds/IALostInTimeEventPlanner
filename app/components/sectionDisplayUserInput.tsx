@@ -1,4 +1,4 @@
-import { theme } from '../utils/formatting';
+import { theme, topForStickybar } from '../utils/formatting';
 import { T_GameState, T_OfflinePeriod } from '../utils/types';
 import { PlanMode } from '../utils/usePlanMode';
 
@@ -27,11 +27,14 @@ export default function DisplayUserInput({gameState, openGameStateModal, mode, o
     const offlinePeriodCSS = calcVisibilityCSS(showOfflinePeriods);
     const containerVisibilityCSS = showGameState || showOfflinePeriods ? `py-3 gap-2 border-b ${theme.borderOnMain} shadow-md` : "";
 
+
+
+
     function calcVisibilityCSS(isVisible : boolean){
         return isVisible ? "" : " sr-only";
     }
 
-    return  <div className={"sticky h-0 top-12 relative z-20 md:sticky md:[grid-area:status] md:[top:calc(7.5rem_+_1px)]"}>
+    return  <div className={`sticky h-0 ${topForStickybar} relative z-20 md:sticky md:[grid-area:status] md:[top:calc(7.5rem_+_1px)]`}>
                 <div className={`${theme.mainAsBg} w-full flex flex-col items-center md:bg-transparent md:border-none md:shadow-none md:min-w-[20rem] md:[height:calc(100vh-8rem)] md:gap-3 md:px-3 md:pt-0 md:pb-1.5 ${containerVisibilityCSS}`}>
                     
                     <DisplayInputSection title={"Game Status"} extraCSS={`md:mt-0 ${gameStateVisibilityCSS}`}>
