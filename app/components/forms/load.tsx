@@ -2,13 +2,15 @@ import { useId, useState } from 'react';
 
 import Modal, { ModalSubmitButton, ModalFieldsWrapper, I_Modal } from '../subcomponents/modal';
 import { SelectWithLabel, T_OptionData } from './subcomponents/select';
+import { Button } from './subcomponents/buttons';
 
 
 interface I_PropsModalLoad extends Pick<I_Modal, "closeModal"> {
     loadInputs : (str : string) => void,
     loadOptions : () => T_OptionData[] | null,
+    reset : () => void,
 }
-export default function ModalLoad({closeModal, loadInputs, loadOptions} 
+export default function ModalLoad({closeModal, loadInputs, loadOptions, reset} 
     : I_PropsModalLoad)
     : JSX.Element {
 
@@ -28,6 +30,7 @@ export default function ModalLoad({closeModal, loadInputs, loadOptions}
         closeModal();
     }
 
+    const ResetBtn = <ResetButton handleClick={() => { reset(); closeModal(); }} />
     const id = useId();
     return (
         <Modal 
@@ -35,9 +38,12 @@ export default function ModalLoad({closeModal, loadInputs, loadOptions}
             closeModal={closeModal}
             >
             { options === null ?
+                <>
                 <ModalFieldsWrapper>
                     <p>There are no saved plans</p>
                 </ModalFieldsWrapper>
+                { ResetBtn }
+                </>
                 :
                 <form onSubmit={() => handleSubmit()}>
                     <ModalFieldsWrapper>
@@ -53,10 +59,25 @@ export default function ModalLoad({closeModal, loadInputs, loadOptions}
                             />
                         </div>
                     </ModalFieldsWrapper>
-                    <ModalSubmitButton label={"load"} extraCSS={''} disabled={false} />
+                    <div className={"flex justify-between"}>
+                        <ModalSubmitButton label={"load"} extraCSS={''} disabled={false} />
+                        { ResetBtn }
+                    </div>
                 </form>
             }
+
         </Modal>
     )
+}
+
+function ResetButton({handleClick} : { handleClick : () => void }){
+    return  <Button 
+                size={"twin"}
+                colours={'warning'}
+                htmlType={'button'}
+                onClick={handleClick}
+                >
+                reset all
+            </Button>
 }
 

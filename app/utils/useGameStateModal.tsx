@@ -21,7 +21,7 @@ export default function useGameStateModal({gameState, setGameState}
     : I_UseGameStateModal)
     : T_UseGameStateModalOutput {
 
-    const [showGameStateModal, setShowGameStateModal] = useState<boolean>(true);
+    const [showGameStateModal, setShowGameStateModal] = useState<boolean>(false);
 
     return {
         isVisible: showGameStateModal,

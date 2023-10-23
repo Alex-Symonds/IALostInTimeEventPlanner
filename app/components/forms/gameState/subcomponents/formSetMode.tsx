@@ -7,7 +7,7 @@ import { PlanMode, T_PlanModeKit } from "@/app/utils/usePlanMode";
 import { Button } from "../../subcomponents/buttons";
 
 
-interface I_ModeSetter extends T_PlanModeKit{
+interface I_ModeSetter extends Pick<T_PlanModeKit, "mode" | "setMode">{
     close : () => void,
 }
 

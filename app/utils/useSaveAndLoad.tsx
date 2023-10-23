@@ -1,4 +1,4 @@
-import {useState, Dispatch, SetStateAction} from 'react';
+import { useState } from 'react';
 
 import { T_OfflinePeriod, T_GameState, T_Action, T_PremiumInfo, T_ModalWithToggle } from './types';
 
@@ -10,6 +10,7 @@ interface I_SaveAndLoad {
     setOfflinePeriods : (data : T_OfflinePeriod[]) => void,
     gameState : T_GameState,
     setGameState : (data : T_GameState) => void,
+    reset : () => void,
 }
 
 type T_LocalStorage = {
@@ -22,7 +23,7 @@ type T_SaveAndLoadOutput = {
     save : T_ModalWithToggle,
     load : T_ModalWithToggle
 }
-export default function useSaveAndLoad({actions, setActions, offlinePeriods, setOfflinePeriods, gameState, setGameState }
+export default function useSaveAndLoad({actions, setActions, offlinePeriods, setOfflinePeriods, gameState, setGameState, reset }
     : I_SaveAndLoad)
     : T_SaveAndLoadOutput {
 
@@ -53,7 +54,7 @@ export default function useSaveAndLoad({actions, setActions, offlinePeriods, set
 
         if(loadedJSONStr === null){
             // TODO: error handling: can't find value
-            console.log(`${keySuffix} not found :(`)
+            //console.log(`${keySuffix} not found :(`)
             return;
         }
 
@@ -132,7 +133,8 @@ export default function useSaveAndLoad({actions, setActions, offlinePeriods, set
             action: loadInputs,
             data: {
                 displayStr: "load",
-                loadOptions
+                loadOptions,
+                reset
             }
         }
     }
