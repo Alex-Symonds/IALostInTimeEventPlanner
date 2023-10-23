@@ -1,5 +1,6 @@
 'use client';
 import Image from 'next/image';
+import { useState } from 'react';
 
 import { theme } from './utils/formatting';
 import { T_ModalData } from './utils/types';
@@ -30,6 +31,8 @@ export default function Home() {
           switchData, 
           timeIDGroups,
           prodSettingsBeforeNow,
+          reset,
+          loadedFromAutosave
         } 
         = usePlanner();
 
@@ -37,8 +40,17 @@ export default function Home() {
 
   const gameStateModal = useGameStateModal({gameState, setGameState});
   const offlinePeriodsModal = useOfflinePeriodsModal({offlinePeriods, setOfflinePeriods, gameState}); 
-  const { save : saveModal, load: loadModal } = useSaveAndLoad({actions, setActions, offlinePeriods, setOfflinePeriods, gameState, setGameState});
+  const { save : saveModal, load: loadModal } = useSaveAndLoad({actions, setActions, offlinePeriods, setOfflinePeriods, gameState, setGameState, reset});
 
+  const [hasHandledInitialModal, setHasHandledInitialModal] = useState(false);
+  if(!hasHandledInitialModal){
+    if(!loadedFromAutosave){
+      gameStateModal.openModal();
+    }
+    setHasHandledInitialModal(true);
+  }
+
+  
   return (
     <main className={`${theme.emptyBg} flex justify-center min-h-screen`}>
 
@@ -95,14 +107,23 @@ function MainPageHeading(){
   return  <h1 className={`${theme.mainAsBg} ${theme.mainHeadingText} [height:4.5rem] relative z-10 flex gap-2 px-3 pt-1 pb-3 block md:sticky md:top-0 md:relative md:[grid-area:heading]`}>
             <Image src={"/planner.svg"} alt="" width={48} height={48} />
             <div className={"flex flex-col"}>
-            <span className={"text-3xl font-extrabold block leading-snug"}>Event&nbsp;Planner</span>
-            <span className={`${theme.subtleTextOnBg} text-sm block leading-none`}>Idle&nbsp;Apocalypse: Lost&nbsp;in&nbsp;Time&nbsp;</span>
+              <span className={"text-3xl font-extrabold block leading-snug"}>Event&nbsp;Planner</span>
+              <span className={`${theme.subtleTextOnBg} text-sm block leading-none`}>Idle&nbsp;Apocalypse: Lost&nbsp;in&nbsp;Time&nbsp;</span>
             </div>
           </h1>
 }
 
 
 function Modals({modals} : { modals : { [key : string] :  T_ModalData} }){
+
+  function resetAll(){
+    modals.load.data.reset();
+    modals.gameState.data.mode.reset();
+    if('openModal' in modals.gameState){
+      modals.gameState.openModal(null);
+    }
+  }
+
   return  <>
             { modals.save.isVisible ?
               <ModalSave 
@@ -115,6 +136,7 @@ function Modals({modals} : { modals : { [key : string] :  T_ModalData} }){
                   closeModal={ modals.load.closeModal } 
                   loadInputs={ modals.load.action }
                   loadOptions={ modals.load.data.loadOptions } 
+                  reset={ resetAll }
                 />
                 : modals.gameState.isVisible ?
                   <StatusForm 
