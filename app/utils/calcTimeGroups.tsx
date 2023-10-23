@@ -1,6 +1,5 @@
-import { deepCopy } from "./consts";
 import { T_TimeData, T_PurchaseData, T_SwitchAction, T_SwitchData, T_TimeGroup, T_TimeDataUnit } from "./types";
-
+import { deepCopy } from './utils';
 
 
 interface I_GroupByTimeID {

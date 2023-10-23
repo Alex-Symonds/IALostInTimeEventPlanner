@@ -1,10 +1,10 @@
 import { useState, useEffect, SyntheticEvent, MutableRefObject } from "react";
 
-import { MAX_TIME, deepCopy } from "@/app/utils/consts";
+import { MAX_TIME } from "@/app/utils/consts";
 import { defaultOfflinePeriodStart, defaultOfflinePeriodEnd } from '@/app/utils/defaults';
 import { printOfflineTime, fixOfflineTimeStrings, convertOfflineTimeToNumber } from "@/app/utils/offlinePeriodHelpers";
 import { T_OfflinePeriod, T_TimeOfflinePeriod } from "@/app/utils/types";
-
+import { deepCopy } from '@/app/utils/utils';
 
 
 type T_OfflinePeriodForm = 
