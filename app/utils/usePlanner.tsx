@@ -37,9 +37,6 @@ export default function usePlanner(){
     defaultInitData
     : autosaveData;
 
-  console.log(autosaveData);
-
-
   const [gameState, setGameState] = useState<T_GameState>(initData.gameState);
   const [offlinePeriods, setOfflinePeriods] = useState<T_OfflinePeriod[]>(initData.offlinePeriods);
   const [actions, setActions] = useState<T_Action[]>(initData.actions);
