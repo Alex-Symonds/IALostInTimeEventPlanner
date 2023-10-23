@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+// import { isRunningOnClient } from "./utils";
 
 export enum PlanMode {
     "active",
@@ -14,7 +15,11 @@ export type T_PlanModeKit = {
 export function usePlanMode(){
     const REMEMBER_MODE_KEY = "lastUsedMode";
 
-    const [mode, setMode] = useState<PlanMode | null>(loadMode());
+    const [mode, setMode] = useState<PlanMode | null>(null);
+
+    useEffect(() => {
+        setMode(loadMode());
+    }, [])
 
     function updateMode(data : PlanMode | null){
         setMode(data);

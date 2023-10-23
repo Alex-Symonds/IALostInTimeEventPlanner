@@ -1,13 +1,19 @@
-import { useState, useEffect, Dispatch, SetStateAction } from "react";
+'use client';
+
+import { useState, useEffect, Dispatch, SetStateAction, useLayoutEffect } from "react";
 
 import { TAILWIND_MD_BREAKPOINT } from './consts';
 import { T_ViewToggle } from "./types";
 
-
 export default function useToggledDisplay(){
-    const [showGameState, setShowGameState] = useState(window.innerWidth >= TAILWIND_MD_BREAKPOINT);
-    const [showOfflinePeriods, setShowOfflinePeriods] = useState(window.innerWidth >= TAILWIND_MD_BREAKPOINT);
+    const [showGameState, setShowGameState] = useState(false);
+    const [showOfflinePeriods, setShowOfflinePeriods] = useState(false);
     
+    useEffect(() => {
+      setShowGameState(window.innerWidth >= TAILWIND_MD_BREAKPOINT);
+      setShowOfflinePeriods(window.innerWidth >= TAILWIND_MD_BREAKPOINT);
+    }, [])
+
     useForcedVisibilityOnDesktop(
       showGameState, setShowGameState,
       showOfflinePeriods, setShowOfflinePeriods,
@@ -28,21 +34,30 @@ export default function useToggledDisplay(){
 
 type T_VisibilitySetter = Dispatch<SetStateAction<boolean>>;
 function useForcedVisibilityOnDesktop(showGame : boolean, setGame : T_VisibilitySetter, showOff : boolean, setOff : T_VisibilitySetter){
-    const [isDesktopWidth, setIsDesktopWidth] = useState(calcIsDesktopWidth());
+    const [isDesktopWidth, setIsDesktopWidth] = useState(false);
   
+
     function calcIsDesktopWidth(){
       return window.innerWidth >= TAILWIND_MD_BREAKPOINT;
     }
+
+
+    useLayoutEffect(() => {
+      setIsDesktopWidth(calcIsDesktopWidth());
+    }, []);
+
   
     function handleResize(){
       setIsDesktopWidth(calcIsDesktopWidth());
     }
   
+
     useEffect(() => {
       window.addEventListener("resize", handleResize);
       return () => window.removeEventListener("resize", handleResize);    
     }, []);
   
+
     useEffect(() => {
       if(isDesktopWidth && !showGame){
         setGame(true);
@@ -51,5 +66,4 @@ function useForcedVisibilityOnDesktop(showGame : boolean, setGame : T_Visibility
         setOff(true);
       }
     }, [showGame, setGame, showOff, setOff, isDesktopWidth])
-
   }
