@@ -7,6 +7,7 @@ import { defaultActionsList, defaultGameState } from './defaults';
 import calcPlanData from './calcPlanData';
 import { calcTimeGroups } from './calcTimeGroups';
 import { T_TimeGroup, T_OfflinePeriod, T_GameState, T_Action, T_ProductionSettingsNow } from './types';
+// import { isRunningOnClient } from "./utils";
 
 
 type T_InitData = {
@@ -26,27 +27,35 @@ export default function usePlanner(){
     prodSettingsNow: null
   }
 
-  const {
-    autosave,
-    deleteAutosave,
-    autoload
-  } = autosaveKit();
-
-  const autosaveData = autoload();
-  const initData : T_InitData = autosaveData === null ?
-    defaultInitData
-    : autosaveData;
-
-  const [gameState, setGameState] = useState<T_GameState>(initData.gameState);
-  const [offlinePeriods, setOfflinePeriods] = useState<T_OfflinePeriod[]>(initData.offlinePeriods);
-  const [actions, setActions] = useState<T_Action[]>(initData.actions);
-  const [prodSettingsNow, setProdSettingsNow] = useState<T_ProductionSettingsNow | null>(initData.prodSettingsNow);
+  const [gameState, setGameState] = useState<T_GameState>(defaultInitData.gameState);
+  const [offlinePeriods, setOfflinePeriods] = useState<T_OfflinePeriod[]>(defaultInitData.offlinePeriods);
+  const [actions, setActions] = useState<T_Action[]>(defaultInitData.actions);
+  const [prodSettingsNow, setProdSettingsNow] = useState<T_ProductionSettingsNow | null>(defaultInitData.prodSettingsNow);
 
   const planData = calcPlanData({ gameState, actions, offlinePeriods, prodSettingsNow });
   const [purchaseData, setPurchaseData] = useState(planData?.purchaseData);
   const [switchData, setSwitchData] = useState(planData?.switchData);
   const [prodSettingsBeforeNow, setProdSettingsBeforeNow] = useState(planData?.productionSettingsBeforeNow);
   const [timeData, setTimeData] = useState(planData?.timeData);
+
+  const [loadedFromAutosave, setLoadedFromAutosave] = useState(false);
+
+  const {
+    autosave,
+    deleteAutosave,
+    autoload
+  } = autosaveKit();
+
+  useEffect(() => {
+    const autoloaded = autoload();
+    if(autoloaded !== null){
+      setGameState(autoloaded.gameState);
+      setOfflinePeriods(autoloaded.offlinePeriods);
+      setActions(autoloaded.actions);
+      setProdSettingsNow(autoloaded.prodSettingsNow);
+      setLoadedFromAutosave(true);
+    }
+  }, [])
 
 
   useEffect(() => {
@@ -133,16 +142,16 @@ export default function usePlanner(){
     timeIDGroups,
     prodSettingsBeforeNow,
     reset,
-    loadedFromAutosave: autosaveData !== null,
+    loadedFromAutosave,
   }
 }
 
 
 function autosaveKit(){
   const AUTOSAVE_KEY = "autoSaveData";
-
+ 
   function autosave(data : T_InitData){
-    localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(data)); 
+      localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(data)); 
   }
 
   function autoload(){
@@ -163,7 +172,7 @@ function autosaveKit(){
   }
 
   function deleteAutosave(){
-      localStorage.removeItem(AUTOSAVE_KEY);
+    localStorage.removeItem(AUTOSAVE_KEY);
   }
 
   return {

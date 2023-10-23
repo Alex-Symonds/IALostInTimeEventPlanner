@@ -1,4 +1,4 @@
-import { deepCopy } from "./consts";
+import { deepCopy } from "./utils";
 import { T_Stockpiles, T_ProductionRates } from "./types";
 
 

@@ -1,4 +1,4 @@
-import { deepCopy } from "@/app/utils/consts";
+import { deepCopy } from "@/app/utils/utils";
 import { getEntriesFromJSON, getProductionCostsFromJSON, T_DATA_KEYS } from "@/app/utils/getDataFromJSON";
 import { T_Stockpiles, T_PurchaseData } from "@/app/utils/types";
 

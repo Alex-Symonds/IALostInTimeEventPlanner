@@ -20,7 +20,7 @@
 */
 import { useState } from 'react';
 
-import { deepCopy } from '../../../utils/consts';
+import { deepCopy } from '../../../utils/utils';
 import { removeAllSwitchActionsInTimeGroup, countInternalProductionSwitches, calcNewSwitchActions } from '../../../utils/productionSettingsHelpers';
 import { I_ProductionSwitcherModalUniversal, T_ProductionSettings, T_TimeGroup, T_Action } from '../../../utils/types';
 

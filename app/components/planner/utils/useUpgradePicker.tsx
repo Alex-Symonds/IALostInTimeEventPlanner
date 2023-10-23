@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { deepCopy } from '../../../utils/consts';
+import { deepCopy } from '../../../utils/utils';
 import { T_PurchaseData, T_Action } from '../../../utils/types';
 
 import { moveIsValid, T_ValidMoveOutput } from './moveIsValid';

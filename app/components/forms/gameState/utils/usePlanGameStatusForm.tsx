@@ -1,6 +1,6 @@
 import { useState, Dispatch, SetStateAction } from "react";
 
-import { deepCopy } from "@/app/utils/consts";
+import { deepCopy } from "@/app/utils/utils";
 import { convertTimeRemainingToMinutes } from "@/app/utils/dateAndTimeHelpers";
 import { startingLevels, startingStockpiles, startingTimeRemaining } from '@/app/utils/defaults';
 import { T_GameState } from "@/app/utils/types";

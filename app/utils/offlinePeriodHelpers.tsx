@@ -1,5 +1,6 @@
-import { MAX_TIME, MS_PER_MINUTE, OUT_OF_TIME, deepCopy } from './consts';
+import { MAX_TIME, MS_PER_MINUTE, OUT_OF_TIME } from './consts';
 import { T_OfflinePeriod, T_TimeOfflinePeriod } from "./types";
+import { deepCopy } from './utils';
 
 
 interface I_IsDuringOfflinePeriods {

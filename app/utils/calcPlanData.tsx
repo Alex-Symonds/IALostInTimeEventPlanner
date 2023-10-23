@@ -1,11 +1,12 @@
 import { calcProductionRates } from './calcProductionRates';
 import { calcStockpilesAdvancedByTime } from './calcStockpilesAdvancedByTime';
 import { calcDustAtEndWithMaxDustProduction } from './calcResults';
-import { MAX_TIME, OUT_OF_TIME, deepCopy } from './consts';
+import { MAX_TIME, OUT_OF_TIME } from './consts';
 import { T_DATA_COSTS, T_DATA_KEYS, getProductionCostsFromJSON } from './getDataFromJSON';
 import { isDuringOfflinePeriod, getOfflinePeriodAsTimeIDs } from './offlinePeriodHelpers';
 import { calcProductionSettingsBeforeIndex as calcProductionSettingsBeforeIndex } from './productionSettingsHelpers';
 import { T_SwitchAction, T_ProductionRates, T_PurchaseData, T_Levels, T_OfflinePeriod, T_UpgradeAction, T_ProductionSettings, T_Stockpiles, T_Action, T_SwitchData, T_ProductionSettingsNow, T_GameState, T_TimeData, T_TimeDataUnit } from './types';
+import { deepCopy } from './utils';
 
 interface I_CalcPlanData {
     gameState : T_GameState,

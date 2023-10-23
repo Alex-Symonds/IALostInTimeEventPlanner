@@ -1,6 +1,7 @@
-import { deepCopy, MAX_TIME } from './consts';
+import { MAX_TIME } from './consts';
 import { T_DATA_KEYS, getMainKeysFromJSON, getMaxLevelFromJSON, getUpgradesDataFromJSON } from './getDataFromJSON';
 import { T_GameState, T_Action, T_TimeRemainingDHM, T_Levels, T_Stockpiles, T_ProductionSettings, T_TimeOfflinePeriod } from './types';
+import { deepCopy } from './utils';
 
 export const startingTimeRemaining : T_TimeRemainingDHM = {
     days: 3,

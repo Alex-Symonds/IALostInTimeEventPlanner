@@ -1,4 +1,4 @@
-import { deepCopy, MAX_TIME, OUT_OF_TIME, WIN_CONDITION } from "./consts";
+import { MAX_TIME, OUT_OF_TIME, WIN_CONDITION } from "./consts";
 import { calcProductionRates, calcProductionRate } from "./calcProductionRates";
 import { calcStockpilesAdvancedByTime } from './calcStockpilesAdvancedByTime';
 import { T_DATA_KEYS, getWorkerOutputsFromJSON } from "./getDataFromJSON";
@@ -6,6 +6,7 @@ import { T_Levels, T_SuggestionData, T_ResultData, T_Action, T_PurchaseData, T_P
 import { calcProductionSettingsBeforeIndex } from "./productionSettingsHelpers";
 import { startingProductionSettings } from "./defaults";
 import { convertDateToTimeID } from "./dateAndTimeHelpers";
+import { deepCopy } from './utils';
 
 
 

@@ -1,9 +1,10 @@
 import { useState, SetStateAction } from "react";
 
-import { deepCopy, MS_PER_MINUTE } from "@/app/utils/consts";
+import { MS_PER_MINUTE } from "@/app/utils/consts";
 import { startingLevels, startingStockpiles, startingTimeRemaining, lateGameSettings, maxLevels } from '@/app/utils/defaults';
 import { convertTimeIDToDHM, convertTimeRemainingToMinutes } from "@/app/utils/dateAndTimeHelpers";
 import { T_GameState, T_TimeRemainingDHM, T_Stockpiles, T_Levels } from "@/app/utils/types";
+import { deepCopy } from '@/app/utils/utils';
 
 import { I_InputGeneral } from '../subcomponents/pageGeneral';
 import { I_InputStockpiles } from '../subcomponents/pageStockpiles';
