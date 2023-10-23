@@ -73,7 +73,8 @@ export function printOfflineTime(dhm : T_TimeOfflinePeriod) : string{
 
 
 export function calcSortedOfflinePeriods(offlinePeriods : T_OfflinePeriod[]){
-    return offlinePeriods.toSorted((a, b) => {
+    let sorted : T_OfflinePeriod[] = deepCopy(offlinePeriods);
+    return sorted.sort((a, b) => {
         const aStart = convertOfflineTimeToNumber(a.start);
         const bStart = convertOfflineTimeToNumber(b.start);
 
