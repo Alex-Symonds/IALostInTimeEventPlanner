@@ -38,7 +38,7 @@ export default function usePlanner(){
   const [prodSettingsBeforeNow, setProdSettingsBeforeNow] = useState(planData?.productionSettingsBeforeNow);
   const [timeData, setTimeData] = useState(planData?.timeData);
 
-  const [loadedFromAutosave, setLoadedFromAutosave] = useState(false);
+  const [loadedFromAutosave, setLoadedFromAutosave] = useState<boolean | null>(null);
 
   const {
     autosave,
@@ -54,6 +54,9 @@ export default function usePlanner(){
       setActions(autoloaded.actions);
       setProdSettingsNow(autoloaded.prodSettingsNow);
       setLoadedFromAutosave(true);
+    }
+    else {
+      setLoadedFromAutosave(false);
     }
   }, [])
 

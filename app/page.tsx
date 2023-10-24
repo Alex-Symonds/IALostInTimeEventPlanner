@@ -43,14 +43,13 @@ export default function Home() {
   const { save : saveModal, load: loadModal } = useSaveAndLoad({actions, setActions, offlinePeriods, setOfflinePeriods, gameState, setGameState, reset});
 
   const [hasHandledInitialModal, setHasHandledInitialModal] = useState(false);
-  if(!hasHandledInitialModal){
+  if(!hasHandledInitialModal && loadedFromAutosave !== null){
     if(!loadedFromAutosave){
       gameStateModal.openModal();
     }
     setHasHandledInitialModal(true);
   }
 
-  
   return (
     <main className={`${theme.emptyBg} flex justify-center min-h-screen`}>
 
