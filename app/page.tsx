@@ -19,6 +19,7 @@ import StickyBar from './components/stickyBar';
 import DisplayUserInput from './components/sectionDisplayUserInput';
 import ErrorWithPlanner from './components/errorWithPlanner';
 
+import logoPic from '../public/planner.svg';
 
 
 export default function Home() {
@@ -104,7 +105,7 @@ export default function Home() {
 
 function MainPageHeading(){
   return  <h1 className={`${theme.mainAsBg} ${theme.mainHeadingText} [height:4.5rem] relative z-10 flex gap-2 px-3 pt-1 pb-3 block md:sticky md:top-0 md:relative md:[grid-area:heading]`}>
-            <Image src={"/planner.svg"} alt="" width={48} height={48} />
+            <Image src={logoPic} alt="" width={48} height={48} />
             <div className={"flex flex-col"}>
               <span className={"text-3xl font-extrabold block leading-snug"}>Event&nbsp;Planner</span>
               <span className={`${theme.subtleTextOnBg} text-sm block leading-none`}>Idle&nbsp;Apocalypse: Lost&nbsp;in&nbsp;Time&nbsp;</span>
