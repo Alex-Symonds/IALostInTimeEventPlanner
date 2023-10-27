@@ -45,7 +45,7 @@ export function usePlanGameStatusForm({gameState, setGameState, closeModal}
         const timeRemaining : number = convertTimeRemainingToMinutes(startingTimeRemaining);
         return {
             startTime,
-            timeEntered : new Date(),
+            timestamp : new Date(),
             timeRemaining,
             premiumInfo: {
                 adBoost: hasAdBoost,

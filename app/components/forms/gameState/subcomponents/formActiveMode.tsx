@@ -33,13 +33,12 @@ export default function FormActiveMode({gameState, setGameState, changeMode, wan
             handleLevelChange,
             hasAdBoost,
             toggleAdBoost,
-            timeEntered,
-            setTimeEntered,
             timeRemaining,
-            setTimeRemaining,
+            updateTimeRemaining,
+            timestamp,
+            updateTimestamp,
             controlledStockpileValue,
             updateStockpiles,
-            setStateOnChange,
         } = useActiveGameStatusForm({setGameState, gameState, closeModal});
 
     const wantBackToModeSetter = useRef<boolean | undefined>();
@@ -59,11 +58,10 @@ export default function FormActiveMode({gameState, setGameState, changeMode, wan
                     isVisible={ activePage === 1 }
                     >
                     <InputGeneral
-                        timeEntered={timeEntered}
-                        setStateOnChange={setStateOnChange}
-                        setTimeEntered={setTimeEntered}
+                        timestamp={timestamp}
+                        updateTimestamp={updateTimestamp}
                         timeRemaining={timeRemaining}
-                        setTimeRemaining={setTimeRemaining}
+                        updateTimeRemaining={updateTimeRemaining}
                         gameState={gameState}
                         handleLevelChange={handleLevelChange}
                         hasAdBoost={hasAdBoost}

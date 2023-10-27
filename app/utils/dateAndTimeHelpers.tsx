@@ -93,6 +93,28 @@ export function calcTimeDisplayStr(myDate : Date) : string {
 }
 
 
+export function validateHour(data : string){
+    const asInt = parseInt(data);
+    if(
+        asInt === undefined ||
+        asInt < 0 ||
+        asInt > 23
+    ){
+        return null;
+    }
+    return asInt;
+}
 
+export function validateMinute(data : string){
+    const asInt = parseInt(data);
+    if(
+        asInt === undefined ||
+        asInt < 0 ||
+        asInt > 59
+    ){
+        return null;
+    }
+    return asInt;
+}
 
 

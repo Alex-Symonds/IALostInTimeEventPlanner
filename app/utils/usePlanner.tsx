@@ -7,7 +7,6 @@ import { defaultActionsList, defaultGameState } from './defaults';
 import calcPlanData from './calcPlanData';
 import { calcTimeGroups } from './calcTimeGroups';
 import { T_TimeGroup, T_OfflinePeriod, T_GameState, T_Action, T_ProductionSettingsNow } from './types';
-// import { isRunningOnClient } from "./utils";
 
 
 type T_InitData = {
@@ -165,7 +164,7 @@ function autosaveKit(){
 
     let parsed = JSON.parse(JSONStr) as T_InitData;
     parsed.gameState.startTime = new Date(parsed.gameState.startTime);
-    parsed.gameState.timeEntered = new Date(parsed.gameState.startTime);
+    parsed.gameState.timestamp = new Date(parsed.gameState.startTime);
 
     if(parsed.offlinePeriods === undefined){
       parsed.offlinePeriods = []

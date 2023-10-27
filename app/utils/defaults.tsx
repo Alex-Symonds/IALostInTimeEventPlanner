@@ -46,7 +46,7 @@ export const startingLevels : T_Levels = {
 }
 
 export const defaultGameState : T_GameState = {
-    timeEntered : new Date(),
+    timestamp : new Date(),
     startTime : new Date(),
     timeRemaining : MAX_TIME,
     premiumInfo :  {

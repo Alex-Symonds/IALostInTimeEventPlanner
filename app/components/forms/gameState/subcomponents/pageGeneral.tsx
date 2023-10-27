@@ -1,9 +1,5 @@
-import { Dispatch, SetStateAction } from "react";
-
-import { calcDateWithTimeDisplayStr } from '../../../../utils/dateAndTimeHelpers';
 import { capitalise } from '../../../../utils/formatting';
 
-import { Button } from '../../subcomponents/buttons';
 import FieldsetWrapper from "../../subcomponents/fieldsetWrapper";
 
 import { useTimeRemainingFieldset, I_TimeRemainingFieldset } from "../utils/useTimeRemainingFieldset";
@@ -12,16 +8,18 @@ import { InputNumberAsText, Label } from "../gameState"
 
 import AllEggs, { I_AllEggs } from "./fieldAllEggs";
 import AdBoost, { I_AdBoostInputEle } from "./fieldAdBoost";
+import Select, { SelectHours, SelectMinutes } from '../../subcomponents/select';
+import { ChangeEvent } from 'react';
 
 
-export interface I_InputGeneral extends I_TimeRemainingFieldset, I_Entered, I_AllEggs, I_AdBoostInputEle {}
-export default function InputGeneral({timeRemaining, setTimeRemaining, timeEntered, setStateOnChange, setTimeEntered, gameState, handleLevelChange, hasAdBoost, toggleAdBoost } 
+export interface I_InputGeneral extends I_TimestampFieldset, I_TimeRemainingFieldset, I_AllEggs, I_AdBoostInputEle {}
+export default function InputGeneral({timestamp, updateTimestamp, timeRemaining, updateTimeRemaining, gameState, handleLevelChange, hasAdBoost, toggleAdBoost } 
     : I_InputGeneral)
     : JSX.Element {
 
     return  <div className={"flex flex-col gap-6 mt-2"}>
-                <TimeRemainingFieldset timeRemaining={timeRemaining} setTimeRemaining={setTimeRemaining} />
-                <Entered timeEntered={timeEntered} setStateOnChange={setStateOnChange} setTimeEntered={setTimeEntered} />
+                <TimestampFieldset timestamp={timestamp} updateTimestamp={updateTimestamp}/>
+                <TimeRemainingFieldset timeRemaining={timeRemaining} updateTimeRemaining={updateTimeRemaining} />
                 <AllEggs gameState={gameState} handleLevelChange={handleLevelChange} />
                 <AdBoost hasAdBoost={hasAdBoost} toggleAdBoost={toggleAdBoost} />
             </div>
@@ -29,50 +27,51 @@ export default function InputGeneral({timeRemaining, setTimeRemaining, timeEnter
 }
 
 
-interface I_Entered {
-    timeEntered : Date, 
-    setStateOnChange : (e : React.ChangeEvent<any>, setFunction : Dispatch<SetStateAction<any>>) => void, 
-    setTimeEntered : Dispatch<SetStateAction<Date>>
+interface I_TimestampFieldset{
+    timestamp : Date, 
+    updateTimestamp : (e : ChangeEvent<HTMLSelectElement>, key : string) => void 
 }
-function Entered({timeEntered, setStateOnChange, setTimeEntered} 
-    : I_Entered)
+function TimestampFieldset({timestamp, updateTimestamp}
+    : I_TimestampFieldset)
     : JSX.Element {
 
-    timeEntered = timeEntered ?? new Date();
+    const dayID = "id_timestampDay";
 
-    return(
-        <div className={"flex items-center gap-2"}>
-            <Label htmlFor={"id_timeEntered"}>
-                Entered
-            </Label>
-            <Button 
-                htmlType={"button"}
-                onClick={() => { setTimeEntered(new Date()) }}
-                colours={"secondary"}
-                size={"inline"}
-                extraCSS={"w-min"}
-                >
-                now
-            </Button>
-            <p 
-                suppressHydrationWarning={true} 
-                className={"ml-2"}
-                >
-                { calcDateWithTimeDisplayStr(timeEntered) }
-            </p>
-            <input 
-                hidden 
-                type="datetime-local" 
-                id={"id_timeEntered"} 
-                value={`${timeEntered}`} 
-                onChange={(e) => setStateOnChange(e, setTimeEntered)}
-            />
-        </div>
-    )
+    return  <FieldsetWrapper>
+                <Label extraCSS={"font-semibold w-min px-1"} htmlFor={''} tagName={'legend'}>
+                    Status&nbsp;At
+                </Label>
+
+                <div className={"flex gap-2 w-full py-1 pl-4"}>
+                    <label htmlFor={dayID} className={"sr-only"}>day</label>
+                    <Select
+                        id={dayID}
+                        options={[
+                            { valueStr:"today", displayStr:"today" },
+                            { valueStr:"yesterday", displayStr:"yesterday" }
+                        ]}
+                        handleChange={ (e) => updateTimestamp(e, 'days') }
+                        initValue={"today"}
+                    />
+
+                    <div className={"flex"}>
+                        <SelectHours
+                            id={"id_timestampHours"}
+                            handleChange={ (e) => updateTimestamp(e, 'hours') }
+                            initValue={timestamp.getHours().toString()}
+                        />
+                        <SelectMinutes
+                            id={"id_timestampMinutes"}
+                            handleChange={ (e) => updateTimestamp(e, 'minutes') }
+                            initValue={timestamp.getMinutes().toString()}
+                        />
+                    </div>
+                </div>
+            </FieldsetWrapper>
 }
 
 
-function TimeRemainingFieldset({timeRemaining, setTimeRemaining} 
+function TimeRemainingFieldset({timeRemaining, updateTimeRemaining} 
     : I_TimeRemainingFieldset)
     : JSX.Element {
 
@@ -82,7 +81,7 @@ function TimeRemainingFieldset({timeRemaining, setTimeRemaining}
         handleChangeDays, 
         handleChangeHours, 
         handleChangeMinutes 
-    } = useTimeRemainingFieldset({timeRemaining, setTimeRemaining});
+    } = useTimeRemainingFieldset({timeRemaining, updateTimeRemaining});
 
     return (
         <FieldsetWrapper>
