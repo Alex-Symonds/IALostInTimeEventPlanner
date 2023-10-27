@@ -43,7 +43,7 @@ function TimeAndPremiumStatus({gameState, mode}
                 { mode === PlanMode.active ?
                 <>
                 <GridRowWrapper title={"Updated"}>
-                    <dd suppressHydrationWarning={true}>{calcDateWithTimeDisplayStr(gameState.timeEntered)}</dd>
+                    <dd suppressHydrationWarning={true}>{calcDateWithTimeDisplayStr(gameState.timestamp)}</dd>
                 </GridRowWrapper>
 
                 <GridRowWrapper title={"Remaining"}>

@@ -260,13 +260,13 @@ describe(SectionGameState, () => {
     })
 
 
-    it("renders time entered correctly", () => {
-        const timeEntered = new Date('1995-12-17T03:24:00')
+    it("renders timestamp correctly", () => {
+        const timestamp = new Date('1995-12-17T03:24:00')
         render(
             <SectionGameState   
                 gameState={ { 
                             ...defaultGameState,
-                            timeEntered
+                            timestamp: timestamp
                          }}
                 openEditForm={() => {}}
                 mode={ PlanMode.active }

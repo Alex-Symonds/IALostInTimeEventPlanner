@@ -6,7 +6,7 @@ import { T_TimeRemainingDHM } from "@/app/utils/types";
 
 export interface I_TimeRemainingFieldset {
     timeRemaining: T_TimeRemainingDHM,
-    setTimeRemaining: React.Dispatch<React.SetStateAction<T_TimeRemainingDHM>>
+    updateTimeRemaining: (data : Partial<T_TimeRemainingDHM>) => void,
 }
 
 type T_OutputUseTimeRemainingFieldset = {
@@ -16,7 +16,7 @@ type T_OutputUseTimeRemainingFieldset = {
     handleChangeHours : (e : React.ChangeEvent<HTMLInputElement>) => void, 
     handleChangeMinutes : (e : React.ChangeEvent<HTMLInputElement>) => void, 
 }
-export function useTimeRemainingFieldset({timeRemaining, setTimeRemaining}
+export function useTimeRemainingFieldset({timeRemaining, updateTimeRemaining}
     : I_TimeRemainingFieldset)
     : T_OutputUseTimeRemainingFieldset {
 
@@ -33,19 +33,15 @@ export function useTimeRemainingFieldset({timeRemaining, setTimeRemaining}
         newDays = validateDays(newDays);
 
         if(newDays === MAX_DAYS){
-            setTimeRemaining({
+            updateTimeRemaining({
                 days: MAX_DAYS,
                 hours: 0,
                 minutes: 0
-            });
+            })
             return;
         }
-
-        setTimeRemaining(prev => {
-            return {
-                ...prev,
-                days: newDays
-            }
+        updateTimeRemaining({
+            days: newDays
         });
     }
 
@@ -81,11 +77,8 @@ export function useTimeRemainingFieldset({timeRemaining, setTimeRemaining}
         let newHours = parseInt(newHoursStr);
         newHours = validateHours(newHours);
 
-        setTimeRemaining((prev) => {
-            return {
-                ...prev,
-                hours: newHours
-            }
+        updateTimeRemaining({
+            hours: newHours
         });
     }
 
@@ -120,11 +113,8 @@ export function useTimeRemainingFieldset({timeRemaining, setTimeRemaining}
         let newMinutes = parseInt(newMinutesStr);
         newMinutes = validateMinutes(newMinutes);
 
-        setTimeRemaining((prev) => {
-            return {
-                ...prev,
-                minutes: newMinutes
-            }
+        updateTimeRemaining({
+            minutes: newMinutes
         });
     }
 
