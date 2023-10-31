@@ -39,7 +39,7 @@ function TimestampFieldset({timestamp, updateTimestamp}
 
     return  <FieldsetWrapper>
                 <Label extraCSS={"font-semibold w-min px-1"} htmlFor={''} tagName={'legend'}>
-                    Status&nbsp;At
+                    Timestamp
                 </Label>
 
                 <div className={"flex gap-2 w-full py-1 pl-4"}>
