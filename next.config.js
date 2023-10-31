@@ -2,7 +2,7 @@
 const nextConfig = {
     output: 'export',
     distDir: 'dist',
-    assetPrefix: "https://alex-symonds.github.io/ialitplanner/"
+    basePath: '/ialitplanner'
 }
 
 module.exports = nextConfig
