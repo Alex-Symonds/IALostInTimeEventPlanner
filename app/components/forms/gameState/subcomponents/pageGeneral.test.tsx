@@ -16,9 +16,9 @@ describe(InputGeneral, () => {
 
     it("time remaining renders correctly", () => {
         render( <InputGeneral 
-                    timeEntered={new Date()}
+                    timestamp={new Date()}
                     setStateOnChange={() => {}}
-                    setTimeEntered={() => {}}
+                    updateTimestamp={() => {}}
                     timeRemaining={startingTimeRemaining}
                     setTimeRemaining={() => {}}
                     gameState={defaultGameState}
@@ -49,11 +49,10 @@ describe(InputGeneral, () => {
     it("changing an input fires setStateOnChange", async () => {
         const onChange = jest.fn();
         render( <InputGeneral 
-                    timeEntered={new Date()}
-                    setStateOnChange={() => {}}
-                    setTimeEntered={() => {}}
+                    timestamp={new Date()}
+                    updateTimestamp={() => {}}
                     timeRemaining={startingTimeRemaining}
-                    setTimeRemaining={onChange}
+                    updateTimeRemaining={onChange}
                     gameState={defaultGameState}
                     handleLevelChange={() => {}}
                     hasAdBoost={false}
@@ -86,11 +85,10 @@ describe(InputGeneral, () => {
             }
 
             return <InputGeneral 
-                        timeEntered={new Date()}
-                        setStateOnChange={() => {}}
-                        setTimeEntered={() => {}}
+                        timestamp={new Date()}
+                        updateTimestamp={() => {}}
                         timeRemaining={timeRemaining}
-                        setTimeRemaining={handleChange}
+                        updateTimeRemaining={handleChange}
                         gameState={defaultGameState}
                         handleLevelChange={() => {}}
                         hasAdBoost={false}
@@ -120,11 +118,10 @@ describe(InputGeneral, () => {
         const Controlled = () => {
             const [timeRemaining, setTimeRemaining] = useState(startingTimeRemaining);
             return <InputGeneral 
-                        timeEntered={new Date()}
-                        setStateOnChange={() => {}}
-                        setTimeEntered={() => {}}
+                        timestamp={new Date()}
+                        updateTimestamp={() => {}}
                         timeRemaining={timeRemaining}
-                        setTimeRemaining={setTimeRemaining}
+                        updateTimeRemaining={setTimeRemaining}
                         gameState={defaultGameState}
                         handleLevelChange={() => {}}
                         hasAdBoost={false}
@@ -145,7 +142,8 @@ describe(InputGeneral, () => {
         expect(errorMsg).not.toBeNull();
 
         await userEvent.type(dayInput, "{selectall}{backspace}2", {delay: 5});
-        errorMsg = screen.queryByTestId("timeRemainingInputErrorMessage");
+        expect(dayInput.value).toBe("2");
+        errorMsg = findTimeRemainingErrorMessage();
         expect(errorMsg).toBeNull();
 
         await userEvent.type(hourInput, "{selectall}{backspace}37", {delay: 5});
@@ -155,7 +153,7 @@ describe(InputGeneral, () => {
 
         await userEvent.type(hourInput, "{selectall}{backspace}{backspace}5", {delay: 5});
         expect(hourInput.value).toBe("5");
-        errorMsg = screen.queryByTestId("timeRemainingInputErrorMessage");
+        errorMsg = findTimeRemainingErrorMessage();
         expect(errorMsg).toBeNull();
 
         await userEvent.type(minuteInput, "{selectall}{backspace}70", {delay: 5});
@@ -165,26 +163,19 @@ describe(InputGeneral, () => {
         
         await userEvent.type(minuteInput, "{selectall}{backspace}{backspace}42", {delay: 5});
         expect(minuteInput.value).toBe("42");
-        errorMsg = screen.queryByTestId("timeRemainingInputErrorMessage");
-        expect(errorMsg).toBeNull();
-
-        await userEvent.type(dayInput, "{selectall}{backspace}3", {delay: 5});
-        expect(dayInput.value).toBe("3");
-        expect(minuteInput.value).toBe("0");
-        expect(minuteInput.value).toBe("0");
         errorMsg = findTimeRemainingErrorMessage();
-        expect(errorMsg).not.toBeNull();
+        expect(errorMsg).toBeNull();
     });
+
 
     it("has a time remaining fieldset which handles letters and negatives correctly", async () => {
         const Controlled = () => {
             const [timeRemaining, setTimeRemaining] = useState(startingTimeRemaining);
             return <InputGeneral 
-                        timeEntered={new Date()}
-                        setStateOnChange={() => {}}
-                        setTimeEntered={() => {}}
+                        timestamp={new Date()}
+                        updateTimestamp={() => {}}
                         timeRemaining={timeRemaining}
-                        setTimeRemaining={setTimeRemaining}
+                        updateTimeRemaining={setTimeRemaining}
                         gameState={defaultGameState}
                         handleLevelChange={() => {}}
                         hasAdBoost={false}
@@ -199,11 +190,11 @@ describe(InputGeneral, () => {
         const hourInput = within(timeRemFieldset).getByLabelText(/h/i);
         const minuteInput = within(timeRemFieldset).getByLabelText(/m/i);
 
-        await userEvent.type(dayInput, "{selectall}{backspace}-2", {delay: 5});
-        expect(dayInput.value).toBe("2");
-        expect(findTimeRemainingErrorMessage()).toBeNull();
         await userEvent.type(dayInput, "{selectall}{backspace}-", {delay: 5});
         expect(dayInput.value).toBe("0");
+        expect(findTimeRemainingErrorMessage()).toBeNull();
+        await userEvent.type(dayInput, "{selectall}{backspace}-2", {delay: 5});
+        expect(dayInput.value).toBe("2");
         expect(findTimeRemainingErrorMessage()).toBeNull();
         await userEvent.type(dayInput, "{selectall}{backspace}-7", {delay: 5});
         expect(dayInput.value).toBe("3");
@@ -235,6 +226,40 @@ describe(InputGeneral, () => {
     });
 
 
+    it("corrects too many days", async () => {
+        const Controlled = () => {
+            const [timeRemaining, setTimeRemaining] = useState({
+                days: 2,
+                hours: 5,
+                minutes: 42
+            });
+            return <InputGeneral 
+                        timestamp={new Date()}
+                        updateTimestamp={() => {}}
+                        timeRemaining={timeRemaining}
+                        updateTimeRemaining={setTimeRemaining}
+                        gameState={defaultGameState}
+                        handleLevelChange={() => {}}
+                        hasAdBoost={false}
+                        toggleAdBoost={() => {}}
+                    />
+        }
+        render( <Controlled />);
+    
+        const timeRemLegend = screen.queryByText(/time remaining/i);
+        const timeRemFieldset = timeRemLegend?.closest('fieldset');
+        const dayInput = within(timeRemFieldset).getByLabelText(/d/i);
+        const hourInput = within(timeRemFieldset).getByLabelText(/h/i);
+    
+        expect(dayInput.value).toBe("2");
+        expect(hourInput.value).toBe("5");
+        let errorMsg = findTimeRemainingErrorMessage();
+        expect(errorMsg).toBeNull();
+    
+        await userEvent.type(dayInput, "{selectall}{backspace}{backspace}3", {delay: 15});
+        expect(dayInput.value).toBe("3");
+        expect(hourInput.value).toBe("0");
+    });
 
 
 })

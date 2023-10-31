@@ -16,11 +16,11 @@ describe(SectionOfflinePeriods, () => {
                 idxEdit={0}
         />)
 
-        expect(screen.queryAllByText("None entered")).not.toHaveLength(0);
+        expect(screen.queryAllByText("None entered")).toHaveLength(1);
         expect(screen.queryAllByText("1")).toHaveLength(0);
     })
 
-    it("displays offline periods correctly", () => {
+    it("displays one offline period correctly", () => {
         render(
             <SectionOfflinePeriods  
                 offlinePeriods={[offlinePeriodOvernight]}
@@ -33,22 +33,24 @@ describe(SectionOfflinePeriods, () => {
                 idxEdit={0}
         />)
 
-        expect(screen.queryAllByText("None entered")).toHaveLength(0);
+        expect(screen.queryAllByText("None entered")).toHaveLength(3);
+        expect(screen.queryAllByText("17 Dec")).toHaveLength(1);
+        expect(screen.queryAllByText("18 Dec")).toHaveLength(1);
+        expect(screen.queryAllByText("19 Dec")).toHaveLength(1);
+        expect(screen.queryAllByText("20 Dec")).toHaveLength(1);
 
-        const eleBeginsWith1 = screen.queryByText(/^1$/);
-        expect(eleBeginsWith1).not.toBeNull();
+        const sectionWithContent = screen.queryAllByText("18 Dec")[0].closest('section');
+        expect(sectionWithContent).toHaveTextContent("18 Dec00:00 - 08:00");
 
-        if(eleBeginsWith1 !== null){
-            const liEle = eleBeginsWith1.closest('li');
-            expect(liEle).not.toBeNull();
+        let sectionWithoutContent = screen.queryAllByText("17 Dec")[0].closest('section');
+        expect(sectionWithoutContent).toHaveTextContent("17 DecNone entered");
 
-            if(liEle !== null){
-                expect(liEle).toHaveTextContent("18 Dec 00:00 - 18 Dec 08:00");
-            }
-        }
+        sectionWithoutContent = screen.queryAllByText("19 Dec")[0].closest('section');
+        expect(sectionWithoutContent).toHaveTextContent("19 DecNone entered");
 
-        const eleBeginsWith2 = screen.queryByText(/^2$/);
-        expect(eleBeginsWith2).toBeNull();
+        sectionWithoutContent = screen.queryAllByText("20 Dec")[0].closest('section');
+        expect(sectionWithoutContent).toHaveTextContent("20 DecNone entered");
+
     })
 
 })
