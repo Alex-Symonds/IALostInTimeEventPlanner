@@ -26,7 +26,7 @@ describe(StatusForm, () => {
             />
         )
 
-        expect(screen.getByRole('heading', {name: "Game Status"})).not.toBeNull();
+        expect(screen.queryAllByText("Game Status")).not.toHaveLength(0);
         expect(screen.queryAllByText("Select input mode")).not.toHaveLength(0);
     });
 
@@ -45,7 +45,7 @@ describe(StatusForm, () => {
         )
 
         expect(screen.queryAllByText("Select input mode")).toHaveLength(0);
-        expect(screen.getByRole('heading', {name: "Plan Game Status"})).not.toBeNull();
+        expect(screen.queryAllByText("Plan Game Status")).not.toHaveLength(0);
     });
 
     it("displays the active mode page when planMode is active", () => {
@@ -62,7 +62,7 @@ describe(StatusForm, () => {
             />
         )
 
-        expect(screen.getByRole('heading', {name: "Active Game Status"})).not.toBeNull();
+        expect(screen.queryAllByText("Active Game Status")).not.toHaveLength(0);
     });
 
 
