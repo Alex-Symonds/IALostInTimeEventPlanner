@@ -5,7 +5,7 @@ export const theme = {
     mainAsBg: "bg-neutral-100",
     mainAsBorder: "border-neutral-100",
     borderOnMain: "border-neutral-200",
-    emptyBg: "bg-neutral-400",
+    emptyBg: "bg-neutral-100",
     plannerHeaderFooterBgAndText: "bg-neutral-600 text-white",
     headingBgAndText: "bg-neutral-500 text-white",
 
