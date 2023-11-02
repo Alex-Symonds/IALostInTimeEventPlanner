@@ -52,7 +52,7 @@ export default function Home() {
   }
 
   return (
-    <main className={`${theme.emptyBg} flex justify-center min-h-screen`}>
+    <main className={`text-black ${theme.emptyBg} text-black flex justify-center min-h-screen`}>
 
       <Modals modals={ {
                 save: saveModal,
