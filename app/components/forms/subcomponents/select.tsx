@@ -14,8 +14,14 @@ export default function Select({id, selectExtraCSS, options, handleChange, initV
     : JSX.Element {
 
     initValue = initValue === null ? undefined : initValue;
+    const isFirefox = navigator.userAgent.indexOf("Firefox") > -1;
+    const firefoxPadding = isFirefox ? "px-[0.3125rem]" : "px-[0.0625rem]";
 
-    return  <select id={id} onChange={(e) => handleChange(e)} defaultValue={initValue} className={`border border-neutral-300 rounded-sm ${selectExtraCSS}`}>
+    return  <select 
+                id={id} 
+                onChange={(e) => handleChange(e)} 
+                defaultValue={initValue} 
+                className={`border border-neutral-300 bg-white py-0.5 rounded-sm ${firefoxPadding} ${selectExtraCSS ?? ''}`}>
             {
                 options.map( (ele, idx) => {
                     return <Option key={idx} valueStr={ele.valueStr} displayStr={ele.displayStr} />
@@ -96,15 +102,17 @@ export function SelectMinutes({id, handleChange, initValue}
 }
 
 
-
-
 export type T_OptionData = {
     valueStr : string,
     displayStr : string   
 }
-
 function Option({valueStr, displayStr} : T_OptionData){
     return (
-        <option value={valueStr}>{displayStr}</option>
+        <option 
+            className={"font-sans"}
+            value={valueStr}
+            >
+            {displayStr}
+        </option>
     )
 }
